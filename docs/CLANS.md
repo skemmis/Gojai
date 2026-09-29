@@ -11,7 +11,7 @@ They are mostly separate, but everything you do on a walk also counts for your f
 
 ## The factions
 
-Sam (2026-09-29): the Order of the Star and the Pathless are in. The third camp is open, and so is whether there should be one at all. Factions have **no special abilities**: they differ in lore, look and who you walk with, never in rules.
+Two factions, the 1929 split itself: the organisation against the man who walked out of it (Sam, 2026-09-29). Factions have **no special abilities**: they differ in lore, look and who you walk with, never in rules. On screen both are in ink, told apart by shape: the Order's star (solid) and the Pathless' acorn (hatched). The spot inks keep their one meaning each.
 
 | | **The Order of the Star** | **The Pathless** |
 |---|---|---|
@@ -22,16 +22,11 @@ Sam (2026-09-29): the Order of the Star and the Pathless are in. The third camp 
 
 The joke that carries it: the Pathless are a faction of people who refuse factions, and the game makes them one anyway.
 
-### Two or three?
+### Why two, not three
 
-Both are balanced in the clan lab (below). What differs is the feel:
+The clan lab found both balanced. Two reads at a glance (every event, duel and neighborhood is us against them) and gives each side bigger crowds at live events in a small town. Three moved the map a little more. The rules take any number of factions (`CLAN.factions`), so a third camp can arrive later, for example as a schism at a season turn.
 
-- **Two** is the 1929 split itself: the organisation against the man who walked out of it. Every event, duel and neighborhood is us against them, which is easy to read at a glance. In a small town each side has more people, so live events draw bigger crowds of your own side. The cost: the map moves less (1.3 neighborhoods change hands a day against 1.7 with three) and about 3 neighborhoods stay with one side all season, against 1 with three.
-- **Three** keeps the map livelier and nobody is ever simply "the losing side", since the two trailing factions squeeze the leader. It's harder to explain and splits a small player base thinner.
-
-Claude's recommendation: **launch with two**, and keep a third camp for later as a lore event (a schism that founds it at a season turn).
-
-### Candidates for a third camp
+### Third-camp ideas, for later
 
 - **The Readymades.** Beatrice Wood, the "Mama of Dada": Duchamp's friend, a Theosophist who followed Krishnamurti to Ojai and threw lustre pots here until she died at 105 in 1998. Today: gallery row, the art walk, the ceramicist with a trust fund. They laugh at both of the others.
 - **The Psychonauts.** Aldous Huxley, Krishnamurti's friend and a founder of the Happy Valley School (1946), who went on to write *The Doors of Perception*. Today: microdosing, the ayahuasca weekend, the breathwork facilitator. Enlightenment as a shortcut, which both other camps hate.
@@ -90,26 +85,49 @@ Proposed, not built (they touch the run layer, owned by the combat thread): smal
 
 ## What the clan lab found
 
-`npm run clans:lab` plays 200 seasons per scenario on the real map, spots and event calendar, with three factions and again with two: bot players sign up (120 at launch, 6 a day, half casual, a third regular, a sixth devoted), walk from home through neighboring neighborhoods, play and lose runs (median 15 floors, like the combat lab), turn up to events, fight bosses, duel and quit. Full report: `lab-reports/clans.md`.
+`npm run clans:lab` plays 200 seasons per scenario on the real map, spots and event calendar: bot players sign up (120 at launch, 6 a day, half casual, a third regular, a sixth devoted), walk from home through neighboring neighborhoods, play and lose runs (median 15 floors, like the combat lab), turn up to events, fight bosses, duel and quit. Full report: `lab-reports/clans.md`.
 
-| | three factions | two factions |
-|---|---|---|
-| Season wins (fair = 33% / 50%) | 33 / 32 / 35% | 52 / 48% |
-| Neighborhoods changing hands a day | 1.7 | 1.3 |
-| Lead changes a season | 9.6 | 7.8 |
-| Neighborhoods one side holds all season | 1.0 | 2.8 |
-| 12 devoted friends forced onto one side at launch: that side wins | 97% | 85% |
-| Same 12 through the invite rule | 39% | 59% |
-
-- **Both are balanced** once faction abilities are gone. With abilities, each one had to be hand-tuned: the Pathless' walking bonus at first won them 87% of seasons.
-- **Events flipping ground makes the map move.** Compared with events only adding influence, fewer neighborhoods get stuck with one side (1.0 against 1.6 with three factions, 2.8 against 4.0 with two) and the lead changes more often.
-- **A founding clique is the real danger.** If a group of devoted friends all land on one side at launch, that side wins almost every season, even though catch-up keeps its share of the map near fair. The invite rule (friends join you only while factions are close) mostly fixes it. A launch in a small town should probably also start with an unscored beta week.
-- **Decay matters.** With 2% fade instead of 15%, 3 to 5 neighborhoods lock up.
+- **Balanced.** Each faction wins about half the seasons, about 1.3 neighborhoods change hands a day, and the lead changes about 8 times a season.
+- **Faction abilities were a trap.** Before they were dropped, each needed hand-tuning: the Pathless' walking bonus at first won them 87% of seasons.
+- **Events flipping ground makes the map move.** Fewer neighborhoods stay with one side all season (about 3 against 4 when events only add influence).
+- **A founding clique is the real danger.** If 12 devoted friends are forced onto one side at launch, that side wins 85% of seasons. Through the invite rule (friends join you only while factions are close) it's about 59%. A launch in a small town should probably also start with an unscored beta week.
+- **Decay matters.** With 2% fade instead of 15%, 5 neighborhoods lock up.
 - **Small town** (40 at launch, 1 a day): still balanced, but bosses die only 57% of the time, so boss HP should scale down harder for thin crowds.
+- With three factions (tested before Sam chose two): also balanced, map a little livelier (1.7 flips a day, 1 locked neighborhood).
+
+## Leaderboards
+
+Every board is a count the server already trusts (verified check-ins, finished runs, boss and duel results). Boards never show where or when anyone played, only totals.
+
+| Board | Counts | Window |
+|---|---|---|
+| Walkers | spots played | this week (resets Monday), so newcomers can top it |
+| Offerings | influence given to your faction | season |
+| Deepest | deepest run, in floors | season |
+| Slayers | group boss damage | season |
+| Duelists | duel wins (ties: fewer losses) | season |
+| Collectors | enemies caught | season |
+| The Hall | deepest run ever | all time |
+
+- **Scopes**: everyone, your faction, your friends. You always see your own row and the two players either side of you, even at rank 300.
+- **Keepers**: in each neighborhood, the player from the holding faction who gave it the most influence this season is its Keeper. Keeping a neighborhood at season's end is a title and a frame.
+- **Live event board**: during an event, the boss HP, the faction damage race (the leader takes the neighborhood) and the hardest hitters, for the people standing there. It's the one board that uses pink, because it's live.
+- Model: `packages/clans/src/leaderboards.ts` (`record`, `standing`, `keepers`, weekly and season rollover).
+
+## Profiles
+
+Your profile is a tarot card: portrait, frame, name, title, faction, and your record (season or all time), with a shelf of the enemies you've caught. Nothing on it shows where or when you walk.
+
+- **Portrait**: pending Sam's pick. Default: drawn archetype portraits in the house ink style (a few free, more unlocked by play) plus **every enemy you've caught**, so catching the $9 Latte means you can wear it. No photos or user-made images at launch, so there are no user images to moderate. Alternatives on the table: Gemini draws you from a short description, or a selfie redrawn in ink.
+- **Frames** (earned): plain; double rule (50 spots); gilt (30 floors in one run); the Keeper's frame; your faction's mark (your faction won a season you played in). No pink frames: pink means live.
+- **Titles** (earned): "Initiate of the Star" or "Of No Path" to start, then "Who Went Deep", "Unbowed", "Collector of Types", "Keeper of …".
+- **Names**: 3 to 20 letters, numbers, spaces and . - ' _; word filters run on the server.
+- Model: `packages/clans/src/profile.ts` (`portraitsFor`, `framesFor`, `titles`, `sanitize`, `validName`).
+- Mockup of the profile, leaderboards and live event board: https://claude.ai/artifact/496eFSomNooT3DbApyDWqG
 
 ## Open questions for Sam
 
-1. Two factions or three? (Claude: two for launch.) If three, which candidate?
+1. Profile images: drawn portraits and caught enemies (default), Gemini-drawn from a description, or selfie to ink?
 2. Duel stake: gold (default) or a card?
 3. Season length: a lunar month ending on the full moon?
 4. Friends: is "invite honoured only if factions stay balanced" acceptable, or should friends always be together (and balance comes only from catch-up)?
@@ -117,7 +135,9 @@ Proposed, not built (they touch the run layer, owned by the combat thread): smal
 ## Pieces
 
 - `packages/clans` (pure TypeScript, no I/O, shared by server, app and lab):
-  - `factions.ts`: the factions and their lore (the third is a placeholder slot).
+  - `factions.ts`: the two factions and their lore.
+  - `leaderboards.ts`: boards, scopes, Keepers.
+  - `profile.ts`: portraits, frames, titles, names.
   - `config.ts`: every number.
   - `territory.ts`: influence, `award`, `settle`, `claimByEvent`, the nightly `endDay`, `startSeason`.
   - `assign.ts`: faction strength and auto-assignment with invites.

@@ -7,18 +7,18 @@
  * Satire rules (plan.md): historical figures are fair game, living people only
  * as archetypes, Krishnamurti paraphrased rather than quoted.
  *
- * Sam picked the Order and the Pathless. Whether there is a third camp, and
- * who it is, is open (see docs/CLANS.md); `third` holds its slot so the lab
- * can compare two factions with three. `CLAN.factions` says which are in play.
+ * Two factions, the 1929 split itself (Sam, 2026-09-29). The rules take any
+ * number of factions (`CLAN.factions`), so a third camp can arrive later;
+ * candidates are in docs/CLANS.md.
  */
-export type FactionId = "order" | "pathless" | "third";
+export type FactionId = "order" | "pathless";
 
-export const FACTION_IDS: readonly FactionId[] = ["order", "pathless", "third"];
+export const FACTION_IDS: readonly FactionId[] = ["order", "pathless"];
 
 export type PerFaction<T> = Record<FactionId, T>;
 
 export const perFaction = <T>(f: (id: FactionId) => T): PerFaction<T> =>
-  ({ order: f("order"), pathless: f("pathless"), third: f("third") });
+  ({ order: f("order"), pathless: f("pathless") });
 
 export interface Faction {
   id: FactionId;
@@ -53,13 +53,5 @@ export const FACTIONS: PerFaction<Faction> = {
     today:
       "The silent-walk crowd, the people who quote him on Instagram, the ones who left the retreat early. No ranks, no leaders, and a very organised group chat about not being organised.",
     haunts: ["meiners-oaks", "trail", "foothills"],
-  },
-  third: {
-    id: "third",
-    name: "The Third Camp",
-    motto: "To be decided.",
-    history: "Placeholder while Sam picks a third camp, or drops it (docs/CLANS.md lists candidates).",
-    today: "",
-    haunts: [],
   },
 };

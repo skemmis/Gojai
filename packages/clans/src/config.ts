@@ -6,7 +6,7 @@
 import type { FactionId } from "./factions.ts";
 
 export const CLAN = {
-  /** Factions in play: two by default; the lab also runs every scenario with a third. */
+  /** Factions in play. */
   factions: ["order", "pathless"] as FactionId[],
 
   /** Share of influence that fades each night (the map keeps moving). */

@@ -6,8 +6,7 @@ import {
   type ClanConfig, type Ground,
 } from "./index.ts";
 
-const THREE: ClanConfig = { ...structuredClone(CLAN), factions: ["order", "pathless", "third"] };
-const flat = (patch: Partial<ClanConfig> = {}): ClanConfig => ({ ...structuredClone(THREE), underdog: { k: 0, min: 1, max: 1 }, ...patch });
+const flat = (patch: Partial<ClanConfig> = {}): ClanConfig => ({ ...structuredClone(CLAN), underdog: { k: 0, min: 1, max: 1 }, ...patch });
 
 test("factions in play have lore and ids", () => {
   for (const f of CLAN.factions) assert.ok(FACTIONS[f].motto && FACTIONS[f].history && FACTIONS[f].today);
@@ -37,7 +36,7 @@ test("one player alone hits diminishing returns in a neighborhood", () => {
 });
 
 test("claiming and flipping need a margin; holders lose ground below the minimum", () => {
-  const g: Ground = { id: "a", influence: { order: 20, pathless: 18, third: 0 }, holder: null };
+  const g: Ground = { id: "a", influence: { order: 20, pathless: 18 }, holder: null };
   assert.equal(settle(g), null, "too close to claim");
   g.influence.pathless = 10;
   assert.equal(settle(g), "order");
@@ -46,7 +45,7 @@ test("claiming and flipping need a margin; holders lose ground below the minimum
   assert.equal(settle(g), "order", "not enough to flip");
   g.influence.pathless = 20 * CLAN.flipMargin;
   assert.equal(settle(g), "pathless");
-  const weak = { id: "b", influence: { order: CLAN.minHold - 1, pathless: 0, third: 0 }, holder: "order" as const };
+  const weak = { id: "b", influence: { order: CLAN.minHold - 1, pathless: 0 }, holder: "order" as const };
   assert.equal(settle(weak), null);
 });
 
@@ -56,7 +55,7 @@ test("the nightly tick scores the day and fades influence", () => {
   t.grounds.a.influence.order = 100;
   t.grounds.b.influence.pathless = 100;
   const rep = endDay(t, cfg);
-  assert.deepEqual(rep.held, { order: 1, pathless: 1, third: 0 });
+  assert.deepEqual(rep.held, { order: 1, pathless: 1 });
   assert.equal(rep.flips.length, 2);
   assert.equal(t.score.order, 1);
   assert.ok(Math.abs(t.grounds.a.influence.order - 100 * (1 - cfg.decay)) < 1e-9);
@@ -66,15 +65,14 @@ test("the nightly tick scores the day and fades influence", () => {
   assert.ok(t.grounds.a.influence.order < 100 * cfg.season.carryOver);
 });
 
-test("catch-up favours the faction holding least, with two or three factions", () => {
+test("catch-up favours the faction holding least", () => {
   const t = newTerritory(["a", "b", "c", "d"]);
-  t.held = { order: 3, pathless: 1, third: 0 };
+  t.held = { order: 3, pathless: 1 };
   assert.ok(catchUp(t, "pathless", CLAN) > 1);
   assert.ok(catchUp(t, "order", CLAN) < 1);
   assert.ok(catchUp(t, "order", CLAN) >= CLAN.underdog.min);
-  t.held = { order: 2, pathless: 2, third: 0 };
-  assert.equal(catchUp(t, "order", CLAN), 1, "even split with two");
-  assert.ok(catchUp(t, "order", THREE) < 1, "half the map is too much with three");
+  t.held = { order: 2, pathless: 2 };
+  assert.equal(catchUp(t, "order", CLAN), 1, "even split");
 });
 
 test("a won event takes its neighborhood outright and keeps it through the night", () => {
@@ -90,16 +88,14 @@ test("a won event takes its neighborhood outright and keeps it through the night
 test("assignment goes to the faction that played least; invites honoured only when close", () => {
   const s = strength([
     { faction: "order", plays: 60, age: 30 },
-    { faction: "pathless", plays: 20, age: 30 },
-    { faction: "third", plays: 0, age: 1 }, // newcomer prior
-    { faction: "third", plays: 15, age: 30 },
-  ], THREE);
-  assert.deepEqual(s, { order: 60, pathless: 20, third: 15 + CLAN.assign.newcomer });
-  assert.equal(assignFaction(s, 0.5, undefined, THREE), "pathless");
-  assert.equal(assignFaction(s, 0.5, "order", THREE), "pathless", "order is far ahead");
-  assert.equal(assignFaction(s, 0.5, "third", THREE), "third", "close enough");
-  assert.equal(assignFaction({ order: 0, pathless: 0, third: 0 }, 0.99, undefined, THREE), "third");
-  assert.equal(assignFaction({ order: 0, pathless: 0, third: 0 }, 0.99), "pathless", "never the third camp when it's off");
+    { faction: "pathless", plays: 0, age: 1 }, // newcomer prior
+    { faction: "pathless", plays: 35, age: 30 },
+  ]);
+  assert.deepEqual(s, { order: 60, pathless: 35 + CLAN.assign.newcomer });
+  assert.equal(assignFaction(s, 0.5), "pathless");
+  assert.equal(assignFaction(s, 0.5, "order"), "pathless", "order is too far ahead");
+  assert.equal(assignFaction({ order: 50, pathless: 45 }, 0.5, "order"), "order", "close enough");
+  assert.equal(assignFaction({ order: 0, pathless: 0 }, 0.99), "pathless");
 });
 
 test("a run's offering pays where its floors were cleared", () => {
@@ -129,7 +125,6 @@ test("group boss: grows with the crowd, splits influence by damage, top faction 
   const r = resolveBoss(b);
   assert.ok(r.killed);
   assert.equal(r.top, "pathless");
-  assert.equal(r.influence.third, 0);
   const pool = CLAN.boss.pool;
   assert.ok(Math.abs(r.influence.order + r.influence.pathless - (pool + CLAN.boss.topBonus + 2 * CLAN.boss.killBonus)) < 1e-9);
   assert.equal(r.gold.p2, CLAN.boss.goldBase + CLAN.boss.goldTop);
