@@ -110,6 +110,10 @@ function artFor(card: Card, named: boolean): string | undefined {
   return CARD_ART[card.value === 1 ? `ace-${card.suit}` : `${card.value}-${card.suit}`];
 }
 
+/** A wax seal in the card's corner carries its live value: an irregular blob, not a box, so it sits on the art like a mark pressed into it. */
+const SEAL =
+  "M93.3 45.3Q95.3 50.0 92.0 54.4Q88.6 58.8 90.3 64.5Q92.0 70.2 86.4 72.4Q80.7 74.5 79.7 80.3Q78.8 86.1 73.2 86.3Q67.6 86.5 63.7 89.8Q59.8 93.1 54.9 92.1Q50.0 91.0 45.1 92.0Q40.2 93.0 36.3 89.9Q32.3 86.7 27.4 85.7Q22.4 84.6 20.8 79.6Q19.2 74.5 14.0 72.2Q8.8 69.8 8.8 64.6Q8.8 59.4 7.1 54.7Q5.5 50.0 8.3 45.6Q11.1 41.1 9.6 35.5Q8.1 29.8 12.3 26.6Q16.5 23.3 18.8 18.6Q21.1 13.8 26.8 13.6Q32.4 13.4 35.9 8.4Q39.3 3.3 44.7 7.1Q50.0 10.8 55.3 7.3Q60.6 3.8 64.0 8.8Q67.4 13.8 72.6 14.5Q77.8 15.1 79.3 20.3Q80.9 25.4 85.8 27.9Q90.8 30.4 91.0 35.5Q91.2 40.6 93.3 45.3Z";
+
 const SUIT_ICON: Record<Suit, IconName> = { spades: "blade", hearts: "shield", diamonds: "draw", clubs: "recall" };
 
 /** Extra room kept either side of the hand for the action orb and End turn (they sit above the outer cards, which fan lower). */
@@ -401,10 +405,12 @@ export function GameCard({ card, mult = 1, off, armed }: { card: Card; mult?: nu
   return (
     <div className={cls} title={d.name ? `${d.name}: ${d.text}` : undefined}>
       {mult > 1 && <span className="mult-tag">×{mult}</span>}
-      <span className="rk">
-        {rankLabel(card)}
-        {card.suit && <Icon name={card.suit} />}
-      </span>
+      {!art && (
+        <span className="rk">
+          {rankLabel(card)}
+          {card.suit && <Icon name={card.suit} />}
+        </span>
+      )}
       <span className="face">
         {art ? (
           <img src={art} alt="" draggable={false} />
@@ -414,7 +420,15 @@ export function GameCard({ card, mult = 1, off, armed }: { card: Card; mult?: nu
           card.suit && <Icon name={card.suit} className="pip" />
         )}
       </span>
-      {card.suit && !junk ? (
+      {art && card.suit ? (
+        <span className="seal" aria-label={`${card.suit} ${powerAmount(card.suit, value)}`}>
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <path d={SEAL} />
+            <circle cx="50" cy="50" r="33" />
+          </svg>
+          <b>{powerAmount(card.suit, value)}</b>
+        </span>
+      ) : card.suit && !junk ? (
         <span className={`pw pw-${card.suit}`}>
           <Icon name={SUIT_ICON[card.suit]} />
           <b>{powerAmount(card.suit, value)}</b>
