@@ -112,6 +112,9 @@ function artFor(card: Card, named: boolean): string | undefined {
 
 const SUIT_ICON: Record<Suit, IconName> = { spades: "blade", hearts: "shield", diamonds: "draw", clubs: "recall" };
 
+/** Extra room kept either side of the hand for the action orb and End turn (they sit above the outer cards, which fan lower). */
+const FLANK = 0;
+
 interface Floater {
   id: number;
   text: string;
@@ -224,7 +227,7 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
   const scene = sceneFor(run);
 
   const cardW = width < 420 ? 78 : 92;
-  const overlap = n > 1 ? Math.max(0, (n * cardW - (width - 24)) / (n - 1)) : 0;
+  const overlap = n > 1 ? Math.max(0, (n * cardW - (width - 24 - 2 * FLANK)) / (n - 1)) : 0;
 
   const hit = incoming(run);
   const through = Math.max(0, hit - f.block - (pv ? pv.block : 0));
@@ -240,12 +243,6 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
         <Scene id={scene} zone={stage} feet={stage.feet} pink={pinkMoment(run)} />
         <SceneFront id={scene} zone={stage} feet={stage.feet} />
         <div className={`sprite-wrap ${shake === "foe" ? "hit" : ""} tier-${tier}`} ref={spriteRef}>
-          {/* What it will do next, hung just over its head */}
-          <div className="intents">
-            {intent(run).map((a, i) => (
-              <IntentBadge key={i} run={run} a={a} />
-            ))}
-          </div>
           {SPRITES[e.id] ? <img className="sprite" src={SPRITES[e.id]} alt={e.name} draggable={false} /> : <Silhouette />}
           {floaters
             .filter((x) => x.where === "foe")
@@ -257,7 +254,13 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
         </div>
         <div className="foe-plate">
           <div className="foe-name">{e.name}</div>
-          <HpBar hp={e.hp} max={e.maxHp} block={e.block} preview={pv ? Math.max(0, pv.damage - e.block) : 0} />
+          <Vitals who="foe" hp={e.hp} max={e.maxHp} block={e.block} loss={pv ? Math.max(0, pv.damage - e.block) : 0} />
+          {/* What it will do next, under it and facing your own bar */}
+          <div className="intents">
+            {intent(run).map((a, i) => (
+              <IntentBadge key={i} run={run} a={a} />
+            ))}
+          </div>
           {e.suits.length > 0 && (
             <div className="immune" title="Immune">
               {e.suits.map((s) => (
@@ -272,39 +275,30 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
 
       {/* ─── You ─── */}
       <div className="you-zone">
-        <div className="orb" title={`${f.actions} actions left`}>
-          <b>{f.actions}</b>
-          <small>/{maxActions}</small>
-        </div>
         <div className="you-bar">
-          <div className="you-hp">
-            {/* Your block: always here, a shield beside your HP (hollow at 0). A heart card you hold shows what it would make it. */}
-            <span className={`shield-mark ${f.block + (pv?.block ?? 0) > 0 ? "" : "empty"} ${pv?.block ? "preview" : ""}`} title="Your block this turn">
-              <b>{f.block + (pv?.block ?? 0)}</b>
-            </span>
-            <div className="bar">
-              <i style={{ width: `${youPct}%` }} />
-              {lossPct > 0 && <u style={{ left: `${youPct - lossPct}%`, width: `${lossPct}%` }} />}
-            </div>
-            <span className="num">
-              <b>{run.hp}</b>/{run.maxHp}
-            </span>
-            {floaters
-              .filter((x) => x.where === "you")
-              .map((x) => (
-                <span key={x.id} className={`floater ${x.kind}`}>
-                  {x.text}
-                </span>
-              ))}
-          </div>
+          <Vitals who="you" hp={run.hp} max={run.maxHp} block={f.block} adding={pv?.block ?? 0} loss={through} />
+          {floaters
+            .filter((x) => x.where === "you")
+            .map((x) => (
+              <span key={x.id} className={`floater ${x.kind}`}>
+                {x.text}
+              </span>
+            ))}
         </div>
-        <button className={`end ${f.actions === 0 ? "ready" : ""}`} onClick={() => act(endTurn) && setSel(null)}>
-          End turn
-        </button>
       </div>
 
       {/* ─── Hand ─── */}
       <div className="hand-zone" ref={handRef}>
+        {/* Actions left (bottom-left) and End turn (bottom-right) flank the hand, as in Slay the Spire */}
+        <div className="orb" title={`${f.actions} actions left`}>
+          <b>{f.actions}</b>
+          <small>/{maxActions}</small>
+        </div>
+        <button className={`end ${f.actions === 0 ? "ready" : ""}`} onClick={() => act(endTurn) && setSel(null)}>
+          End
+          <br />
+          turn
+        </button>
         <Pile n={run.draw.length} side="left" />
         <div className="fan" style={{ ["--card-w" as string]: `${cardW}px` }}>
           {cards.map((c, i) => {
@@ -364,11 +358,20 @@ function IntentBadge({ run, a }: { run: Run; a: EnemyAction }) {
   );
 }
 
-function HpBar({ hp, max, block, preview }: { hp: number; max: number; block: number; preview: number }) {
+/**
+ * HP and block, drawn the same for the enemy and for you so the two read as a
+ * pair: a shield (hollow at 0) then the bar, with what's about to be lost hatched.
+ * `adding` is block a held card would add, shown hatched on the shield.
+ */
+function Vitals({ hp, max, block, adding = 0, loss, who }: { hp: number; max: number; block: number; adding?: number; loss: number; who: "foe" | "you" }) {
   const pct = Math.max(0, (hp / max) * 100);
-  const cut = Math.min(pct, (preview / max) * 100);
+  const cut = Math.min(pct, (loss / max) * 100);
+  const shown = block + adding;
   return (
-    <div className="foe-hp">
+    <div className={`vitals ${who}`}>
+      <span className={`shield-mark ${shown > 0 ? "" : "empty"} ${adding > 0 ? "preview" : ""}`} title={who === "you" ? "Your block" : "Its block"}>
+        <b>{shown}</b>
+      </span>
       <div className="bar">
         <i style={{ width: `${pct}%` }} />
         {cut > 0 && <u style={{ left: `${pct - cut}%`, width: `${cut}%` }} />}
@@ -376,12 +379,6 @@ function HpBar({ hp, max, block, preview }: { hp: number; max: number; block: nu
       <span className="num">
         <b>{Math.max(0, hp)}</b>/{max}
       </span>
-      {block > 0 && (
-        <span className="shield-badge">
-          <Icon name="shield" />
-          <b>{block}</b>
-        </span>
-      )}
     </div>
   );
 }

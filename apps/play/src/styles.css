@@ -578,7 +578,7 @@ footer {
   justify-items: center;
   align-items: end;
   min-height: 0;
-  padding: 64px 0 10px;
+  padding: 16px 0 10px;
   border: 1px dashed transparent;
 }
 .foe-zone.armed {
@@ -1198,4 +1198,92 @@ footer {
 }
 .shield-mark.preview {
   background: repeating-linear-gradient(135deg, var(--suit-hearts) 0 3px, color-mix(in srgb, var(--suit-hearts) 55%, var(--night)) 3px 5px);
+}
+
+/* ─── Vitals: the same HP-and-block bar for the enemy and for you, so they read as a pair ─── */
+.vitals {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  width: min(240px, 100%);
+}
+.vitals .bar {
+  height: 12px;
+}
+.vitals .num {
+  font-size: 13px;
+  color: var(--on-night-soft);
+  font-variant-numeric: tabular-nums;
+  min-width: 44px;
+}
+.vitals .num b {
+  font-size: 18px;
+  color: var(--on-night);
+}
+.foe-plate .intents {
+  position: static;
+  transform: none;
+  margin: 6px 0 0;
+  justify-content: center;
+}
+.foe-plate .intent {
+  transform: none;
+}
+.foe-plate .intent::before {
+  display: none;
+}
+/* Your side: just your vitals, centred under the enemy's */
+.you-zone {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+}
+.you-bar {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: min(240px, 100%);
+}
+.you-bar .floater {
+  top: -40px;
+  left: 45%;
+  font-size: 30px;
+}
+/* Orb and End turn sit at the hand's corners */
+.hand-zone .orb {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50px;
+  height: 50px;
+  padding-top: 6px;
+  z-index: 70;
+}
+.hand-zone .orb b {
+  font-size: 26px;
+}
+.hand-zone .end {
+  position: absolute;
+  right: 0;
+  top: 0;
+  min-height: 0;
+  width: 56px;
+  height: 50px;
+  padding: 0;
+  font-size: 10px;
+  line-height: 1.2;
+  z-index: 70;
+  background: var(--night);
+}
+.hand-zone .end.ready {
+  background: var(--on-night);
+  color: var(--night);
+}
+/* No block: a faint empty shield, no number */
+.vitals .shield-mark.empty {
+  opacity: 0.35;
+}
+.vitals .shield-mark.empty b {
+  visibility: hidden;
 }
