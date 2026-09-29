@@ -156,7 +156,23 @@ def boundary():
     write("ojai-boundary.geojson", [feature(shapely.set_precision(g, 1e-5), {"name": "Ojai"})])
 
 
-TASKS = {"roads": roads, "water": water, "landuse": landuse, "buildings": buildings, "boundary": boundary}
+def places():
+    """Named places (for landmark spots), trimmed to what build_territory.py needs."""
+    out = []
+    for r in query("places", "place", ["names", "basic_category", "confidence"]):
+        n = name(r)
+        if not n or not r["basic_category"]:
+            continue
+        g = shapely.from_wkb(r["geometry"])
+        out.append({"name": n, "category": r["basic_category"], "confidence": round(r["confidence"] or 0, 2),
+                    "at": [round(g.x, 6), round(g.y, 6)]})
+    p = os.path.join(os.path.dirname(__file__), "places.json")
+    with open(p, "w") as fh:
+        json.dump(sorted(out, key=lambda x: (x["category"], x["name"])), fh, indent=0)
+    print(f"wrote {p} ({len(out)} places)")
+
+
+TASKS = {"roads": roads, "water": water, "landuse": landuse, "buildings": buildings, "boundary": boundary, "places": places}
 
 if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True)

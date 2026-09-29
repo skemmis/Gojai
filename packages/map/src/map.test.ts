@@ -3,16 +3,20 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
-  BBOX, SPOTS, EVENTS, NEIGHBORHOODS, FORMER_SCHOOL_SITES, inRing, neighborhoodOf, sunset, fullMoons,
+  BBOX, SPOTS, EVENTS, NEIGHBORHOODS, FORMER_SCHOOL_SITES, inRing, neighborhoodOf, type Neighborhood, sunset, fullMoons,
   windowsBetween, activeEvents, zoned, localParts, spotsInRange, spotById, spotOdds, findAt,
   REFRESH_MIN, type LngLat, type Find,
 } from "./index.ts";
+
+const inHood = (p: LngLat, n: Neighborhood) =>
+  n.polygons.some(([outer, ...holes]) => inRing(p, outer) && !holes.some((h) => inRing(p, h)));
 
 const geo = (f: string) =>
   JSON.parse(fs.readFileSync(fileURLToPath(new URL(`../../../apps/map/public/geo/${f}`, import.meta.url)), "utf8"));
 
 test("spot and neighborhood ids are unique; events point at real spots", () => {
-  assert.equal(new Set(SPOTS.map((s) => s.id)).size, SPOTS.length);
+  const dupes = SPOTS.map((s) => s.id).filter((id, i, a) => a.indexOf(id) !== i);
+  assert.deepEqual(dupes, []);
   assert.equal(new Set(NEIGHBORHOODS.map((n) => n.id)).size, NEIGHBORHOODS.length);
   for (const e of EVENTS) for (const id of e.spots) assert.ok(spotById(id), `${e.id} → ${id}`);
 });
@@ -21,8 +25,19 @@ test("every spot is on the map and inside exactly one neighborhood", () => {
   for (const s of SPOTS) {
     const [lng, lat] = s.at;
     assert.ok(lng > BBOX[0] && lng < BBOX[2] && lat > BBOX[1] && lat < BBOX[3], s.id);
-    const n = NEIGHBORHOODS.filter((h) => inRing(s.at, h.ring));
+    const n = NEIGHBORHOODS.filter((h) => inHood(s.at, h));
     assert.equal(n.length, 1, `${s.id} is in ${n.map((h) => h.id).join(", ") || "no neighborhood"}`);
+  }
+});
+
+test("spots are dense enough to walk between", () => {
+  assert.ok(SPOTS.length >= 150, `${SPOTS.length} spots`);
+  // Every point on the downtown grid is within ~150 m of a spot.
+  for (let lng = -119.2505; lng <= -119.2405; lng += 0.0005) {
+    for (let lat = 34.4445; lat <= 34.45; lat += 0.0005) {
+      const d = Math.min(...SPOTS.map((s) => Math.hypot((s.at[0] - lng) * 91_800, (s.at[1] - lat) * 111_320)));
+      assert.ok(d < 150, `${lng},${lat} is ${Math.round(d)} m from a spot`);
+    }
   }
 });
 
@@ -33,7 +48,7 @@ test("every neighborhood has at least one spot", () => {
 test("neighborhoods don't overlap (sampled)", () => {
   for (let lng = BBOX[0]; lng < BBOX[2]; lng += 0.0006) {
     for (let lat = BBOX[1]; lat < BBOX[3]; lat += 0.0005) {
-      const n = NEIGHBORHOODS.filter((h) => inRing([lng, lat], h.ring));
+      const n = NEIGHBORHOODS.filter((h) => inHood([lng, lat], h));
       assert.ok(n.length <= 1, `${lng},${lat} in ${n.map((h) => h.id)}`);
     }
   }

@@ -15,7 +15,7 @@ export interface Theme {
   school: string; // no-go zones
   boundary: string;
   hood: string; // neighborhood outlines and labels
-  hoodTints: [string, string, string, string]; // neighbouring territories
+  hoodTints: [string, string, string, string, string]; // neighbouring territories; [4] = the trail
   spot: string;
   eventSpot: string;
   you: string;
@@ -39,7 +39,7 @@ export const THEMES: Theme[] = [
     school: "#f0d6d0",
     boundary: "#26241f",
     hood: "#8c5a3c",
-    hoodTints: ["#9d8ec7", "#6d9dc5", "#a3b18a", "#e0a458"],
+    hoodTints: ["#9d8ec7", "#6d9dc5", "#a3b18a", "#e0a458", "#2f9e44"],
     spot: "#0b7285",
     eventSpot: "#862e9c",
     you: "#1c7ed6",
@@ -58,7 +58,7 @@ export const THEMES: Theme[] = [
     school: "#3a2224",
     boundary: "#e9e6df",
     hood: "#d9a07b",
-    hoodTints: ["#9d8ec7", "#6d9dc5", "#a3b18a", "#e0a458"],
+    hoodTints: ["#9d8ec7", "#6d9dc5", "#a3b18a", "#e0a458", "#2f9e44"],
     spot: "#3bc9db",
     eventSpot: "#da77f2",
     you: "#4dabf7",

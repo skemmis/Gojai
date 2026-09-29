@@ -28,6 +28,15 @@ const RANGES: FC = {
 
 const HOODS = neighborhoodsGeoJSON();
 
+const SPOT_POINTS: FC = {
+  type: "FeatureCollection",
+  features: SPOTS.filter((s) => s.kind === "spot").map((s) => ({
+    type: "Feature",
+    properties: { id: s.id },
+    geometry: { type: "Point", coordinates: s.at },
+  })),
+};
+
 const byTier = (v: [number, number, number, number]): ExpressionSpecification =>
   ["interpolate", ["linear"], ["zoom"], 12, ["match", ["get", "t"], 3, v[3] * 0.6, 2, v[2] * 0.5, 1, v[1] * 0.4, v[0] * 0.3], 17, ["match", ["get", "t"], 3, v[3] * 2, 2, v[2] * 2, 1, v[1] * 2, v[0] * 2]];
 
@@ -45,6 +54,7 @@ export function buildStyle(t: Theme, active: { spots: string[]; hoods: string[] 
       ojai: { type: "geojson", data: GEO.boundary },
       hoods: { type: "geojson", data: HOODS as never, promoteId: "id" },
       ranges: { type: "geojson", data: RANGES as never },
+      spots: { type: "geojson", data: SPOT_POINTS as never, promoteId: "id" },
     },
     layers: [
       { id: "paper", type: "background", paint: { "background-color": t.paper } },
@@ -130,7 +140,7 @@ export function buildStyle(t: Theme, active: { spots: string[]; hoods: string[] 
           "fill-color": [
             "case",
             ["in", ["get", "id"], ["literal", active.hoods]], t.event.boss,
-            ["match", ["get", "tint"], 0, t.hoodTints[0], 1, t.hoodTints[1], 2, t.hoodTints[2], t.hoodTints[3]],
+            ["match", ["get", "tint"], 0, t.hoodTints[0], 1, t.hoodTints[1], 2, t.hoodTints[2], 3, t.hoodTints[3], t.hoodTints[4]],
           ],
           "fill-opacity": ["case", ["boolean", ["feature-state", "selected"], false], 0.3, 0.12],
         },
@@ -151,10 +161,26 @@ export function buildStyle(t: Theme, active: { spots: string[]; hoods: string[] 
         id: "ranges",
         type: "fill",
         source: "ranges",
+        minzoom: 15,
         paint: {
           "fill-color": ["case", ["in", ["get", "id"], ["literal", active.spots]], t.event.boss, kindColor],
           "fill-opacity": 0.16,
           "fill-outline-color": kindColor,
+        },
+      },
+      {
+        id: "spots",
+        type: "circle",
+        source: "spots",
+        paint: {
+          "circle-color": ["case", ["in", ["get", "id"], ["literal", active.spots]], t.event.boss, t.spot],
+          "circle-radius": [
+            "interpolate", ["linear"], ["zoom"],
+            13, ["case", ["boolean", ["feature-state", "selected"], false], 5, 2.5],
+            17, ["case", ["boolean", ["feature-state", "selected"], false], 11, 7],
+          ],
+          "circle-stroke-color": t.paper,
+          "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 13, 0.5, 17, 2],
         },
       },
     ],

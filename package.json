@@ -11,7 +11,8 @@
     "build:play": "npm run build -w apps/play",
     "map": "npm run dev -w apps/map",
     "build:map": "npm run build -w apps/map",
-    "map:extract": "python3 tools/map/extract_overture.py && NODE_USE_ENV_PROXY=1 tsx tools/map/contours.ts"
+    "map:extract": "python3 tools/map/extract_overture.py && NODE_USE_ENV_PROXY=1 tsx tools/map/contours.ts",
+    "map:territory": "python3 tools/map/build_territory.py"
   },
   "devDependencies": {
     "@types/d3-contour": "^3.0.6",

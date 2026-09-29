@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import {
-  BBOX, CENTER, EVENTS, NEIGHBORHOODS, REFRESH_MIN, SPOTS, distanceM, findAt, localParts, neighborhoodById,
+  BBOX, CENTER, EVENTS, NEIGHBORHOODS, REFRESH_MIN, SPOTS, distanceM, findAt, labelPoint, localParts, neighborhoodById,
   neighborhoodOf, spotById, spotOdds, spotsInRange, upcomingEvents, zoned,
   type EventWindow, type Find, type LngLat, type Neighborhood, type Spot,
 } from "@gojai/map";
@@ -40,18 +40,6 @@ const fromInput = (v: string) => {
   const [h, mi] = time.split(":").map(Number);
   return zoned(y, mo, d, h, mi);
 };
-
-/** Area-weighted centroid of a ring, for the neighborhood label. */
-function centroid(ring: LngLat[]): LngLat {
-  let a = 0, x = 0, y = 0;
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-    const f = ring[j][0] * ring[i][1] - ring[i][0] * ring[j][1];
-    a += f;
-    x += (ring[j][0] + ring[i][0]) * f;
-    y += (ring[j][1] + ring[i][1]) * f;
-  }
-  return [x / (3 * a), y / (3 * a)];
-}
 
 /** A stand-in player, so the page can show what "you" would find at a spot. */
 const DEMO_PLAYER = "demo";
@@ -107,9 +95,17 @@ export default function App() {
     m.on("zoom", zoomClass);
     zoomClass();
     m.on("click", (e) => {
+      const box: [maplibregl.PointLike, maplibregl.PointLike] = [
+        [e.point.x - 10, e.point.y - 10],
+        [e.point.x + 10, e.point.y + 10],
+      ];
+      const spot = m.queryRenderedFeatures(box, { layers: ["spots"] })[0];
+      if (spot) return setSel({ kind: "spot", id: String(spot.properties.id) });
       const hit = m.queryRenderedFeatures(e.point, { layers: ["hood-fill"] })[0];
       if (hit) setSel({ kind: "hood", id: String(hit.properties.id) });
     });
+    m.on("mouseenter", "spots", () => (m.getCanvas().style.cursor = "pointer"));
+    m.on("mouseleave", "spots", () => (m.getCanvas().style.cursor = ""));
     map.current = m;
     return () => m.remove();
   }, []);
@@ -141,10 +137,24 @@ export default function App() {
     };
   }, [selHood]);
 
-  // Spot markers and neighborhood names (DOM, so labels need no font service).
+  // Selected plain-spot highlight.
+  const selSpot = sel?.kind === "spot" ? sel.id : undefined;
+  useEffect(() => {
+    const m = map.current;
+    if (!m || !selSpot || spotById(selSpot)?.kind !== "spot") return;
+    const apply = () => m.getSource("spots") && m.setFeatureState({ source: "spots", id: selSpot }, { selected: true });
+    apply();
+    m.on("styledata", apply);
+    return () => {
+      m.off("styledata", apply);
+      if (m.getSource("spots")) m.setFeatureState({ source: "spots", id: selSpot }, { selected: false });
+    };
+  }, [selSpot]);
+
+  // Event-spot markers and neighborhood names (DOM, so labels need no font service).
   useEffect(() => {
     const m = map.current!;
-    const spots = SPOTS.map((s) => {
+    const spots = SPOTS.filter((s) => s.kind === "event").map((s) => {
       const el = document.createElement("button");
       el.className = `spot ${s.kind}` + (active.spots.includes(s.id) ? " live" : "");
       el.style.setProperty("--c", s.kind === "event" ? theme.eventSpot : theme.spot);
@@ -154,14 +164,13 @@ export default function App() {
         ev.stopPropagation();
         setSel({ kind: "spot", id: s.id });
       };
-      const size = s.kind === "event" ? 26 : 16;
-      return new maplibregl.Marker({ element: el, anchor: "left", offset: [-size / 2, 0] }).setLngLat(s.at).addTo(m);
+      return new maplibregl.Marker({ element: el, anchor: "left", offset: [-13, 0] }).setLngLat(s.at).addTo(m);
     });
-    const names = NEIGHBORHOODS.map((n) => {
+    const names = NEIGHBORHOODS.filter((n) => n.id !== "trail").map((n) => {
       const el = document.createElement("div");
       el.className = "hood-name";
       el.textContent = n.name;
-      return new maplibregl.Marker({ element: el }).setLngLat(centroid(n.ring)).addTo(m);
+      return new maplibregl.Marker({ element: el }).setLngLat(labelPoint(n)).addTo(m);
     });
     return () => [...spots, ...names].forEach((mk) => mk.remove());
   }, [theme, active]);
@@ -269,7 +278,7 @@ export default function App() {
             onPick={pickSpot}
             onPickHood={(n) => {
               setSel({ kind: "hood", id: n.id });
-              flyTo(centroid(n.ring), 15);
+              flyTo(labelPoint(n), 15);
             }}
           />
         )}
@@ -345,11 +354,15 @@ function SpotPanel(p: { s: Spot; windows: EventWindow[]; now: Date; theme: Theme
     <section>
       <label htmlFor="spot-picker" className="visually-hidden">Spot</label>
       <select id="spot-picker" className="picker" value={s.id} onChange={(e) => p.onPick(spotById(e.target.value)!)}>
-        {SPOTS.map((x) => (
-          <option key={x.id} value={x.id}>
-            {x.kind === "event" ? "♛ " : "• "}
-            {x.name}
-          </option>
+        {NEIGHBORHOODS.map((n) => (
+          <optgroup key={n.id} label={n.name}>
+            {SPOTS.filter((x) => neighborhoodOf(x.at)?.id === n.id).map((x) => (
+              <option key={x.id} value={x.id}>
+                {x.kind === "event" ? "♛ " : "• "}
+                {x.name}
+              </option>
+            ))}
+          </optgroup>
         ))}
       </select>
       <h2>
@@ -441,7 +454,11 @@ function KeyPanel({ theme }: { theme: Theme }) {
         </li>
         <li>
           <span className="glyph-sm swatch" style={{ borderColor: theme.hood, borderWidth: 2 }} />
-          <div><b>Neighborhood</b><small>Hand-drawn territory. Tap one to see its spots.</small></div>
+          <div><b>Neighborhood</b><small>Territory, bordered by real streets. Tap one to see its spots.</small></div>
+        </li>
+        <li>
+          <span className="glyph-sm swatch" style={{ background: theme.hoodTints[4] }} />
+          <div><b>The Ojai Valley Trail</b><small>Its own territory: the main walking artery, with a spot every 200 m.</small></div>
         </li>
         <li>
           <span className="glyph-sm swatch" style={{ background: theme.school, borderColor: theme.event.raid }} />
