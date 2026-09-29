@@ -1,5 +1,3 @@
-import { OJAI_CITY_RINGS } from "./ojaiBoundary.ts";
-
 /** [lng, lat] */
 export type LngLat = [number, number];
 
@@ -13,31 +11,6 @@ export const BBOX = [-119.34, 34.415, -119.16, 34.505] as const;
 /** Downtown Ojai (Libbey Park / the Arcade). Default map centre. */
 export const CENTER: LngLat = [-119.2455, 34.4475];
 
-/**
- * Meiners Oaks is unincorporated and has no boundary in the open data, so
- * this ring is hand-drawn: Ventura River on the west, the Ojai city line on
- * the east, down to the Ojai Valley Trail at Mira Monte. Approximate on
- * purpose; tweak freely.
- */
-export const MEINERS_OAKS_RING: LngLat[] = [
-  [-119.2995, 34.4390],
-  [-119.2890, 34.4330],
-  [-119.2790, 34.4300],
-  [-119.2700, 34.4300],
-  [-119.2690, 34.4400],
-  [-119.2690, 34.4560],
-  [-119.2800, 34.4640],
-  [-119.2940, 34.4610],
-  [-119.2995, 34.4390],
-];
-
-/**
- * The play area: the City of Ojai plus Meiners Oaks. Hotspots outside it
- * (Meditation Mount, Soule Park) pull in their own cell and its neighbours;
- * see hex.ts.
- */
-export const PLAY_AREA_RINGS: LngLat[][] = [...OJAI_CITY_RINGS, MEINERS_OAKS_RING];
-
 /** Ray-casting point-in-ring test. */
 export function inRing([lng, lat]: LngLat, ring: LngLat[]): boolean {
   let inside = false;
@@ -49,8 +22,6 @@ export function inRing([lng, lat]: LngLat, ring: LngLat[]): boolean {
   return inside;
 }
 
-export const inPlayArea = (p: LngLat) => PLAY_AREA_RINGS.some((r) => inRing(p, r));
-
 const R = 6371008.8;
 /** Great-circle distance in metres. */
 export function distanceM([lng1, lat1]: LngLat, [lng2, lat2]: LngLat): number {
@@ -60,3 +31,11 @@ export function distanceM([lng1, lat1]: LngLat, [lng2, lat2]: LngLat): number {
   const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * toRad) * Math.cos(lat2 * toRad) * Math.sin(dLng / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(a));
 }
+
+/**
+ * Sites the open data still tags as schools but that aren't active schools.
+ * Land-use polygons containing one of these points are not no-go zones.
+ * 414 E Ojai Ave: the old Ojai Unified grounds, home of the Thursday market
+ * (Sam, 2026-09-29).
+ */
+export const FORMER_SCHOOL_SITES: LngLat[] = [[-119.2428, 34.4489]];

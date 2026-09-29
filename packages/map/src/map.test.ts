@@ -3,43 +3,69 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
-  BBOX, HOTSPOTS, EVENTS, inPlayArea, inRing, playAreaCells, cellOf, sunset, fullMoons,
-  windowsBetween, activeEvents, zoned, localParts, hotspotsInRange, hotspotById, type LngLat,
+  BBOX, SPOTS, EVENTS, NEIGHBORHOODS, FORMER_SCHOOL_SITES, inRing, neighborhoodOf, sunset, fullMoons,
+  windowsBetween, activeEvents, zoned, localParts, spotsInRange, spotById, spotOdds, findAt,
+  REFRESH_MIN, type LngLat, type Find,
 } from "./index.ts";
 
 const geo = (f: string) =>
   JSON.parse(fs.readFileSync(fileURLToPath(new URL(`../../../apps/map/public/geo/${f}`, import.meta.url)), "utf8"));
 
-test("hotspot ids are unique and events point at real hotspots", () => {
-  assert.equal(new Set(HOTSPOTS.map((h) => h.id)).size, HOTSPOTS.length);
-  for (const e of EVENTS) for (const id of e.hotspots) assert.ok(hotspotById(id), `${e.id} → ${id}`);
+test("spot and neighborhood ids are unique; events point at real spots", () => {
+  assert.equal(new Set(SPOTS.map((s) => s.id)).size, SPOTS.length);
+  assert.equal(new Set(NEIGHBORHOODS.map((n) => n.id)).size, NEIGHBORHOODS.length);
+  for (const e of EVENTS) for (const id of e.spots) assert.ok(spotById(id), `${e.id} → ${id}`);
 });
 
-test("every hotspot is on the map and in a claimable cell", () => {
-  const cells = new Set(playAreaCells());
-  for (const h of HOTSPOTS) {
-    const [lng, lat] = h.at;
-    assert.ok(lng > BBOX[0] && lng < BBOX[2] && lat > BBOX[1] && lat < BBOX[3], h.id);
-    assert.ok(cells.has(cellOf(h.at)), h.id);
+test("every spot is on the map and inside exactly one neighborhood", () => {
+  for (const s of SPOTS) {
+    const [lng, lat] = s.at;
+    assert.ok(lng > BBOX[0] && lng < BBOX[2] && lat > BBOX[1] && lat < BBOX[3], s.id);
+    const n = NEIGHBORHOODS.filter((h) => inRing(s.at, h.ring));
+    assert.equal(n.length, 1, `${s.id} is in ${n.map((h) => h.id).join(", ") || "no neighborhood"}`);
   }
-  // Only these sit outside the town lines (both are county land).
-  assert.deepEqual(HOTSPOTS.filter((h) => !inPlayArea(h.at)).map((h) => h.id), ["meditation-mount", "soule-park"]);
 });
 
-test("no hotspot or event venue stands on school grounds", () => {
-  const schools = geo("landuse.geojson").features.filter((f: any) => f.properties.c === "education");
+test("every neighborhood has at least one spot", () => {
+  for (const n of NEIGHBORHOODS) assert.ok(SPOTS.some((s) => neighborhoodOf(s.at)?.id === n.id), n.id);
+});
+
+test("neighborhoods don't overlap (sampled)", () => {
+  for (let lng = BBOX[0]; lng < BBOX[2]; lng += 0.0006) {
+    for (let lat = BBOX[1]; lat < BBOX[3]; lat += 0.0005) {
+      const n = NEIGHBORHOODS.filter((h) => inRing([lng, lat], h.ring));
+      assert.ok(n.length <= 1, `${lng},${lat} in ${n.map((h) => h.id)}`);
+    }
+  }
+});
+
+test("no spot stands on active school grounds", () => {
+  const polys = (f: any): LngLat[][][] => (f.geometry.type === "Polygon" ? [f.geometry.coordinates] : f.geometry.coordinates);
+  const schools = geo("landuse.geojson").features.filter(
+    (f: any) => f.properties.c === "education" && !FORMER_SCHOOL_SITES.some((p) => polys(f).some((poly) => inRing(p, poly[0]))),
+  );
   assert.ok(schools.length > 5);
-  const onSchool = (p: LngLat) =>
-    schools.some((f: any) => {
-      const polys = f.geometry.type === "Polygon" ? [f.geometry.coordinates] : f.geometry.coordinates;
-      return polys.some((poly: LngLat[][]) => inRing(p, poly[0]));
-    });
-  for (const h of HOTSPOTS) assert.ok(!onSchool(h.at), h.id);
+  for (const s of SPOTS) {
+    assert.ok(!schools.some((f: any) => polys(f).some((poly) => inRing(s.at, poly[0]))), s.id);
+  }
 });
 
-test("play area grid is town-sized", () => {
-  const n = playAreaCells().length;
-  assert.ok(n > 80 && n < 400, `${n} cells`);
+test("finds follow the odds and hold steady within a refresh slot", () => {
+  const spot = spotById("krotona")!;
+  const odds = spotOdds(spot);
+  assert.ok(Math.abs(Object.values(odds).reduce((a, b) => a + b, 0) - 1) < 1e-9);
+  assert.ok(odds.rest > spotOdds(spotById("soule-park")!).rest);
+  const t = zoned(2026, 10, 1, 12, 1);
+  assert.equal(findAt(spot, "p1", t), findAt(spot, "p1", new Date(t.getTime() + 60_000)));
+  const counts: Record<Find, number> = { fight: 0, elite: 0, rest: 0, shop: 0, mystery: 0 };
+  const plain = spotById("soule-park")!;
+  const N = 20_000;
+  for (let i = 0; i < N; i++) counts[findAt(plain, `p${i}`, t)]++;
+  const expect = spotOdds(plain);
+  for (const f of Object.keys(counts) as Find[]) assert.ok(Math.abs(counts[f] / N - expect[f]) < 0.02, f);
+  // A new slot rerolls for at least some players.
+  const later = new Date(t.getTime() + REFRESH_MIN * 6e4);
+  assert.ok([...Array(50)].some((_, i) => findAt(plain, `p${i}`, t) !== findAt(plain, `p${i}`, later)));
 });
 
 test("sunset matches published times for Ojai", () => {
@@ -62,11 +88,12 @@ test("zoned handles PST and PDT", () => {
   assert.equal(zoned(2026, 7, 15, 9).toISOString(), "2026-07-15T16:00:00.000Z");
 });
 
-test("weekly markets and Pink Moment open at the right times", () => {
-  // Sunday 2026-10-04, 10:00 PDT.
+test("markets and Pink Moment open at the right times", () => {
   const ids = (d: Date) => activeEvents(d).map((w) => w.event.id);
-  assert.ok(ids(zoned(2026, 10, 4, 10)).includes("sunday-market"));
+  assert.ok(ids(zoned(2026, 10, 4, 10)).includes("sunday-market")); // Sunday 10 AM
   assert.ok(!ids(zoned(2026, 10, 5, 10)).includes("sunday-market"));
+  assert.ok(ids(zoned(2026, 10, 1, 15, 30)).includes("thursday-market")); // Thursday 3:30 PM
+  assert.ok(!ids(zoned(2026, 10, 1, 19, 1)).includes("thursday-market"));
   const pink = windowsBetween(zoned(2026, 10, 5, 0), zoned(2026, 10, 6, 0)).filter((w) => w.event.id === "pink-moment");
   assert.equal(pink.length, 1);
   assert.equal((pink[0].end.getTime() - pink[0].start.getTime()) / 6e4, 35);
@@ -74,6 +101,6 @@ test("weekly markets and Pink Moment open at the right times", () => {
 });
 
 test("range check finds the spot you stand on", () => {
-  assert.equal(hotspotsInRange(hotspotById("soule-park")!.at)[0].id, "soule-park");
-  assert.equal(hotspotsInRange([-119.2, 34.49]).length, 0);
+  assert.equal(spotsInRange(spotById("soule-park")!.at)[0].id, "soule-park");
+  assert.equal(spotsInRange([-119.2, 34.49]).length, 0);
 });

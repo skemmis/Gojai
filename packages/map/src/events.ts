@@ -1,5 +1,4 @@
 import { localDays, localParts, sunset, zoned, fullMoons } from "./time.ts";
-import type { LngLat } from "./area.ts";
 
 /** "HH:MM" Ojai wall-clock time. */
 type Clock = `${number}:${number}`;
@@ -23,9 +22,8 @@ export interface TimedEvent {
   name: string;
   kind: EventKind;
   rule: TimeRule;
-  /** Hotspot ids and/or extra venues where it happens. */
-  hotspots: string[];
-  venues?: { name: string; at: LngLat; verify?: string }[];
+  /** Spot ids where it happens (usually event spots). */
+  spots: string[];
   note: string;
   verify?: string;
 }
@@ -38,7 +36,7 @@ export const EVENTS: TimedEvent[] = [
     name: "Pink Moment",
     kind: "boss",
     rule: { kind: "sunset", startMin: -15, endMin: 20 },
-    hotspots: ["shelf-road", "meditation-mount"],
+    spots: ["shelf-road", "meditation-mount"],
     note: "The Topatopa bluffs glow pink after sunset. Daily boss window; magenta cards only drop here.",
   },
   {
@@ -46,8 +44,7 @@ export const EVENTS: TimedEvent[] = [
     name: "Sunday Farmers Market",
     kind: "market",
     rule: { kind: "weekly", days: [0], start: "09:00", end: "13:00" },
-    hotspots: ["arcade"],
-    venues: [{ name: "Ojai Certified Farmers Market, 300 E Matilija St", at: [-119.24439, 34.449] }],
+    spots: ["sunday-market"],
     note: "Behind the Arcade. Rare shop stock and a co-op boss.",
     verify: "Hours.",
   },
@@ -56,23 +53,15 @@ export const EVENTS: TimedEvent[] = [
     name: "Thursday People's Market",
     kind: "market",
     rule: { kind: "weekly", days: [4], start: "15:00", end: "19:00" },
-    hotspots: [],
-    venues: [
-      {
-        name: "Ojai Community Farmers' Market (candidate)",
-        at: [-119.2428, 34.4489],
-        verify: "Open data puts it at 414 E Ojai Ave, which is a school site. Sam to confirm the real place.",
-      },
-    ],
-    note: "The counter-market to Sunday's: the anti-establishment shop.",
-    verify: "Day, hours and place all need Sam's confirmation.",
+    spots: ["ousd-grounds"],
+    note: "The counter-market to Sunday's: the anti-establishment shop. On the old school district grounds.",
   },
   {
     id: "full-moon",
     name: "Full Moon",
     kind: "boss",
     rule: { kind: "fullMoon", start: "19:00", end: "23:00" },
-    hotspots: ["meditation-mount", "oak-grove"],
+    spots: ["meditation-mount", "oak-grove"],
     note: "Theosophical lore boss: the Masters, the astral plane.",
   },
   {
@@ -80,7 +69,7 @@ export const EVENTS: TimedEvent[] = [
     name: "Solstice / Equinox",
     kind: "rare",
     rule: { kind: "annual", dates: ["03-20", "06-21", "09-22", "12-21"], start: "06:00", end: "22:00" },
-    hotspots: ["krotona", "meditation-mount"],
+    spots: ["krotona", "meditation-mount"],
     note: "Season change at the rest sites; the map reshuffles. Dates are the usual ones, off by a day some years.",
   },
   {
@@ -88,7 +77,7 @@ export const EVENTS: TimedEvent[] = [
     name: "Morning Trail Rush",
     kind: "rare",
     rule: { kind: "weekly", days: [0, 6], start: "07:00", end: "09:00" },
-    hotspots: ["trail-downtown", "trail-mira-monte"],
+    spots: ["trail-downtown", "trail-mira-monte"],
     note: "E-bike Teen swarm along the Ojai Valley Trail. Fast fights.",
   },
   {
@@ -96,7 +85,7 @@ export const EVENTS: TimedEvent[] = [
     name: "The Pathless Land",
     kind: "raid",
     rule: { kind: "annual", dates: ["08-03"], start: "10:00", end: "18:00" },
-    hotspots: ["oak-grove"],
+    spots: ["oak-grove"],
     note: "Anniversary of Krishnamurti's 1929 speech. Factions dissolve for a day.",
   },
   {
@@ -104,7 +93,7 @@ export const EVENTS: TimedEvent[] = [
     name: "Ojai Day",
     kind: "raid",
     rule: { kind: "tbd", when: "Annual, October" },
-    hotspots: ["libbey-park", "arcade"],
+    spots: ["libbey-park", "sunday-market"],
     note: "Town-wide raid, all factions.",
     verify: "Date.",
   },
@@ -113,7 +102,7 @@ export const EVENTS: TimedEvent[] = [
     name: "Ojai Music Festival",
     kind: "boss",
     rule: { kind: "tbd", when: "Annual, June" },
-    hotspots: ["libbey-park"],
+    spots: ["libbey-park"],
     note: "A boss runs the whole festival at Libbey Bowl.",
     verify: "Dates.",
   },
@@ -122,7 +111,7 @@ export const EVENTS: TimedEvent[] = [
     name: "Lavender Festival",
     kind: "rare",
     rule: { kind: "tbd", when: "Annual, June" },
-    hotspots: ["libbey-park"],
+    spots: ["libbey-park"],
     note: "Seasonal card set.",
     verify: "Dates and place.",
   },

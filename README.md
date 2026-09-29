@@ -2,7 +2,7 @@
 
 A location-based card game set in Ojai, California. You walk to real places at real times (Pink Moment on Shelf Road, the Thursday market), fight card battles with a standard deck (spades attack, hearts defend, diamonds draw, clubs recycle), catch what you beat, and hold ground for your faction.
 
-This repo is at **prototype v0**: the combat engine, a balance lab, and a web page to play runs. It also has the Ojai map (hotspots, timed events, territory hexes) as data plus a viewable page. There's no art or multiplayer yet.
+This repo is at **prototype v0**: the combat engine, a balance lab, and a web page to play runs. It also has the Ojai map (neighborhoods, spots, event spots, timed events) as data plus a viewable page. There's no art or multiplayer yet.
 
 ## Layout
 
@@ -11,8 +11,8 @@ This repo is at **prototype v0**: the combat engine, a balance lab, and a web pa
 | `packages/core` | The rules engine: pure TypeScript, seeded, no I/O. The same code will run on phones, the server and the lab. |
 | `packages/sim` | The balance lab: a bot plays thousands of runs and reports walls, dead cards, must-picks and broken Guide combos. |
 | `apps/play` | A web page to play runs (React + Vite). |
-| `packages/map` | The map as data: play area, hotspots (run-node types), timed events with sunset/full-moon math, H3 territory hexes. Pure TypeScript. |
-| `apps/map` | A phone-friendly web page showing the Ojai / Meiners Oaks map, hotspots, hexes and upcoming events (React + MapLibre). |
+| `packages/map` | The map as data: hand-drawn neighborhoods, spots and event spots (Pokémon Go style), timed events with sunset/full-moon math. Pure TypeScript. |
+| `apps/map` | A phone-friendly web page showing the Ojai / Meiners Oaks map, neighborhoods, spots and upcoming events (React + MapLibre). |
 | `tools/map` | One-time extractors for the base map (Overture Maps + AWS terrain tiles), output committed to `apps/map/public/geo`. |
 | `docs/MAP.md` | How the map works and what's still to check on the ground. |
 | `docs/COMBAT.md` | The combat rules. |

@@ -1,5 +1,5 @@
 import type { StyleSpecification, ExpressionSpecification } from "maplibre-gl";
-import { MEINERS_OAKS_RING, HOTSPOTS, type LngLat } from "@gojai/map";
+import { SPOTS, neighborhoodsGeoJSON, type LngLat } from "@gojai/map";
 import { GEO } from "./geo.ts";
 import type { Theme } from "./theme.ts";
 
@@ -19,26 +19,20 @@ function circle([lng, lat]: LngLat, m: number, steps = 48): LngLat[] {
 
 const RANGES: FC = {
   type: "FeatureCollection",
-  features: HOTSPOTS.map((h) => ({
+  features: SPOTS.map((s) => ({
     type: "Feature",
-    properties: { id: h.id, node: h.node },
-    geometry: { type: "Polygon", coordinates: [circle(h.at, h.radiusM)] },
+    properties: { id: s.id, kind: s.kind },
+    geometry: { type: "Polygon", coordinates: [circle(s.at, s.radiusM)] },
   })),
 };
 
-const MEINERS: FC = {
-  type: "FeatureCollection",
-  features: [{ type: "Feature", properties: {}, geometry: { type: "Polygon", coordinates: [MEINERS_OAKS_RING] } }],
-};
+const HOODS = neighborhoodsGeoJSON();
 
 const byTier = (v: [number, number, number, number]): ExpressionSpecification =>
   ["interpolate", ["linear"], ["zoom"], 12, ["match", ["get", "t"], 3, v[3] * 0.6, 2, v[2] * 0.5, 1, v[1] * 0.4, v[0] * 0.3], 17, ["match", ["get", "t"], 3, v[3] * 2, 2, v[2] * 2, 1, v[1] * 2, v[0] * 2]];
 
-export function buildStyle(t: Theme, hexes: FC, active: { hotspots: string[]; cells: string[] }): StyleSpecification {
-  const nodeColor: ExpressionSpecification = [
-    "match", ["get", "node"],
-    "fight", t.node.fight, "elite", t.node.elite, "rest", t.node.rest, "shop", t.node.shop, t.node.mystery,
-  ];
+export function buildStyle(t: Theme, active: { spots: string[]; hoods: string[] }): StyleSpecification {
+  const kindColor: ExpressionSpecification = ["match", ["get", "kind"], "event", t.eventSpot, t.spot];
   return {
     version: 8,
     sources: {
@@ -49,8 +43,7 @@ export function buildStyle(t: Theme, hexes: FC, active: { hotspots: string[]; ce
       trails: { type: "geojson", data: GEO.trails },
       roads: { type: "geojson", data: GEO.roads },
       ojai: { type: "geojson", data: GEO.boundary },
-      meiners: { type: "geojson", data: MEINERS as never },
-      hexes: { type: "geojson", data: hexes as never, promoteId: "cell" },
+      hoods: { type: "geojson", data: HOODS as never, promoteId: "id" },
       ranges: { type: "geojson", data: RANGES as never },
     },
     layers: [
@@ -127,42 +120,41 @@ export function buildStyle(t: Theme, hexes: FC, active: { hotspots: string[]; ce
         id: "ojai-line",
         type: "line",
         source: "ojai",
-        paint: { "line-color": t.boundary, "line-width": 1.5, "line-dasharray": [4, 2, 1, 2], "line-opacity": 0.6 },
+        paint: { "line-color": t.boundary, "line-width": 1, "line-dasharray": [4, 2, 1, 2], "line-opacity": 0.25 },
       },
       {
-        id: "meiners-line",
-        type: "line",
-        source: "meiners",
-        paint: { "line-color": t.boundary, "line-width": 1.5, "line-dasharray": [4, 2, 1, 2], "line-opacity": 0.6 },
-      },
-      {
-        id: "hex-fill",
+        id: "hood-fill",
         type: "fill",
-        source: "hexes",
+        source: "hoods",
         paint: {
-          "fill-color": ["case", ["in", ["get", "cell"], ["literal", active.cells]], t.hexActive, t.hex],
-          "fill-opacity": [
+          "fill-color": [
             "case",
-            ["boolean", ["feature-state", "selected"], false], 0.28,
-            ["in", ["get", "cell"], ["literal", active.cells]], 0.12,
-            0.02,
+            ["in", ["get", "id"], ["literal", active.hoods]], t.event.boss,
+            ["match", ["get", "tint"], 0, t.hoodTints[0], 1, t.hoodTints[1], 2, t.hoodTints[2], t.hoodTints[3]],
           ],
+          "fill-opacity": ["case", ["boolean", ["feature-state", "selected"], false], 0.3, 0.12],
         },
       },
       {
-        id: "hex-line",
+        id: "hood-line",
         type: "line",
-        source: "hexes",
-        paint: { "line-color": t.hex, "line-opacity": 0.35, "line-width": 0.8 },
+        source: "hoods",
+        layout: { "line-join": "round" },
+        paint: {
+          "line-color": t.hood,
+          "line-width": ["case", ["boolean", ["feature-state", "selected"], false], 4, 2.5],
+          "line-opacity": 0.55,
+          "line-dasharray": [3, 1.5],
+        },
       },
       {
         id: "ranges",
         type: "fill",
         source: "ranges",
         paint: {
-          "fill-color": ["case", ["in", ["get", "id"], ["literal", active.hotspots]], t.event.boss, nodeColor],
-          "fill-opacity": 0.18,
-          "fill-outline-color": nodeColor,
+          "fill-color": ["case", ["in", ["get", "id"], ["literal", active.spots]], t.event.boss, kindColor],
+          "fill-opacity": 0.16,
+          "fill-outline-color": kindColor,
         },
       },
     ],
