@@ -16,5 +16,6 @@ jobs:
       - run: npm run check
       - run: npm test
       - run: npm run build:play
+      - run: npm run build:map
       - name: Balance lab
         run: npm run lab -- --runs 300 --out lab-reports/ci.md > /dev/null && cat lab-reports/ci.md >> "$GITHUB_STEP_SUMMARY"

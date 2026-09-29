@@ -4,14 +4,22 @@
   "type": "module",
   "workspaces": ["packages/*", "apps/*"],
   "scripts": {
-    "check": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p apps/play/tsconfig.json",
+    "check": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p apps/play/tsconfig.json && tsc --noEmit -p apps/map/tsconfig.json",
     "test": "node --import tsx --test \"packages/**/*.test.ts\"",
     "lab": "tsx packages/sim/src/lab.ts",
     "play": "npm run dev -w apps/play",
-    "build:play": "npm run build -w apps/play"
+    "build:play": "npm run build -w apps/play",
+    "map": "npm run dev -w apps/map",
+    "build:map": "npm run build -w apps/map",
+    "map:extract": "python3 tools/map/extract_overture.py && NODE_USE_ENV_PROXY=1 tsx tools/map/contours.ts",
+    "map:territory": "python3 tools/map/build_territory.py"
   },
   "devDependencies": {
+    "@types/d3-contour": "^3.0.6",
     "@types/node": "^22.10.5",
+    "@types/pngjs": "^6.0.5",
+    "d3-contour": "^4.0.2",
+    "pngjs": "^7.0.0",
     "tsx": "^4.20.0",
     "typescript": "^5.9.3"
   }

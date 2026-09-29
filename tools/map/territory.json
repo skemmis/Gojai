@@ -1,0 +1,306 @@
+{
+  "_comment": "Hand-crafted inputs for tools/map/build_territory.py. Borders are the streets listed in `borders` (plus the play-area edge and the trail corridor); each face they cut is given to the neighborhood whose seed it holds, or the nearest seed if it holds none. To redraw a neighborhood, add or remove a border street or move a seed, then rerun the script.",
+  "trail": {
+    "name": "The Ojai Valley Trail",
+    "path": "Ojai - Ventura Bike Path",
+    "halfWidthM": 45,
+    "spotEveryM": 200
+  },
+  "borders": [
+    "West Ojai Avenue",
+    "East Ojai Avenue",
+    "Maricopa Highway",
+    "North Signal Street",
+    "Fox Street",
+    "Foothill Road",
+    "Del Norte Road",
+    "Country Club Drive",
+    "Grand Avenue",
+    "Gridley Road",
+    "West Matilija Street",
+    "Matilija Street",
+    "East Matilija Street",
+    "El Paseo Road",
+    "North Montgomery Street"
+  ],
+  "meinersOaks": [
+    [
+      -119.2995,
+      34.439
+    ],
+    [
+      -119.289,
+      34.433
+    ],
+    [
+      -119.279,
+      34.43
+    ],
+    [
+      -119.2735,
+      34.4295
+    ],
+    [
+      -119.2735,
+      34.442
+    ],
+    [
+      -119.269,
+      34.447
+    ],
+    [
+      -119.269,
+      34.456
+    ],
+    [
+      -119.28,
+      34.464
+    ],
+    [
+      -119.294,
+      34.461
+    ]
+  ],
+  "theMount": [
+    [
+      -119.1705,
+      34.4475
+    ],
+    [
+      -119.161,
+      34.4475
+    ],
+    [
+      -119.161,
+      34.454
+    ],
+    [
+      -119.1705,
+      34.454
+    ]
+  ],
+  "neighborhoods": [
+    {
+      "id": "arcade",
+      "name": "The Arcade",
+      "tint": 0,
+      "note": "North side of Ojai Ave between Signal and Montgomery: the Arcade, the post office tower, the Sunday market lot.",
+      "seeds": [
+        [
+          -119.2445,
+          34.4484
+        ]
+      ]
+    },
+    {
+      "id": "libbey-park",
+      "name": "Libbey Park",
+      "tint": 2,
+      "note": "South side of Ojai Ave down to the trail: the park, the Bowl, the demonstration garden.",
+      "seeds": [
+        [
+          -119.2455,
+          34.446
+        ]
+      ]
+    },
+    {
+      "id": "west-matilija",
+      "name": "West Matilija",
+      "tint": 3,
+      "note": "Between Foothill Rd and Signal St: Bart's Books, the museum, the old Matilija St bungalows.",
+      "seeds": [
+        [
+          -119.2485,
+          34.4482
+        ]
+      ]
+    },
+    {
+      "id": "arbolada",
+      "name": "Arbolada",
+      "tint": 1,
+      "note": "Libbey's planned oak-shaded enclave west of Foothill Rd. Land Rovers idle here.",
+      "seeds": [
+        [
+          -119.256,
+          34.452
+        ]
+      ]
+    },
+    {
+      "id": "north-end",
+      "name": "North End",
+      "tint": 2,
+      "note": "Between Signal and Montgomery from Matilija St up to Grand Ave: bungalows, inns, the film society.",
+      "seeds": [
+        [
+          -119.2445,
+          34.452
+        ]
+      ]
+    },
+    {
+      "id": "sarzotti",
+      "name": "Sarzotti",
+      "tint": 3,
+      "note": "Montgomery to Gridley, Ojai Ave up to Grand Ave: Sarzotti Park, the rec center, the old school district grounds where the Thursday market sets up.",
+      "seeds": [
+        [
+          -119.24,
+          34.4495
+        ],
+        [
+          -119.234,
+          34.4515
+        ]
+      ]
+    },
+    {
+      "id": "foothills",
+      "name": "The Foothills",
+      "tint": 0,
+      "note": "North of Grand Ave to Shelf Road, facing the Topatopa bluffs. Pink Moment country.",
+      "seeds": [
+        [
+          -119.24,
+          34.46
+        ],
+        [
+          -119.255,
+          34.462
+        ]
+      ]
+    },
+    {
+      "id": "east-end",
+      "name": "East End",
+      "tint": 1,
+      "note": "East of Gridley Rd, and south of Ojai Ave past Fox St and over San Antonio Creek: out past Soule Park toward the orchards.",
+      "seeds": [
+        [
+          -119.226,
+          34.446
+        ],
+        [
+          -119.238,
+          34.447
+        ],
+        [
+          -119.226,
+          34.442
+        ]
+      ]
+    },
+    {
+      "id": "creekside",
+      "name": "San Antonio Creek",
+      "tint": 3,
+      "note": "South of the trail, west of San Antonio Creek: the Inn's back gate, horse country, the creek bottom.",
+      "seeds": [
+        [
+          -119.245,
+          34.438
+        ]
+      ]
+    },
+    {
+      "id": "country-club",
+      "name": "Krotona & the Inn",
+      "tint": 0,
+      "note": "West of Country Club Dr and south of the highway: Krotona Hill, the Theosophists' 1924 refuge, and the Inn's golf course.",
+      "seeds": [
+        [
+          -119.262,
+          34.436
+        ],
+        [
+          -119.2697,
+          34.438
+        ]
+      ]
+    },
+    {
+      "id": "westside",
+      "name": "The Westside",
+      "tint": 2,
+      "note": "West of Del Norte Rd along Maricopa Hwy: the hospital, the hitching posts, the road out to Meiners Oaks.",
+      "seeds": [
+        [
+          -119.266,
+          34.447
+        ]
+      ]
+    },
+    {
+      "id": "meiners-oaks",
+      "name": "Meiners Oaks",
+      "tint": 1,
+      "note": "The other town: El Roblar's caf\u00e9s, the Oak Grove where Krishnamurti spoke, the river bottom.",
+      "seeds": [
+        [
+          -119.28,
+          34.448
+        ]
+      ]
+    },
+    {
+      "id": "the-mount",
+      "name": "Meditation Mount",
+      "tint": 3,
+      "note": "Up Reeves Rd, apart from town: the garden that watches the Pink Moment.",
+      "seeds": [
+        [
+          -119.1657,
+          34.4508
+        ]
+      ]
+    }
+  ],
+  "borderWaters": [
+    "San Antonio Creek"
+  ],
+  "extraArea": [
+    [
+      [
+        -119.233,
+        34.4375
+      ],
+      [
+        -119.2195,
+        34.4375
+      ],
+      [
+        -119.2195,
+        34.4475
+      ],
+      [
+        -119.233,
+        34.4475
+      ]
+    ]
+  ],
+  "excludePlaces": {
+    "_why": "Places from the open data that aren't good public spots: private homes/studios, apartments, offices, wrong coordinates, duplicates of hand-placed spots.",
+    "names": [
+      "You Call We Haul",
+      "Ojai Certified Farmers Market",
+      "Starbucks",
+      "Byron Katie International",
+      "Whispering Oaks",
+      "Creekside Village Ojai",
+      "Roth Apartments",
+      "Ojai Gardens Apartment",
+      "Reinhard Studio",
+      "Wyatt Amend Ceramics",
+      "Firestick Pottery",
+      "Brittany Davis Gallery",
+      "Ojai Ranger District",
+      "Topa Topa Folk Fest",
+      "Riverview Ranch",
+      "Ojai Underground Exchange",
+      "Dan Schultz Fine Art Gallery & Studio",
+      "City of Ojai Public Works Department"
+    ]
+  }
+}

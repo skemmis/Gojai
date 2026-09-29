@@ -1,0 +1,17 @@
+/* The standalone map page. MapScreen's own styles are in map-screen.css. */
+html, body, #root { margin: 0; height: 100%; background: #ECE3CF; color: #1B1814; }
+.app {
+  position: fixed; inset: 0;
+  --paper: #ECE3CF; --ink: #1B1814; --ink-soft: #5B5347;
+  --display: "IM Fell English SC", "IM Fell English", Georgia, serif;
+  font-family: "Libre Franklin", "Franklin Gothic Medium", system-ui, sans-serif;
+}
+.opened {
+  position: absolute; z-index: 5; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(320px, calc(100% - 32px));
+  background: var(--paper); border: 3px solid var(--ink); outline: 1px solid var(--ink); outline-offset: 3px; padding: 18px; text-align: center;
+  display: grid; gap: 8px;
+}
+.opened small { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
+.opened b { font-family: var(--display); font-weight: 400; font-size: 30px; line-height: 1.1; }
+.opened p { margin: 0; font-size: 14px; }
+.opened button { margin-top: 6px; padding: 10px; border: 2px solid var(--ink); background: var(--ink); color: var(--paper); font-weight: 800; letter-spacing: .12em; text-transform: uppercase; border-radius: 2px; }

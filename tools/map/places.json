@@ -1,0 +1,11405 @@
+[
+{
+"name": "Grove Care Inc",
+"category": "agricultural_service",
+"confidence": 0.65,
+"at": [
+-119.243249,
+34.448699
+]
+},
+{
+"name": "Quail Run Ranch",
+"category": "agricultural_service",
+"confidence": 0.55,
+"at": [
+-119.285215,
+34.469928
+]
+},
+{
+"name": "Friend's Stable and Orchard",
+"category": "amusement_park",
+"confidence": 0.32,
+"at": [
+-119.239928,
+34.44734
+]
+},
+{
+"name": "Haunted Hayrides at Boccali's Pumpkin Patch",
+"category": "amusement_park",
+"confidence": 0.93,
+"at": [
+-119.203986,
+34.446037
+]
+},
+{
+"name": "Los Alamos Dressage Center",
+"category": "amusement_park",
+"confidence": 0.7,
+"at": [
+-119.2432,
+34.44188
+]
+},
+{
+"name": "Willett Hot Springs",
+"category": "amusement_park",
+"confidence": 0.76,
+"at": [
+-119.247013,
+34.449086
+]
+},
+{
+"name": "Ojai Valley Feed",
+"category": "animal_and_pet_store",
+"confidence": 0.92,
+"at": [
+-119.284684,
+34.435498
+]
+},
+{
+"name": "Pets & More",
+"category": "animal_and_pet_store",
+"confidence": 0.92,
+"at": [
+-119.261886,
+34.440591
+]
+},
+{
+"name": "Ventura Hay Co",
+"category": "animal_and_pet_store",
+"confidence": 0.92,
+"at": [
+-119.288041,
+34.428655
+]
+},
+{
+"name": "Wachter Hay & Grain",
+"category": "animal_and_pet_store",
+"confidence": 0.92,
+"at": [
+-119.243243,
+34.446883
+]
+},
+{
+"name": "Four Paws Pet Grooming",
+"category": "animal_or_pet_service",
+"confidence": 0.92,
+"at": [
+-119.280688,
+34.449472
+]
+},
+{
+"name": "Grooming by Jessica",
+"category": "animal_or_pet_service",
+"confidence": 0.83,
+"at": [
+-119.27491,
+34.44775
+]
+},
+{
+"name": "Humane Society of Ventura County",
+"category": "animal_or_pet_service",
+"confidence": 0.99,
+"at": [
+-119.236851,
+34.444652
+]
+},
+{
+"name": "Matilija Veterinary Hospital",
+"category": "animal_or_pet_service",
+"confidence": 1.0,
+"at": [
+-119.236563,
+34.447714
+]
+},
+{
+"name": "Ojai Human Society",
+"category": "animal_or_pet_service",
+"confidence": 0.65,
+"at": [
+-119.236445,
+34.444647
+]
+},
+{
+"name": "Ojai Pet Hospital",
+"category": "animal_or_pet_service",
+"confidence": 0.92,
+"at": [
+-119.262051,
+34.442619
+]
+},
+{
+"name": "Ojai Raptor Center",
+"category": "animal_or_pet_service",
+"confidence": 0.92,
+"at": [
+-119.29811,
+34.423791
+]
+},
+{
+"name": "Ojai Village Veterinary Hospital",
+"category": "animal_or_pet_service",
+"confidence": 0.92,
+"at": [
+-119.250245,
+34.446699
+]
+},
+{
+"name": "Puff N Fluff Pet Grooming",
+"category": "animal_or_pet_service",
+"confidence": 0.92,
+"at": [
+-119.274915,
+34.447753
+]
+},
+{
+"name": "River rock ranch",
+"category": "animal_or_pet_service",
+"confidence": 0.92,
+"at": [
+-119.284673,
+34.457868
+]
+},
+{
+"name": "Rosemont Animal Clinic",
+"category": "animal_or_pet_service",
+"confidence": 0.54,
+"at": [
+-119.24573,
+34.45583
+]
+},
+{
+"name": "The Peaceful Pup",
+"category": "animal_or_pet_service",
+"confidence": 0.92,
+"at": [
+-119.262511,
+34.44128
+]
+},
+{
+"name": "The Ultimutt Pet Spa",
+"category": "animal_or_pet_service",
+"confidence": 0.92,
+"at": [
+-119.24315,
+34.448819
+]
+},
+{
+"name": "Aces High Gallery",
+"category": "art_gallery",
+"confidence": 0.93,
+"at": [
+-119.237654,
+34.44797
+]
+},
+{
+"name": "August Laurel Gallery",
+"category": "art_gallery",
+"confidence": 0.71,
+"at": [
+-119.244312,
+34.447652
+]
+},
+{
+"name": "Brittany Davis Gallery",
+"category": "art_gallery",
+"confidence": 0.92,
+"at": [
+-119.24862,
+34.447926
+]
+},
+{
+"name": "Carolyn Glasoe Bailey Foundation",
+"category": "art_gallery",
+"confidence": 0.92,
+"at": [
+-119.24323,
+34.44623
+]
+},
+{
+"name": "DAT",
+"category": "art_gallery",
+"confidence": 0.45,
+"at": [
+-119.237297,
+34.446976
+]
+},
+{
+"name": "Dan Schultz Fine Art Gallery & Studio",
+"category": "art_gallery",
+"confidence": 0.98,
+"at": [
+-119.245853,
+34.448308
+]
+},
+{
+"name": "Firestick Pottery",
+"category": "art_gallery",
+"confidence": 0.92,
+"at": [
+-119.222471,
+34.448772
+]
+},
+{
+"name": "Galerie102",
+"category": "art_gallery",
+"confidence": 0.49,
+"at": [
+-119.247664,
+34.448754
+]
+},
+{
+"name": "Joyce Huntington Art",
+"category": "art_gallery",
+"confidence": 0.18,
+"at": [
+-119.249206,
+34.447703
+]
+},
+{
+"name": "Lesley Laine Studio",
+"category": "art_gallery",
+"confidence": 0.37,
+"at": [
+-119.241888,
+34.454584
+]
+},
+{
+"name": "Nomad Gallery",
+"category": "art_gallery",
+"confidence": 0.92,
+"at": [
+-119.244362,
+34.447561
+]
+},
+{
+"name": "OVA Arts",
+"category": "art_gallery",
+"confidence": 1.0,
+"at": [
+-119.24503,
+34.447929
+]
+},
+{
+"name": "Ojai Art Center",
+"category": "art_gallery",
+"confidence": 0.97,
+"at": [
+-119.243566,
+34.447122
+]
+},
+{
+"name": "Reinhard Studio",
+"category": "art_gallery",
+"confidence": 0.92,
+"at": [
+-119.270178,
+34.439309
+]
+},
+{
+"name": "Robert Lloyd, artist",
+"category": "art_gallery",
+"confidence": 0.43,
+"at": [
+-119.276434,
+34.449367
+]
+},
+{
+"name": "The Village Archive",
+"category": "art_gallery",
+"confidence": 0.35,
+"at": [
+-119.245801,
+34.448023
+]
+},
+{
+"name": "Wyatt Amend Ceramics",
+"category": "art_gallery",
+"confidence": 0.84,
+"at": [
+-119.220036,
+34.445926
+]
+},
+{
+"name": "The Wow House",
+"category": "arts_and_crafts_space",
+"confidence": 0.92,
+"at": [
+-119.274807,
+34.44773
+]
+},
+{
+"name": "Artist Cottage & Apothecary",
+"category": "arts_and_entertainment",
+"confidence": 0.71,
+"at": [
+-119.256687,
+34.437658
+]
+},
+{
+"name": "Garden Temple",
+"category": "arts_and_entertainment",
+"confidence": 0.29,
+"at": [
+-119.236454,
+34.448679
+]
+},
+{
+"name": "Meiners Oaks Community Garden",
+"category": "arts_and_entertainment",
+"confidence": 0.92,
+"at": [
+-119.279751,
+34.445591
+]
+},
+{
+"name": "Cattywampus Crafts",
+"category": "arts_crafts_and_hobby_store",
+"confidence": 0.92,
+"at": [
+-119.248964,
+34.447183
+]
+},
+{
+"name": "Frameworks of Ojai",
+"category": "arts_crafts_and_hobby_store",
+"confidence": 0.95,
+"at": [
+-119.24915,
+34.448012
+]
+},
+{
+"name": "Ojai Creates",
+"category": "arts_crafts_and_hobby_store",
+"confidence": 0.92,
+"at": [
+-119.277843,
+34.449285
+]
+},
+{
+"name": "Plush Surroundings",
+"category": "arts_crafts_and_hobby_store",
+"confidence": 0.92,
+"at": [
+-119.288808,
+34.421362
+]
+},
+{
+"name": "Shop Gunays",
+"category": "arts_crafts_and_hobby_store",
+"confidence": 0.95,
+"at": [
+-119.244427,
+34.448024
+]
+},
+{
+"name": "Crypto Dispensers | Cdreload",
+"category": "atm",
+"confidence": 0.75,
+"at": [
+-119.288481,
+34.42541
+]
+},
+{
+"name": "GetCoins Bitcoin ATM",
+"category": "atm",
+"confidence": 0.85,
+"at": [
+-119.239838,
+34.448189
+]
+},
+{
+"name": "Wells Fargo",
+"category": "atm",
+"confidence": 0.99,
+"at": [
+-119.24571,
+34.44895
+]
+},
+{
+"name": "Wells Fargo ATM",
+"category": "atm",
+"confidence": 1.0,
+"at": [
+-119.288451,
+34.425455
+]
+},
+{
+"name": "Wells Fargo Atm",
+"category": "atm",
+"confidence": 0.75,
+"at": [
+-119.2457,
+34.448999
+]
+},
+{
+"name": "Auric Law Group Ltd.",
+"category": "attorney_or_law_firm",
+"confidence": 0.89,
+"at": [
+-119.251992,
+34.445922
+]
+},
+{
+"name": "California Law Firm - Urban Thier And Federer",
+"category": "attorney_or_law_firm",
+"confidence": 0.55,
+"at": [
+-119.243249,
+34.448699
+]
+},
+{
+"name": "Carpenter & Zuckerman",
+"category": "attorney_or_law_firm",
+"confidence": 0.55,
+"at": [
+-119.238947,
+34.44386
+]
+},
+{
+"name": "Chris Cohen Law",
+"category": "attorney_or_law_firm",
+"confidence": 0.92,
+"at": [
+-119.247764,
+34.446441
+]
+},
+{
+"name": "McElroy Parris Trial Lawyers",
+"category": "attorney_or_law_firm",
+"confidence": 0.06,
+"at": [
+-119.238789,
+34.444048
+]
+},
+{
+"name": "Ryan Blatz Law",
+"category": "attorney_or_law_firm",
+"confidence": 0.92,
+"at": [
+-119.248405,
+34.448277
+]
+},
+{
+"name": "Sustainable Law Group Inc.",
+"category": "attorney_or_law_firm",
+"confidence": 0.75,
+"at": [
+-119.247773,
+34.446447
+]
+},
+{
+"name": "The Rowley Law Firm",
+"category": "attorney_or_law_firm",
+"confidence": 0.65,
+"at": [
+-119.238947,
+34.44386
+]
+},
+{
+"name": "Waite Jacobs and Atkinson",
+"category": "attorney_or_law_firm",
+"confidence": 0.92,
+"at": [
+-119.251833,
+34.444901
+]
+},
+{
+"name": "Adamson's Tire & Service",
+"category": "automotive_service",
+"confidence": 0.88,
+"at": [
+-119.235874,
+34.446402
+]
+},
+{
+"name": "Adamson's Towing",
+"category": "automotive_service",
+"confidence": 0.99,
+"at": [
+-119.237273,
+34.446061
+]
+},
+{
+"name": "David's Mobile Auto Glass",
+"category": "automotive_service",
+"confidence": 0.92,
+"at": [
+-119.251974,
+34.446144
+]
+},
+{
+"name": "JAW-Droppin' Customz, Welch Fabrication, Welch Premier Coach Building",
+"category": "automotive_service",
+"confidence": 0.37,
+"at": [
+-119.238672,
+34.445571
+]
+},
+{
+"name": "Kupelian Racing",
+"category": "automotive_service",
+"confidence": 0.92,
+"at": [
+-119.291033,
+34.444662
+]
+},
+{
+"name": "Les Hinks Automotive",
+"category": "automotive_service",
+"confidence": 0.55,
+"at": [
+-119.24585,
+34.450883
+]
+},
+{
+"name": "Matilija Vintage Trailer Restoration",
+"category": "automotive_service",
+"confidence": 0.75,
+"at": [
+-119.289894,
+34.430437
+]
+},
+{
+"name": "Meiners Oaks Auto Repair and Smog Inspection",
+"category": "automotive_service",
+"confidence": 0.92,
+"at": [
+-119.283653,
+34.450509
+]
+},
+{
+"name": "Mike's Mobile Auto Glass",
+"category": "automotive_service",
+"confidence": 0.92,
+"at": [
+-119.23909,
+34.442656
+]
+},
+{
+"name": "Ojai European Complete Auto Care",
+"category": "automotive_service",
+"confidence": 0.92,
+"at": [
+-119.285063,
+34.431786
+]
+},
+{
+"name": "Ojai Gas",
+"category": "automotive_service",
+"confidence": 0.92,
+"at": [
+-119.262252,
+34.442167
+]
+},
+{
+"name": "Ojai Spring Carwash and Lube",
+"category": "automotive_service",
+"confidence": 1.0,
+"at": [
+-119.288601,
+34.42603
+]
+},
+{
+"name": "Ojai Valley Imports",
+"category": "automotive_service",
+"confidence": 0.99,
+"at": [
+-119.235024,
+34.448597
+]
+},
+{
+"name": "Ojai Windshield Shop",
+"category": "automotive_service",
+"confidence": 0.92,
+"at": [
+-119.251739,
+34.445633
+]
+},
+{
+"name": "Quality Muffler & Complete Auto Repair",
+"category": "automotive_service",
+"confidence": 0.92,
+"at": [
+-119.285634,
+34.431763
+]
+},
+{
+"name": "Spray rite Car Wash",
+"category": "automotive_service",
+"confidence": 0.61,
+"at": [
+-119.241816,
+34.447366
+]
+},
+{
+"name": "Two Twelve Body & Restoration",
+"category": "automotive_service",
+"confidence": 0.95,
+"at": [
+-119.236746,
+34.446738
+]
+},
+{
+"name": "Ventura Auto Glass Repair",
+"category": "automotive_service",
+"confidence": 0.85,
+"at": [
+-119.289576,
+34.423023
+]
+},
+{
+"name": "Wilson Auto Services",
+"category": "automotive_service",
+"confidence": 0.92,
+"at": [
+-119.276248,
+34.449071
+]
+},
+{
+"name": "Zest Business Consulting",
+"category": "b2b_office_and_professional_service",
+"confidence": 0.92,
+"at": [
+-119.247257,
+34.445525
+]
+},
+{
+"name": "Car Buying Support",
+"category": "b2b_service",
+"confidence": 0.76,
+"at": [
+-119.243249,
+34.448699
+]
+},
+{
+"name": "Community Memorial Health Center - Maricopa Highway",
+"category": "b2b_service",
+"confidence": 0.92,
+"at": [
+-119.263152,
+34.442085
+]
+},
+{
+"name": "Favly",
+"category": "b2b_service",
+"confidence": 0.65,
+"at": [
+-119.263531,
+34.441649
+]
+},
+{
+"name": "Krause Bell Group",
+"category": "b2b_service",
+"confidence": 0.65,
+"at": [
+-119.239128,
+34.443349
+]
+},
+{
+"name": "Lark Ellen Farm",
+"category": "b2b_service",
+"confidence": 0.96,
+"at": [
+-119.24029,
+34.443388
+]
+},
+{
+"name": "Miyabi Charcoal",
+"category": "b2b_service",
+"confidence": 0.52,
+"at": [
+-119.276573,
+34.449799
+]
+},
+{
+"name": "Vins Rare",
+"category": "b2b_transportation_and_storage_service",
+"confidence": 0.92,
+"at": [
+-119.237859,
+34.447158
+]
+},
+{
+"name": "Bank of America",
+"category": "bank_or_credit_union",
+"confidence": 1.0,
+"at": [
+-119.248456,
+34.447182
+]
+},
+{
+"name": "Bank of the Sierra",
+"category": "bank_or_credit_union",
+"confidence": 0.92,
+"at": [
+-119.25074,
+34.447034
+]
+},
+{
+"name": "Mechanics Bank - Ojai Valley Branch",
+"category": "bank_or_credit_union",
+"confidence": 0.92,
+"at": [
+-119.263267,
+34.441543
+]
+},
+{
+"name": "Ojai Community Bank",
+"category": "bank_or_credit_union",
+"confidence": 0.77,
+"at": [
+-119.250728,
+34.447073
+]
+},
+{
+"name": "Pacific Western Bank",
+"category": "bank_or_credit_union",
+"confidence": 0.92,
+"at": [
+-119.246771,
+34.447109
+]
+},
+{
+"name": "Chief's Peak",
+"category": "bar",
+"confidence": 0.99,
+"at": [
+-119.253003,
+34.444559
+]
+},
+{
+"name": "Jimmy's Pub",
+"category": "bar",
+"confidence": 0.98,
+"at": [
+-119.256741,
+34.437912
+]
+},
+{
+"name": "Lisa's Cantina",
+"category": "bar",
+"confidence": 1.0,
+"at": [
+-119.248551,
+34.447642
+]
+},
+{
+"name": "Ojai Harvest",
+"category": "bar",
+"confidence": 0.85,
+"at": [
+-119.24466,
+34.4478
+]
+},
+{
+"name": "Ojai Roots",
+"category": "bar",
+"confidence": 0.92,
+"at": [
+-119.243139,
+34.450993
+]
+},
+{
+"name": "Ojai Sports Grill",
+"category": "bar",
+"confidence": 0.92,
+"at": [
+-119.276073,
+34.448742
+]
+},
+{
+"name": "Ojai Wine Festival",
+"category": "bar",
+"confidence": 0.92,
+"at": [
+-119.262454,
+34.441787
+]
+},
+{
+"name": "Reframe Bistro",
+"category": "bar",
+"confidence": 0.48,
+"at": [
+-119.280476,
+34.449373
+]
+},
+{
+"name": "Sam's Place",
+"category": "bar",
+"confidence": 0.92,
+"at": [
+-119.24437,
+34.448055
+]
+},
+{
+"name": "The Hub",
+"category": "bar",
+"confidence": 0.97,
+"at": [
+-119.244609,
+34.44798
+]
+},
+{
+"name": "The Hut",
+"category": "bar",
+"confidence": 0.99,
+"at": [
+-119.276308,
+34.452078
+]
+},
+{
+"name": "The Ojai Beverage Company",
+"category": "bar",
+"confidence": 0.9,
+"at": [
+-119.239331,
+34.448077
+]
+},
+{
+"name": "The Vine",
+"category": "bar",
+"confidence": 0.95,
+"at": [
+-119.244373,
+34.448036
+]
+},
+{
+"name": "Tipple And Ramble",
+"category": "bar",
+"confidence": 0.95,
+"at": [
+-119.243385,
+34.451018
+]
+},
+{
+"name": "Wallace Neff Heritage Bar",
+"category": "bar",
+"confidence": 0.92,
+"at": [
+-119.256607,
+34.437765
+]
+},
+{
+"name": "Lavender Inn",
+"category": "bed_and_breakfast",
+"confidence": 0.99,
+"at": [
+-119.245203,
+34.448963
+]
+},
+{
+"name": "Ojai Retreat and Inn",
+"category": "bed_and_breakfast",
+"confidence": 0.97,
+"at": [
+-119.278392,
+34.439635
+]
+},
+{
+"name": "Bonnie Rose, Marriage & Family Therapist",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.75,
+"at": [
+-119.237859,
+34.447158
+]
+},
+{
+"name": "Changes Happen",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.92,
+"at": [
+-119.247983,
+34.449297
+]
+},
+{
+"name": "Cheryle Van Scoy Consulting - Jungian Analyst",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.75,
+"at": [
+-119.239503,
+34.445571
+]
+},
+{
+"name": "Debra S. London, Md",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.65,
+"at": [
+-119.251992,
+34.445922
+]
+},
+{
+"name": "Easyread Support USA",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.92,
+"at": [
+-119.235596,
+34.448753
+]
+},
+{
+"name": "Gladstone Counseling Center",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.55,
+"at": [
+-119.251992,
+34.445922
+]
+},
+{
+"name": "Heather Howard Konopa Mft",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.65,
+"at": [
+-119.251992,
+34.445922
+]
+},
+{
+"name": "Heidi A. Dahl-Rosenbaum",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.69,
+"at": [
+-119.263917,
+34.441708
+]
+},
+{
+"name": "Julie Sardonia",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.65,
+"at": [
+-119.251992,
+34.445922
+]
+},
+{
+"name": "Meghan Rudd",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.92,
+"at": [
+-119.263995,
+34.441928
+]
+},
+{
+"name": "Nexus Counseling and Wellness",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.28,
+"at": [
+-119.2466,
+34.44897
+]
+},
+{
+"name": "Nicola Gosen, Mft",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.65,
+"at": [
+-119.251992,
+34.445922
+]
+},
+{
+"name": "Ojai Marriage and Family Therapy Inc. dba Work In Progress Therapy",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.26,
+"at": [
+-119.252031,
+34.445051
+]
+},
+{
+"name": "Personalized Recovery",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.41,
+"at": [
+-119.29131,
+34.4225
+]
+},
+{
+"name": "Somatic Wendy Elliott",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.92,
+"at": [
+-119.245843,
+34.449349
+]
+},
+{
+"name": "Take 5 Counseling",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.26,
+"at": [
+-119.237376,
+34.447276
+]
+},
+{
+"name": "Wendy Elliott",
+"category": "behavioral_or_mental_health_clinic",
+"confidence": 0.43,
+"at": [
+-119.245843,
+34.449349
+]
+},
+{
+"name": "American Vedic Associates",
+"category": "books_music_and_video_store",
+"confidence": 0.92,
+"at": [
+-119.28701,
+34.426123
+]
+},
+{
+"name": "Bart's Books",
+"category": "books_music_and_video_store",
+"confidence": 0.99,
+"at": [
+-119.249847,
+34.448598
+]
+},
+{
+"name": "Bookends Bookstore",
+"category": "books_music_and_video_store",
+"confidence": 0.95,
+"at": [
+-119.277553,
+34.448665
+]
+},
+{
+"name": "Jagannatha Enterprises",
+"category": "books_music_and_video_store",
+"confidence": 0.92,
+"at": [
+-119.28704,
+34.426231
+]
+},
+{
+"name": "Krotona Quest Bookshop",
+"category": "books_music_and_video_store",
+"confidence": 0.98,
+"at": [
+-119.269715,
+34.437596
+]
+},
+{
+"name": "Ojai Valley Library Friends",
+"category": "books_music_and_video_store",
+"confidence": 0.65,
+"at": [
+-119.246509,
+34.447527
+]
+},
+{
+"name": "Soul Centered",
+"category": "books_music_and_video_store",
+"confidence": 0.92,
+"at": [
+-119.243224,
+34.450726
+]
+},
+{
+"name": "AZU Restaurant",
+"category": "brewery",
+"confidence": 0.97,
+"at": [
+-119.2423,
+34.44798
+]
+},
+{
+"name": "Ojai Valley Brewery",
+"category": "brewery",
+"confidence": 0.97,
+"at": [
+-119.23748,
+34.446341
+]
+},
+{
+"name": "Topa Topa Brewing Company",
+"category": "brewery",
+"confidence": 0.98,
+"at": [
+-119.243625,
+34.447739
+]
+},
+{
+"name": "Blue Sky Custom Construction",
+"category": "building_or_construction_service",
+"confidence": 0.92,
+"at": [
+-119.283264,
+34.431532
+]
+},
+{
+"name": "Cjm Engineering, Inc.",
+"category": "building_or_construction_service",
+"confidence": 0.95,
+"at": [
+-119.244362,
+34.447561
+]
+},
+{
+"name": "Jones & Jones Construction",
+"category": "building_or_construction_service",
+"confidence": 0.95,
+"at": [
+-119.263733,
+34.441909
+]
+},
+{
+"name": "Ojai Valley Electronics",
+"category": "building_or_construction_service",
+"confidence": 0.95,
+"at": [
+-119.243819,
+34.4486
+]
+},
+{
+"name": "Ojai Valley Sanitary District",
+"category": "building_or_construction_service",
+"confidence": 1.0,
+"at": [
+-119.284,
+34.43596
+]
+},
+{
+"name": "Supan Builders",
+"category": "building_or_construction_service",
+"confidence": 0.92,
+"at": [
+-119.272352,
+34.457413
+]
+},
+{
+"name": "Tenpenny Construction Co., Inc",
+"category": "building_or_construction_service",
+"confidence": 0.95,
+"at": [
+-119.263531,
+34.441649
+]
+},
+{
+"name": "Timothy J. Droney General Contractor",
+"category": "building_or_construction_service",
+"confidence": 0.75,
+"at": [
+-119.235621,
+34.448757
+]
+},
+{
+"name": "Beacon Coffee Company",
+"category": "cafe",
+"confidence": 0.96,
+"at": [
+-119.248992,
+34.447227
+]
+},
+{
+"name": "Caf\u00e9 B\u014dku",
+"category": "cafe",
+"confidence": 0.94,
+"at": [
+-119.258352,
+34.442214
+]
+},
+{
+"name": "Noso Vita",
+"category": "cafe",
+"confidence": 0.77,
+"at": [
+-119.246331,
+34.449114
+]
+},
+{
+"name": "Ojai Valley Deli Cafe",
+"category": "cafe",
+"confidence": 0.34,
+"at": [
+-119.263226,
+34.441586
+]
+},
+{
+"name": "The Dutchess",
+"category": "cafe",
+"confidence": 0.99,
+"at": [
+-119.24202,
+34.447893
+]
+},
+{
+"name": "Three Birds",
+"category": "cafe",
+"confidence": 0.99,
+"at": [
+-119.246278,
+34.44912
+]
+},
+{
+"name": "Bass Campground",
+"category": "campground",
+"confidence": 0.9,
+"at": [
+-119.338574,
+34.415288
+]
+},
+{
+"name": "Camp Comfort Park",
+"category": "campground",
+"confidence": 0.99,
+"at": [
+-119.258461,
+34.426232
+]
+},
+{
+"name": "Camp Oak",
+"category": "campground",
+"confidence": 0.48,
+"at": [
+-119.253761,
+34.444317
+]
+},
+{
+"name": "Camp Ramah in California-Ezra",
+"category": "campground",
+"confidence": 0.99,
+"at": [
+-119.266122,
+34.46189
+]
+},
+{
+"name": "Crooked Creek Ranch",
+"category": "campground",
+"confidence": 0.92,
+"at": [
+-119.225759,
+34.461206
+]
+},
+{
+"name": "Middle Lion Campground",
+"category": "campground",
+"confidence": 0.65,
+"at": [
+-119.288568,
+34.425507
+]
+},
+{
+"name": "Ojai Unified School District",
+"category": "campus_building",
+"confidence": 0.77,
+"at": [
+-119.242494,
+34.448336
+]
+},
+{
+"name": "krishnamurti Library",
+"category": "campus_building",
+"confidence": 0.77,
+"at": [
+-119.182198,
+34.458823
+]
+},
+{
+"name": "Beato Chocolates",
+"category": "casual_eatery",
+"confidence": 0.92,
+"at": [
+-119.237945,
+34.443117
+]
+},
+{
+"name": "Bliss Frozen Yogurt",
+"category": "casual_eatery",
+"confidence": 0.96,
+"at": [
+-119.242196,
+34.44781
+]
+},
+{
+"name": "Bonnie Lu's",
+"category": "casual_eatery",
+"confidence": 0.99,
+"at": [
+-119.244002,
+34.447989
+]
+},
+{
+"name": "Donut Hole",
+"category": "casual_eatery",
+"confidence": 0.92,
+"at": [
+-119.276193,
+34.448285
+]
+},
+{
+"name": "Garden Terrace",
+"category": "casual_eatery",
+"confidence": 0.92,
+"at": [
+-119.234448,
+34.448749
+]
+},
+{
+"name": "Gustos",
+"category": "casual_eatery",
+"confidence": 0.92,
+"at": [
+-119.262962,
+34.441781
+]
+},
+{
+"name": "Kate\u2019s bread",
+"category": "casual_eatery",
+"confidence": 0.92,
+"at": [
+-119.257949,
+34.460309
+]
+},
+{
+"name": "Knead Baking Company",
+"category": "casual_eatery",
+"confidence": 0.92,
+"at": [
+-119.24188,
+34.447838
+]
+},
+{
+"name": "MJ's Deli",
+"category": "casual_eatery",
+"confidence": 0.95,
+"at": [
+-119.242871,
+34.447635
+]
+},
+{
+"name": "Ojai Ice Cream",
+"category": "casual_eatery",
+"confidence": 0.97,
+"at": [
+-119.245622,
+34.447863
+]
+},
+{
+"name": "Ojai Pub",
+"category": "casual_eatery",
+"confidence": 0.95,
+"at": [
+-119.236732,
+34.448501
+]
+},
+{
+"name": "Quiznos Sub",
+"category": "casual_eatery",
+"confidence": 0.92,
+"at": [
+-119.288988,
+34.425291
+]
+},
+{
+"name": "Sanders & Sons Gelato",
+"category": "casual_eatery",
+"confidence": 0.96,
+"at": [
+-119.243832,
+34.448178
+]
+},
+{
+"name": "Sanders & Sons Gelato",
+"category": "casual_eatery",
+"confidence": 0.92,
+"at": [
+-119.237414,
+34.443503
+]
+},
+{
+"name": "Subway",
+"category": "casual_eatery",
+"confidence": 0.98,
+"at": [
+-119.289078,
+34.423146
+]
+},
+{
+"name": "SunOven Gluten Free Bakery",
+"category": "casual_eatery",
+"confidence": 0.92,
+"at": [
+-119.288867,
+34.422897
+]
+},
+{
+"name": "Sunoven Gluten Free Bakery",
+"category": "casual_eatery",
+"confidence": 0.55,
+"at": [
+-119.248895,
+34.447265
+]
+},
+{
+"name": "zChocolat",
+"category": "casual_eatery",
+"confidence": 0.32,
+"at": [
+-119.243495,
+34.451357
+]
+},
+{
+"name": "Byron Katie International",
+"category": "christian_place_of_worship",
+"confidence": 0.65,
+"at": [
+-119.2458,
+34.450349
+]
+},
+{
+"name": "Church Of The Living Christ",
+"category": "christian_place_of_worship",
+"confidence": 0.77,
+"at": [
+-119.273939,
+34.448229
+]
+},
+{
+"name": "Church of Christ",
+"category": "christian_place_of_worship",
+"confidence": 0.92,
+"at": [
+-119.243122,
+34.451773
+]
+},
+{
+"name": "Ecumenical Ministry of the Unity of All Religions",
+"category": "christian_place_of_worship",
+"confidence": 0.46,
+"at": [
+-119.247439,
+34.448259
+]
+},
+{
+"name": "Grace Church Ojai",
+"category": "christian_place_of_worship",
+"confidence": 0.92,
+"at": [
+-119.234216,
+34.455003
+]
+},
+{
+"name": "Ojai Presbyterian Church",
+"category": "christian_place_of_worship",
+"confidence": 0.92,
+"at": [
+-119.253055,
+34.449465
+]
+},
+{
+"name": "Ojai United Methodist Church",
+"category": "christian_place_of_worship",
+"confidence": 1.0,
+"at": [
+-119.266925,
+34.44368
+]
+},
+{
+"name": "Ojai Valley Baptist Church",
+"category": "christian_place_of_worship",
+"confidence": 0.92,
+"at": [
+-119.286885,
+34.430622
+]
+},
+{
+"name": "Ojai Valley Community Church",
+"category": "christian_place_of_worship",
+"confidence": 0.92,
+"at": [
+-119.282878,
+34.43815
+]
+},
+{
+"name": "Ojai Valley Foursquare Church",
+"category": "christian_place_of_worship",
+"confidence": 0.92,
+"at": [
+-119.266578,
+34.444782
+]
+},
+{
+"name": "Ojai Valley Seventh-day Adventist Church",
+"category": "christian_place_of_worship",
+"confidence": 0.99,
+"at": [
+-119.27256,
+34.447364
+]
+},
+{
+"name": "Ojai Valley Wesleyan Church",
+"category": "christian_place_of_worship",
+"confidence": 0.92,
+"at": [
+-119.246583,
+34.446717
+]
+},
+{
+"name": "Our Lady and All Angels",
+"category": "christian_place_of_worship",
+"confidence": 0.92,
+"at": [
+-119.226353,
+34.450272
+]
+},
+{
+"name": "Redemption Church Assemblies of God",
+"category": "christian_place_of_worship",
+"confidence": 0.92,
+"at": [
+-119.274097,
+34.448116
+]
+},
+{
+"name": "Refuge Church Ojai Valley",
+"category": "christian_place_of_worship",
+"confidence": 0.92,
+"at": [
+-119.266547,
+34.445838
+]
+},
+{
+"name": "Saint Thomas Aquinas Church",
+"category": "christian_place_of_worship",
+"confidence": 0.98,
+"at": [
+-119.272272,
+34.445995
+]
+},
+{
+"name": "St Andrews Episcopal Church",
+"category": "christian_place_of_worship",
+"confidence": 0.92,
+"at": [
+-119.251235,
+34.445301
+]
+},
+{
+"name": "The Church of Jesus Christ of Latter-day Saints",
+"category": "christian_place_of_worship",
+"confidence": 0.99,
+"at": [
+-119.251513,
+34.443543
+]
+},
+{
+"name": "The Well",
+"category": "christian_place_of_worship",
+"confidence": 0.98,
+"at": [
+-119.230613,
+34.454193
+]
+},
+{
+"name": "FamilySearch center",
+"category": "civic_organization",
+"confidence": 0.92,
+"at": [
+-119.251421,
+34.44353
+]
+},
+{
+"name": "Happy Valley Foundation",
+"category": "civic_organization",
+"confidence": 0.51,
+"at": [
+-119.185572,
+34.439719
+]
+},
+{
+"name": "Help Of Ojai",
+"category": "civic_organization",
+"confidence": 1.0,
+"at": [
+-119.24299,
+34.447223
+]
+},
+{
+"name": "Nomad Foundation",
+"category": "civic_organization",
+"confidence": 0.92,
+"at": [
+-119.249005,
+34.447608
+]
+},
+{
+"name": "Ojai Valley Hospital Foundation",
+"category": "civic_organization",
+"confidence": 0.92,
+"at": [
+-119.264718,
+34.441947
+]
+},
+{
+"name": "Bonito Coffee Roaster",
+"category": "coffee_shop",
+"confidence": 0.92,
+"at": [
+-119.237306,
+34.443391
+]
+},
+{
+"name": "Coffee Connection",
+"category": "coffee_shop",
+"confidence": 0.92,
+"at": [
+-119.272009,
+34.447211
+]
+},
+{
+"name": "Full of Beans Coffee House & Bakery",
+"category": "coffee_shop",
+"confidence": 0.92,
+"at": [
+-119.288332,
+34.427201
+]
+},
+{
+"name": "Java and Joe",
+"category": "coffee_shop",
+"confidence": 0.92,
+"at": [
+-119.243736,
+34.448762
+]
+},
+{
+"name": "LOVE Social Cafe",
+"category": "coffee_shop",
+"confidence": 0.95,
+"at": [
+-119.246294,
+34.449125
+]
+},
+{
+"name": "Libbey's Market",
+"category": "coffee_shop",
+"confidence": 0.99,
+"at": [
+-119.256956,
+34.43804
+]
+},
+{
+"name": "Ojai Coffee Roasters",
+"category": "coffee_shop",
+"confidence": 0.98,
+"at": [
+-119.243745,
+34.447818
+]
+},
+{
+"name": "Starbucks",
+"category": "coffee_shop",
+"confidence": 0.85,
+"at": [
+-119.254974,
+34.446877
+]
+},
+{
+"name": "Starbucks",
+"category": "coffee_shop",
+"confidence": 0.89,
+"at": [
+-119.288589,
+34.427359
+]
+},
+{
+"name": "Starbucks",
+"category": "coffee_shop",
+"confidence": 0.89,
+"at": [
+-119.288656,
+34.424985
+]
+},
+{
+"name": "World University of America, Ojai",
+"category": "college_university",
+"confidence": 0.52,
+"at": [
+-119.247439,
+34.448259
+]
+},
+{
+"name": "Nordhoff Cemetery",
+"category": "community_and_government",
+"confidence": 0.92,
+"at": [
+-119.260503,
+34.445889
+]
+},
+{
+"name": "Tesla Supercharger",
+"category": "community_and_government",
+"confidence": 0.37,
+"at": [
+-119.259064,
+34.442007
+]
+},
+{
+"name": "ALQUIMIA Wellness",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.279834,
+34.44929
+]
+},
+{
+"name": "Alan T. Z. Chang",
+"category": "complementary_and_alternative_medicine",
+"confidence": 1.0,
+"at": [
+-119.266919,
+34.444485
+]
+},
+{
+"name": "Bliss Always  at Resonance Healing Center",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.39,
+"at": [
+-119.267126,
+34.444651
+]
+},
+{
+"name": "Boshoff Novak Chiropractic",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.95,
+"at": [
+-119.249039,
+34.447833
+]
+},
+{
+"name": "Brooks Deborah DC",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.226737,
+34.452633
+]
+},
+{
+"name": "California Homeopathic Medical Society",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.274668,
+34.447814
+]
+},
+{
+"name": "Dr. Darrell Pilcher Family Chiropracor",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.42,
+"at": [
+-119.242462,
+34.451484
+]
+},
+{
+"name": "Dr. Deborah Murphy - Ojai Chiropractor & Neurofeedback",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.248012,
+34.446529
+]
+},
+{
+"name": "Dr. Edith Resto",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.267107,
+34.444601
+]
+},
+{
+"name": "Dr. Kate Integrative Medicine",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.35,
+"at": [
+-119.248639,
+34.448417
+]
+},
+{
+"name": "Dr. Rebecca",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.79,
+"at": [
+-119.306565,
+34.423167
+]
+},
+{
+"name": "Earth Lotus Natural Healing for Body and Soul",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.281941,
+34.430453
+]
+},
+{
+"name": "Evergreen Chiropractic",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.244935,
+34.449095
+]
+},
+{
+"name": "Evergreen Wellness Ojai",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.242863,
+34.450143
+]
+},
+{
+"name": "Fatah R. Evans",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.64,
+"at": [
+-119.23721,
+34.447233
+]
+},
+{
+"name": "Healing in America School of Energy Medicine",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.79,
+"at": [
+-119.28536,
+34.46925
+]
+},
+{
+"name": "Internal Alchemy",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.55,
+"at": [
+-119.267157,
+34.444751
+]
+},
+{
+"name": "Kate Tenney, Nd",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.55,
+"at": [
+-119.248639,
+34.448417
+]
+},
+{
+"name": "Khabir Southwick's Health Clinic",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.281768,
+34.451625
+]
+},
+{
+"name": "Laurie Edgcomb",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.247015,
+34.449741
+]
+},
+{
+"name": "Livin Guide",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.243811,
+34.448708
+]
+},
+{
+"name": "Medicine Mama\u2019s Apothecary",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.237411,
+34.44696
+]
+},
+{
+"name": "Mid Valley Chiropractic",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.289416,
+34.422218
+]
+},
+{
+"name": "Ojai Acupuncture",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.276951,
+34.4486
+]
+},
+{
+"name": "Ojai Herb and Acupuncture Clinic",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.265847,
+34.442871
+]
+},
+{
+"name": "Ojai Holistic Journey",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.289465,
+34.422236
+]
+},
+{
+"name": "Oracle Of Ojai",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.245658,
+34.449474
+]
+},
+{
+"name": "Purnamaya Ayurveda",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.95,
+"at": [
+-119.24561,
+34.449444
+]
+},
+{
+"name": "Rigsby Acupuncture and Healing Arts",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.267097,
+34.444638
+]
+},
+{
+"name": "Sequoia Chiropractic",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.249213,
+34.447814
+]
+},
+{
+"name": "Sharmila Mali Intuitive Energy and Reiki Healing",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.245691,
+34.449373
+]
+},
+{
+"name": "The Lymphatic Health Institute",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.96,
+"at": [
+-119.239569,
+34.445661
+]
+},
+{
+"name": "Wild Qi",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.97,
+"at": [
+-119.251358,
+34.446463
+]
+},
+{
+"name": "Wiseman Chiropractic",
+"category": "complementary_and_alternative_medicine",
+"confidence": 0.92,
+"at": [
+-119.281035,
+34.452592
+]
+},
+{
+"name": "Andy's Liquors",
+"category": "convenience_store",
+"confidence": 0.99,
+"at": [
+-119.276346,
+34.448235
+]
+},
+{
+"name": "Casa Barranca",
+"category": "convenience_store",
+"confidence": 0.59,
+"at": [
+-119.256025,
+34.462937
+]
+},
+{
+"name": "Circle K",
+"category": "convenience_store",
+"confidence": 1.0,
+"at": [
+-119.289341,
+34.422662
+]
+},
+{
+"name": "Corner Store",
+"category": "convenience_store",
+"confidence": 0.92,
+"at": [
+-119.239811,
+34.448451
+]
+},
+{
+"name": "ExtraMile",
+"category": "convenience_store",
+"confidence": 0.92,
+"at": [
+-119.243356,
+34.447938
+]
+},
+{
+"name": "Joe's Quick Stop Mini Mart",
+"category": "convenience_store",
+"confidence": 0.99,
+"at": [
+-119.246205,
+34.448909
+]
+},
+{
+"name": "Rite Aid",
+"category": "convenience_store",
+"confidence": 0.92,
+"at": [
+-119.289003,
+34.425274
+]
+},
+{
+"name": "Camp Ojai",
+"category": "corporate_or_business_office",
+"confidence": 0.92,
+"at": [
+-119.244354,
+34.447946
+]
+},
+{
+"name": "Nomad Foundation",
+"category": "corporate_or_business_office",
+"confidence": 0.65,
+"at": [
+-119.244362,
+34.447561
+]
+},
+{
+"name": "Watershed Progressive",
+"category": "corporate_or_business_office",
+"confidence": 0.65,
+"at": [
+-119.24561,
+34.449444
+]
+},
+{
+"name": "Coral in Motion",
+"category": "dance_club",
+"confidence": 0.22,
+"at": [
+-119.27262,
+34.43964
+]
+},
+{
+"name": "Dalto Dental Lab",
+"category": "dental_clinic",
+"confidence": 0.92,
+"at": [
+-119.265584,
+34.44367
+]
+},
+{
+"name": "David A Watson DDS A Dental Corporation",
+"category": "dental_clinic",
+"confidence": 0.92,
+"at": [
+-119.244133,
+34.449123
+]
+},
+{
+"name": "David L Garber DDS",
+"category": "dental_clinic",
+"confidence": 0.97,
+"at": [
+-119.2633,
+34.44246
+]
+},
+{
+"name": "Dr. David Facet",
+"category": "dental_clinic",
+"confidence": 0.93,
+"at": [
+-119.263341,
+34.442316
+]
+},
+{
+"name": "Dr. Irina Rodriguez",
+"category": "dental_clinic",
+"confidence": 0.99,
+"at": [
+-119.265894,
+34.443476
+]
+},
+{
+"name": "Dr. Nanda and Dr. Haar Orthodontics - Ojai",
+"category": "dental_clinic",
+"confidence": 0.92,
+"at": [
+-119.264994,
+34.44344
+]
+},
+{
+"name": "Insight Dentistry of Ojai",
+"category": "dental_clinic",
+"confidence": 0.92,
+"at": [
+-119.244205,
+34.449244
+]
+},
+{
+"name": "Komura Jan M Dds",
+"category": "dental_clinic",
+"confidence": 0.95,
+"at": [
+-119.265416,
+34.443665
+]
+},
+{
+"name": "Modern Age Dentistry",
+"category": "dental_clinic",
+"confidence": 0.92,
+"at": [
+-119.241665,
+34.446523
+]
+},
+{
+"name": "Ojai Advanced Dentistry",
+"category": "dental_clinic",
+"confidence": 0.92,
+"at": [
+-119.266467,
+34.443066
+]
+},
+{
+"name": "Ojai Dental Studio",
+"category": "dental_clinic",
+"confidence": 0.92,
+"at": [
+-119.251012,
+34.44606
+]
+},
+{
+"name": "Restore Dental Group",
+"category": "dental_clinic",
+"confidence": 0.55,
+"at": [
+-119.265416,
+34.443665
+]
+},
+{
+"name": "Saeghi DDS",
+"category": "dental_clinic",
+"confidence": 0.92,
+"at": [
+-119.241886,
+34.446813
+]
+},
+{
+"name": "Vladlen Radchenko",
+"category": "dental_clinic",
+"confidence": 0.92,
+"at": [
+-119.287511,
+34.461076
+]
+},
+{
+"name": "Jula",
+"category": "department_store",
+"confidence": 1.0,
+"at": [
+-119.242889,
+34.44805
+]
+},
+{
+"name": "RAINS of Ojai",
+"category": "department_store",
+"confidence": 0.92,
+"at": [
+-119.245219,
+34.447952
+]
+},
+{
+"name": "Carlos Carrillo",
+"category": "design_service",
+"confidence": 0.65,
+"at": [
+-119.2441,
+34.448338
+]
+},
+{
+"name": "David Magney Environmental",
+"category": "design_service",
+"confidence": 0.65,
+"at": [
+-119.24561,
+34.449444
+]
+},
+{
+"name": "Hartmann Architecture Studio",
+"category": "design_service",
+"confidence": 0.75,
+"at": [
+-119.246605,
+34.448977
+]
+},
+{
+"name": "Jon Dieges Architect",
+"category": "design_service",
+"confidence": 0.97,
+"at": [
+-119.2787,
+34.444761
+]
+},
+{
+"name": "Magney David L Enviromental Consulting",
+"category": "design_service",
+"confidence": 0.55,
+"at": [
+-119.250728,
+34.446952
+]
+},
+{
+"name": "Ojai Digital",
+"category": "design_service",
+"confidence": 0.92,
+"at": [
+-119.242194,
+34.447893
+]
+},
+{
+"name": "Trust Creative",
+"category": "design_service",
+"confidence": 0.92,
+"at": [
+-119.165707,
+34.450768
+]
+},
+{
+"name": "Two Trees Architects",
+"category": "design_service",
+"confidence": 0.75,
+"at": [
+-119.249217,
+34.448376
+]
+},
+{
+"name": "Two Trees Architects",
+"category": "design_service",
+"confidence": 0.95,
+"at": [
+-119.238947,
+34.44386
+]
+},
+{
+"name": "Whitman Architectural Design Inc.",
+"category": "design_service",
+"confidence": 0.92,
+"at": [
+-119.247773,
+34.446447
+]
+},
+{
+"name": "Community Memorial Health Center - Pirie Road",
+"category": "diagnostics_imaging_or_lab_service",
+"confidence": 0.92,
+"at": [
+-119.265968,
+34.443482
+]
+},
+{
+"name": "Natural Fertility Shop",
+"category": "diagnostics_imaging_or_lab_service",
+"confidence": 0.92,
+"at": [
+-119.243824,
+34.445316
+]
+},
+{
+"name": "Ojai Spine & Sports Clinic",
+"category": "diagnostics_imaging_or_lab_service",
+"confidence": 0.77,
+"at": [
+-119.235664,
+34.448174
+]
+},
+{
+"name": "Preston Arndt MD Medical Clinic",
+"category": "diagnostics_imaging_or_lab_service",
+"confidence": 0.92,
+"at": [
+-119.250873,
+34.445968
+]
+},
+{
+"name": "Quest Diagnostics",
+"category": "diagnostics_imaging_or_lab_service",
+"confidence": 0.92,
+"at": [
+-119.265525,
+34.442894
+]
+},
+{
+"name": "Ben Franklin",
+"category": "discount_store",
+"confidence": 0.99,
+"at": [
+-119.263032,
+34.441698
+]
+},
+{
+"name": "Mitchell Edelson Dog Park",
+"category": "dog_park",
+"confidence": 0.85,
+"at": [
+-119.22858,
+34.44155
+]
+},
+{
+"name": "Soule Park Dog Park",
+"category": "dog_park",
+"confidence": 0.52,
+"at": [
+-119.246053,
+34.444143
+]
+},
+{
+"name": "A Place To Grow",
+"category": "education",
+"confidence": 0.92,
+"at": [
+-119.242335,
+34.450262
+]
+},
+{
+"name": "East End Eden",
+"category": "education",
+"confidence": 0.92,
+"at": [
+-119.209885,
+34.468218
+]
+},
+{
+"name": "Ojai Adult School",
+"category": "education",
+"confidence": 0.88,
+"at": [
+-119.24262,
+34.44812
+]
+},
+{
+"name": "Ojai Unified School District",
+"category": "education",
+"confidence": 0.92,
+"at": [
+-119.254746,
+34.445884
+]
+},
+{
+"name": "Ojai Valley School Alumni Association",
+"category": "education",
+"confidence": 0.77,
+"at": [
+-119.257215,
+34.444
+]
+},
+{
+"name": "Mediaex Net",
+"category": "electronics_store",
+"confidence": 0.77,
+"at": [
+-119.245846,
+34.449438
+]
+},
+{
+"name": "Omega Cellular",
+"category": "electronics_store",
+"confidence": 0.92,
+"at": [
+-119.249315,
+34.447755
+]
+},
+{
+"name": "Smart Media Solutions - Design Integration And Sales",
+"category": "electronics_store",
+"confidence": 0.75,
+"at": [
+-119.238947,
+34.44386
+]
+},
+{
+"name": "T-Mobile",
+"category": "electronics_store",
+"confidence": 0.92,
+"at": [
+-119.288626,
+34.425021
+]
+},
+{
+"name": "T-mobile",
+"category": "electronics_store",
+"confidence": 0.55,
+"at": [
+-119.235621,
+34.448757
+]
+},
+{
+"name": "Verizon",
+"category": "electronics_store",
+"confidence": 1.0,
+"at": [
+-119.288752,
+34.42522
+]
+},
+{
+"name": "Global Village School",
+"category": "elementary_school",
+"confidence": 0.9,
+"at": [
+-119.247563,
+34.449187
+]
+},
+{
+"name": "Global Village School",
+"category": "elementary_school",
+"confidence": 0.44,
+"at": [
+-119.239214,
+34.440356
+]
+},
+{
+"name": "Meiners Oaks Elementary School",
+"category": "elementary_school",
+"confidence": 0.92,
+"at": [
+-119.27742,
+34.444865
+]
+},
+{
+"name": "Mira Monte Elementary School",
+"category": "elementary_school",
+"confidence": 0.92,
+"at": [
+-119.279854,
+34.433566
+]
+},
+{
+"name": "Saint Thomas Aquinas School",
+"category": "elementary_school",
+"confidence": 0.92,
+"at": [
+-119.249475,
+34.450296
+]
+},
+{
+"name": "San Antonio Elementary School",
+"category": "elementary_school",
+"confidence": 1.0,
+"at": [
+-119.206025,
+34.454762
+]
+},
+{
+"name": "St Monica's School",
+"category": "elementary_school",
+"confidence": 0.89,
+"at": [
+-119.260913,
+34.457025
+]
+},
+{
+"name": "Summit Lower Campus (At San Antonio)",
+"category": "elementary_school",
+"confidence": 0.81,
+"at": [
+-119.205076,
+34.45426
+]
+},
+{
+"name": "Topa Topa Elementary",
+"category": "elementary_school",
+"confidence": 0.99,
+"at": [
+-119.235219,
+34.457579
+]
+},
+{
+"name": "Dr. Neil Canby",
+"category": "emergency_or_urgent_care_facility",
+"confidence": 0.65,
+"at": [
+-119.264573,
+34.442735
+]
+},
+{
+"name": "Friends Stable & Orchard",
+"category": "environmental_or_ecological_service",
+"confidence": 0.92,
+"at": [
+-119.200619,
+34.452416
+]
+},
+{
+"name": "Ojai Valley Green Coalition",
+"category": "environmental_or_ecological_service",
+"confidence": 0.92,
+"at": [
+-119.249146,
+34.447673
+]
+},
+{
+"name": "Ojai Valley Land Conservancy",
+"category": "environmental_or_ecological_service",
+"confidence": 0.92,
+"at": [
+-119.295515,
+34.425638
+]
+},
+{
+"name": "Pax Environmental, Inc.",
+"category": "environmental_or_ecological_service",
+"confidence": 0.37,
+"at": [
+-119.249138,
+34.447819
+]
+},
+{
+"name": "Valley View Preserve",
+"category": "environmental_or_ecological_service",
+"confidence": 0.97,
+"at": [
+-119.246175,
+34.451569
+]
+},
+{
+"name": "Hacienda Shop",
+"category": "event_or_party_service",
+"confidence": 0.4,
+"at": [
+-119.255218,
+34.43761
+]
+},
+{
+"name": "Las Palmas de Ojai",
+"category": "event_or_party_service",
+"confidence": 0.92,
+"at": [
+-119.287483,
+34.458816
+]
+},
+{
+"name": "Michel B. Events",
+"category": "event_or_party_service",
+"confidence": 0.92,
+"at": [
+-119.262512,
+34.441769
+]
+},
+{
+"name": "Private Chef Robin",
+"category": "event_or_party_service",
+"confidence": 0.92,
+"at": [
+-119.261717,
+34.440835
+]
+},
+{
+"name": "Sonia Hopkins Events",
+"category": "event_or_party_service",
+"confidence": 0.92,
+"at": [
+-119.268698,
+34.439806
+]
+},
+{
+"name": "Ojai Farmhouse",
+"category": "event_venue",
+"confidence": 0.97,
+"at": [
+-119.259433,
+34.437499
+]
+},
+{
+"name": "Ojai Film Festival",
+"category": "event_venue",
+"confidence": 0.92,
+"at": [
+-119.243812,
+34.447044
+]
+},
+{
+"name": "Sane Living",
+"category": "event_venue",
+"confidence": 0.92,
+"at": [
+-119.243222,
+34.449047
+]
+},
+{
+"name": "Cdr Ojai Topa Topa Head Start",
+"category": "family_service",
+"confidence": 0.53,
+"at": [
+-119.235819,
+34.459926
+]
+},
+{
+"name": "Dutter Family Childcare and Preschool WeeCare",
+"category": "family_service",
+"confidence": 0.96,
+"at": [
+-119.294532,
+34.439092
+]
+},
+{
+"name": "Perez Family Funeral Home",
+"category": "family_service",
+"confidence": 0.92,
+"at": [
+-119.251858,
+34.445926
+]
+},
+{
+"name": "Smart Start Child Development Centers",
+"category": "family_service",
+"confidence": 0.92,
+"at": [
+-119.277164,
+34.44865
+]
+},
+{
+"name": "Boccali Ranch Pumpkin Patch",
+"category": "farm",
+"confidence": 0.92,
+"at": [
+-119.204013,
+34.445926
+]
+},
+{
+"name": "Coultas Ranch",
+"category": "farm",
+"confidence": 0.23,
+"at": [
+-119.214673,
+34.462929
+]
+},
+{
+"name": "Etchart Ranch Organics",
+"category": "farm",
+"confidence": 0.67,
+"at": [
+-119.2869,
+34.47052
+]
+},
+{
+"name": "Euterpe Farms",
+"category": "farm",
+"confidence": 0.92,
+"at": [
+-119.291919,
+34.443354
+]
+},
+{
+"name": "Friend's Ranches",
+"category": "farm",
+"confidence": 0.92,
+"at": [
+-119.290607,
+34.479197
+]
+},
+{
+"name": "Frog Creek Farm Ojai",
+"category": "farm",
+"confidence": 0.93,
+"at": [
+-119.161092,
+34.433569
+]
+},
+{
+"name": "Funny Farms",
+"category": "farm",
+"confidence": 0.43,
+"at": [
+-119.283431,
+34.455635
+]
+},
+{
+"name": "Golden Heart Ranch Equine",
+"category": "farm",
+"confidence": 0.92,
+"at": [
+-119.171018,
+34.436553
+]
+},
+{
+"name": "Hermitage Ranch Company",
+"category": "farm",
+"confidence": 0.23,
+"at": [
+-119.220314,
+34.47242
+]
+},
+{
+"name": "J\u2022BAR Bella Collina",
+"category": "farm",
+"confidence": 0.71,
+"at": [
+-119.297806,
+34.48124
+]
+},
+{
+"name": "Mulberry Haven",
+"category": "farm",
+"confidence": 0.4,
+"at": [
+-119.288604,
+34.462274
+]
+},
+{
+"name": "Ojai Olive Oil",
+"category": "farm",
+"confidence": 0.99,
+"at": [
+-119.206218,
+34.468576
+]
+},
+{
+"name": "Ojai Vista Farm",
+"category": "farm",
+"confidence": 0.53,
+"at": [
+-119.277025,
+34.463303
+]
+},
+{
+"name": "Ponycreek Ranch",
+"category": "farm",
+"confidence": 0.69,
+"at": [
+-119.169384,
+34.439462
+]
+},
+{
+"name": "Rolling Thunder Ranch",
+"category": "farm",
+"confidence": 0.95,
+"at": [
+-119.277492,
+34.454316
+]
+},
+{
+"name": "S and R Ranch",
+"category": "farm",
+"confidence": 0.69,
+"at": [
+-119.224228,
+34.445577
+]
+},
+{
+"name": "Starseed Farms In Ojai",
+"category": "farm",
+"confidence": 0.97,
+"at": [
+-119.27659,
+34.45461
+]
+},
+{
+"name": "Sulphur Mountain CSA",
+"category": "farm",
+"confidence": 0.72,
+"at": [
+-119.16064,
+34.4364
+]
+},
+{
+"name": "The Nut Farm",
+"category": "farm",
+"confidence": 0.37,
+"at": [
+-119.177889,
+34.431023
+]
+},
+{
+"name": "El Mercado Comunitario De Ojai",
+"category": "farmers_market",
+"confidence": 0.79,
+"at": [
+-119.242595,
+34.448923
+]
+},
+{
+"name": "Farmer and the Cook",
+"category": "farmers_market",
+"confidence": 0.99,
+"at": [
+-119.27889,
+34.449023
+]
+},
+{
+"name": "Ojai Certified Farmers Market",
+"category": "farmers_market",
+"confidence": 0.99,
+"at": [
+-119.244381,
+34.448999
+]
+},
+{
+"name": "Ojai Community Farmers' Market",
+"category": "farmers_market",
+"confidence": 0.92,
+"at": [
+-119.242786,
+34.4489
+]
+},
+{
+"name": "Ali Golden",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.244343,
+34.447792
+]
+},
+{
+"name": "Barbara Bowman Boutique",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.246447,
+34.447656
+]
+},
+{
+"name": "Blanche Sylvia",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.245456,
+34.447959
+]
+},
+{
+"name": "Bungalow by FiG",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.2431,
+34.448583
+]
+},
+{
+"name": "Calais & Co.",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.246315,
+34.448509
+]
+},
+{
+"name": "Camouflage",
+"category": "fashion_and_apparel_store",
+"confidence": 0.51,
+"at": [
+-119.262147,
+34.440925
+]
+},
+{
+"name": "Carly Home",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.243812,
+34.44814
+]
+},
+{
+"name": "Cercana",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.244465,
+34.44805
+]
+},
+{
+"name": "Crescent Moon Collective",
+"category": "fashion_and_apparel_store",
+"confidence": 0.55,
+"at": [
+-119.2441,
+34.448338
+]
+},
+{
+"name": "Danski",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.24409,
+34.44778
+]
+},
+{
+"name": "Genesis Of Ojai",
+"category": "fashion_and_apparel_store",
+"confidence": 0.95,
+"at": [
+-119.2441,
+34.448338
+]
+},
+{
+"name": "In the Field",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.238539,
+34.448439
+]
+},
+{
+"name": "Jes MaHarry",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.244257,
+34.448042
+]
+},
+{
+"name": "Julia Rose and Co",
+"category": "fashion_and_apparel_store",
+"confidence": 0.99,
+"at": [
+-119.243787,
+34.447736
+]
+},
+{
+"name": "Kariella",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.245472,
+34.447895
+]
+},
+{
+"name": "Kariella And The Men's Den\u2122",
+"category": "fashion_and_apparel_store",
+"confidence": 0.95,
+"at": [
+-119.24862,
+34.447926
+]
+},
+{
+"name": "Mayware Ceramics - Design Studio",
+"category": "fashion_and_apparel_store",
+"confidence": 0.96,
+"at": [
+-119.274915,
+34.447753
+]
+},
+{
+"name": "Milo and Mimi",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.244189,
+34.448018
+]
+},
+{
+"name": "Modern Folk Living",
+"category": "fashion_and_apparel_store",
+"confidence": 0.65,
+"at": [
+-119.243899,
+34.449126
+]
+},
+{
+"name": "Ojai Baby",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.24623,
+34.448881
+]
+},
+{
+"name": "Ojai Clothing",
+"category": "fashion_and_apparel_store",
+"confidence": 0.93,
+"at": [
+-119.243998,
+34.447782
+]
+},
+{
+"name": "Pastease Co",
+"category": "fashion_and_apparel_store",
+"confidence": 0.65,
+"at": [
+-119.237065,
+34.443991
+]
+},
+{
+"name": "Priscilla",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.244074,
+34.447968
+]
+},
+{
+"name": "Real Fun, Wow",
+"category": "fashion_and_apparel_store",
+"confidence": 0.05,
+"at": [
+-119.2748,
+34.44773
+]
+},
+{
+"name": "Ride or Dye Ojai",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.237076,
+34.448732
+]
+},
+{
+"name": "Shoe Doctor",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.276922,
+34.448773
+]
+},
+{
+"name": "Soultonic",
+"category": "fashion_and_apparel_store",
+"confidence": 0.66,
+"at": [
+-119.277177,
+34.44852
+]
+},
+{
+"name": "Soultonic",
+"category": "fashion_and_apparel_store",
+"confidence": 0.77,
+"at": [
+-119.245031,
+34.448093
+]
+},
+{
+"name": "Store Nezha",
+"category": "fashion_and_apparel_store",
+"confidence": 0.03,
+"at": [
+-119.233844,
+34.431151
+]
+},
+{
+"name": "Studio C & Wild Honey Boutique",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.244384,
+34.447683
+]
+},
+{
+"name": "Talon",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.242824,
+34.44765
+]
+},
+{
+"name": "Terramor Organic",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.276986,
+34.448535
+]
+},
+{
+"name": "The Mud Lotus",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.244067,
+34.448195
+]
+},
+{
+"name": "The Nature Conservancy",
+"category": "fashion_and_apparel_store",
+"confidence": 0.55,
+"at": [
+-119.247773,
+34.446447
+]
+},
+{
+"name": "Whipple David Goldsmith",
+"category": "fashion_and_apparel_store",
+"confidence": 0.92,
+"at": [
+-119.2804,
+34.44933
+]
+},
+{
+"name": "rum reggae",
+"category": "fashion_and_apparel_store",
+"confidence": 0.77,
+"at": [
+-119.283639,
+34.41848
+]
+},
+{
+"name": "Habit Burger & Grill",
+"category": "fast_food_restaurant",
+"confidence": 0.97,
+"at": [
+-119.288371,
+34.428816
+]
+},
+{
+"name": "Jersey Mike's Subs",
+"category": "fast_food_restaurant",
+"confidence": 0.95,
+"at": [
+-119.24276,
+34.44786
+]
+},
+{
+"name": "McDonald's",
+"category": "fast_food_restaurant",
+"confidence": 0.99,
+"at": [
+-119.288612,
+34.423982
+]
+},
+{
+"name": "Ohms Collective",
+"category": "fast_food_restaurant",
+"confidence": 0.75,
+"at": [
+-119.246332,
+34.449206
+]
+},
+{
+"name": "Taco Bell",
+"category": "fast_food_restaurant",
+"confidence": 0.99,
+"at": [
+-119.28838,
+34.424291
+]
+},
+{
+"name": "Wendy\u2019s",
+"category": "fast_food_restaurant",
+"confidence": 0.92,
+"at": [
+-119.288377,
+34.428816
+]
+},
+{
+"name": "Ojai Music Festival",
+"category": "festival_venue",
+"confidence": 0.92,
+"at": [
+-119.246304,
+34.448929
+]
+},
+{
+"name": "Ojai Valley Lavender Festival",
+"category": "festival_venue",
+"confidence": 0.55,
+"at": [
+-119.245021,
+34.446575
+]
+},
+{
+"name": "American Marine Insurance",
+"category": "financial_service",
+"confidence": 0.55,
+"at": [
+-119.239643,
+34.442489
+]
+},
+{
+"name": "Ameriprise Financial",
+"category": "financial_service",
+"confidence": 0.8,
+"at": [
+-119.250763,
+34.44614
+]
+},
+{
+"name": "Bob Daddi - State Farm Insurance Agent",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.26438,
+34.442139
+]
+},
+{
+"name": "C2 Financial Corporation",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.249193,
+34.447659
+]
+},
+{
+"name": "Chase Mortgage",
+"category": "financial_service",
+"confidence": 0.99,
+"at": [
+-119.264123,
+34.441831
+]
+},
+{
+"name": "Coinme",
+"category": "financial_service",
+"confidence": 0.8,
+"at": [
+-119.26241,
+34.441209
+]
+},
+{
+"name": "David G. Junod, Cpa",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.243249,
+34.448699
+]
+},
+{
+"name": "Derby & Derby, Inc.",
+"category": "financial_service",
+"confidence": 0.95,
+"at": [
+-119.251869,
+34.444777
+]
+},
+{
+"name": "Dmm Management & Insurance Services",
+"category": "financial_service",
+"confidence": 0.65,
+"at": [
+-119.249796,
+34.448335
+]
+},
+{
+"name": "Doug Crawford Insurance Agency",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.247016,
+34.449846
+]
+},
+{
+"name": "E Summers Insurance Agency - Jake Zimmerman",
+"category": "financial_service",
+"confidence": 0.43,
+"at": [
+-119.24472,
+34.449621
+]
+},
+{
+"name": "Edward Jones",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.251816,
+34.445963
+]
+},
+{
+"name": "Edward Jones",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.288963,
+34.422921
+]
+},
+{
+"name": "Edward Jones - Financial Advisor: Jonathan Morton",
+"category": "financial_service",
+"confidence": 0.77,
+"at": [
+-119.263847,
+34.441698
+]
+},
+{
+"name": "Effitax",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.277018,
+34.44873
+]
+},
+{
+"name": "Farmers Insurance - Amir Manzur",
+"category": "financial_service",
+"confidence": 0.55,
+"at": [
+-119.238947,
+34.44386
+]
+},
+{
+"name": "Farmers Insurance - Linda Thompson",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.250623,
+34.446249
+]
+},
+{
+"name": "Farmers Insurance - Lisa Boverson",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.28849,
+34.42527
+]
+},
+{
+"name": "Gold Coast Medical Billing",
+"category": "financial_service",
+"confidence": 0.85,
+"at": [
+-119.265048,
+34.443626
+]
+},
+{
+"name": "Gourley Insurance Agency Inc",
+"category": "financial_service",
+"confidence": 0.75,
+"at": [
+-119.24453,
+34.448581
+]
+},
+{
+"name": "H&R Block",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.288989,
+34.423073
+]
+},
+{
+"name": "Heritage Financial",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.250434,
+34.446285
+]
+},
+{
+"name": "Ivan Chen",
+"category": "financial_service",
+"confidence": 0.8,
+"at": [
+-119.261932,
+34.441877
+]
+},
+{
+"name": "Jacobs & Jacobs Accountancy Corporation",
+"category": "financial_service",
+"confidence": 0.95,
+"at": [
+-119.251869,
+34.444777
+]
+},
+{
+"name": "Jenae Juarez Bookkeeping Services",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.237016,
+34.449218
+]
+},
+{
+"name": "Mcdaniel Insurance Services",
+"category": "financial_service",
+"confidence": 0.75,
+"at": [
+-119.24561,
+34.449444
+]
+},
+{
+"name": "Ojai Valley Financial Services",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.263997,
+34.441927
+]
+},
+{
+"name": "Opportunities In Options, Lp",
+"category": "financial_service",
+"confidence": 0.95,
+"at": [
+-119.247773,
+34.446447
+]
+},
+{
+"name": "P3 Insurance Services",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.249654,
+34.448329
+]
+},
+{
+"name": "Paul Achee - Bestefits Insurance Solutions",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.250612,
+34.446897
+]
+},
+{
+"name": "SagePointe Wealth Management",
+"category": "financial_service",
+"confidence": 0.65,
+"at": [
+-119.25958,
+34.44218
+]
+},
+{
+"name": "Sc&a Insurance Services, Llc",
+"category": "financial_service",
+"confidence": 0.95,
+"at": [
+-119.251869,
+34.444777
+]
+},
+{
+"name": "Western Union",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.249715,
+34.447236
+]
+},
+{
+"name": "Western Union",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.262314,
+34.441201
+]
+},
+{
+"name": "Western Union",
+"category": "financial_service",
+"confidence": 0.92,
+"at": [
+-119.288427,
+34.425513
+]
+},
+{
+"name": "Zusman & Associates, Llp",
+"category": "financial_service",
+"confidence": 0.95,
+"at": [
+-119.244362,
+34.447561
+]
+},
+{
+"name": "Ojai Fire Department",
+"category": "fire_station",
+"confidence": 0.91,
+"at": [
+-119.231118,
+34.448453
+]
+},
+{
+"name": "Ventura County Fire Station 22",
+"category": "fire_station",
+"confidence": 0.92,
+"at": [
+-119.285517,
+34.444466
+]
+},
+{
+"name": "33 Hot Yoga",
+"category": "fitness_studio",
+"confidence": 0.99,
+"at": [
+-119.28886,
+34.422894
+]
+},
+{
+"name": "Alignment Healings",
+"category": "fitness_studio",
+"confidence": 0.92,
+"at": [
+-119.245823,
+34.449364
+]
+},
+{
+"name": "Arrow Heart Yoga",
+"category": "fitness_studio",
+"confidence": 0.92,
+"at": [
+-119.276986,
+34.448535
+]
+},
+{
+"name": "Breathe Ojai {Yoga Studio and Community Hall}",
+"category": "fitness_studio",
+"confidence": 0.92,
+"at": [
+-119.243304,
+34.448684
+]
+},
+{
+"name": "ElementsOjai",
+"category": "fitness_studio",
+"confidence": 0.64,
+"at": [
+-119.26414,
+34.442645
+]
+},
+{
+"name": "Farm Love Yoga",
+"category": "fitness_studio",
+"confidence": 0.92,
+"at": [
+-119.202829,
+34.459833
+]
+},
+{
+"name": "Hamsa Studio",
+"category": "fitness_studio",
+"confidence": 0.93,
+"at": [
+-119.276126,
+34.4481
+]
+},
+{
+"name": "Healing With Alison",
+"category": "fitness_studio",
+"confidence": 0.77,
+"at": [
+-119.245778,
+34.449542
+]
+},
+{
+"name": "Light and Space",
+"category": "fitness_studio",
+"confidence": 0.92,
+"at": [
+-119.236707,
+34.448209
+]
+},
+{
+"name": "Move Sanctuary",
+"category": "fitness_studio",
+"confidence": 0.52,
+"at": [
+-119.24777,
+34.44644
+]
+},
+{
+"name": "Ojai Pilates & Fitness",
+"category": "fitness_studio",
+"confidence": 0.92,
+"at": [
+-119.243101,
+34.448592
+]
+},
+{
+"name": "Ojai Yoga Shala",
+"category": "fitness_studio",
+"confidence": 0.77,
+"at": [
+-119.243997,
+34.449046
+]
+},
+{
+"name": "Peak Power Yoga & Wellness",
+"category": "fitness_studio",
+"confidence": 0.94,
+"at": [
+-119.24561,
+34.449444
+]
+},
+{
+"name": "Pilates Weights & Fitness Inc",
+"category": "fitness_studio",
+"confidence": 0.75,
+"at": [
+-119.24561,
+34.449444
+]
+},
+{
+"name": "Rosemary Garrison Yoga",
+"category": "fitness_studio",
+"confidence": 0.99,
+"at": [
+-119.243249,
+34.448699
+]
+},
+{
+"name": "Sacred Space Studio",
+"category": "fitness_studio",
+"confidence": 0.92,
+"at": [
+-119.243768,
+34.448702
+]
+},
+{
+"name": "Shell Shape Fitness",
+"category": "fitness_studio",
+"confidence": 0.65,
+"at": [
+-119.238947,
+34.44386
+]
+},
+{
+"name": "Zalla Pilates",
+"category": "fitness_studio",
+"confidence": 0.92,
+"at": [
+-119.244052,
+34.44906
+]
+},
+{
+"name": "Angela's Flowers",
+"category": "flowers_and_gifts_store",
+"confidence": 0.92,
+"at": [
+-119.255853,
+34.46123
+]
+},
+{
+"name": "Angela's Flowers",
+"category": "flowers_and_gifts_store",
+"confidence": 0.65,
+"at": [
+-119.249027,
+34.447819
+]
+},
+{
+"name": "Blooming Ruby's",
+"category": "flowers_and_gifts_store",
+"confidence": 0.2,
+"at": [
+-119.280623,
+34.449383
+]
+},
+{
+"name": "Dulce Floral Design",
+"category": "flowers_and_gifts_store",
+"confidence": 0.92,
+"at": [
+-119.294945,
+34.438419
+]
+},
+{
+"name": "Dustin's crafty abode",
+"category": "flowers_and_gifts_store",
+"confidence": 0.5,
+"at": [
+-119.263433,
+34.437945
+]
+},
+{
+"name": "Eskina space",
+"category": "flowers_and_gifts_store",
+"confidence": 0.9,
+"at": [
+-119.25283,
+34.44427
+]
+},
+{
+"name": "Fig Curated Living",
+"category": "flowers_and_gifts_store",
+"confidence": 0.96,
+"at": [
+-119.244002,
+34.44777
+]
+},
+{
+"name": "Forage Ojai",
+"category": "flowers_and_gifts_store",
+"confidence": 0.97,
+"at": [
+-119.246452,
+34.449025
+]
+},
+{
+"name": "Jones and Company - Ojai",
+"category": "flowers_and_gifts_store",
+"confidence": 0.92,
+"at": [
+-119.243109,
+34.450485
+]
+},
+{
+"name": "Mabel's Place",
+"category": "flowers_and_gifts_store",
+"confidence": 0.92,
+"at": [
+-119.276992,
+34.448764
+]
+},
+{
+"name": "Made in Ojai",
+"category": "flowers_and_gifts_store",
+"confidence": 0.92,
+"at": [
+-119.243352,
+34.448703
+]
+},
+{
+"name": "Magic Hour Ceremonial Teas and Gifts",
+"category": "flowers_and_gifts_store",
+"confidence": 0.99,
+"at": [
+-119.244795,
+34.44868
+]
+},
+{
+"name": "Nutmeg's Ojai House",
+"category": "flowers_and_gifts_store",
+"confidence": 0.95,
+"at": [
+-119.242856,
+34.450278
+]
+},
+{
+"name": "Ojai Arcade and Plaza",
+"category": "flowers_and_gifts_store",
+"confidence": 0.97,
+"at": [
+-119.244608,
+34.448111
+]
+},
+{
+"name": "Ojai Flowers",
+"category": "flowers_and_gifts_store",
+"confidence": 0.92,
+"at": [
+-119.246484,
+34.449512
+]
+},
+{
+"name": "Pixies General Store",
+"category": "flowers_and_gifts_store",
+"confidence": 1.0,
+"at": [
+-119.246151,
+34.449026
+]
+},
+{
+"name": "Poppies Art and Gifts",
+"category": "flowers_and_gifts_store",
+"confidence": 0.93,
+"at": [
+-119.243469,
+34.448632
+]
+},
+{
+"name": "Rainbow Warehouse Store",
+"category": "flowers_and_gifts_store",
+"confidence": 0.63,
+"at": [
+-119.244692,
+34.448612
+]
+},
+{
+"name": "Sorenity Rocks Ojai",
+"category": "flowers_and_gifts_store",
+"confidence": 0.92,
+"at": [
+-119.257487,
+34.44281
+]
+},
+{
+"name": "Summer Camp",
+"category": "flowers_and_gifts_store",
+"confidence": 0.92,
+"at": [
+-119.260278,
+34.441944
+]
+},
+{
+"name": "Sunday's",
+"category": "flowers_and_gifts_store",
+"confidence": 0.24,
+"at": [
+-119.243999,
+34.44772
+]
+},
+{
+"name": "101 Cbd | Ojai",
+"category": "food_and_beverage_store",
+"confidence": 0.55,
+"at": [
+-119.289036,
+34.422946
+]
+},
+{
+"name": "Ambrosia Produce Bags",
+"category": "food_and_beverage_store",
+"confidence": 0.92,
+"at": [
+-119.238829,
+34.443037
+]
+},
+{
+"name": "Boku Superfood",
+"category": "food_and_beverage_store",
+"confidence": 0.92,
+"at": [
+-119.258352,
+34.442214
+]
+},
+{
+"name": "Carolina Gramm Extra Virgin Olive Oil Products",
+"category": "food_and_beverage_store",
+"confidence": 0.96,
+"at": [
+-119.243995,
+34.447951
+]
+},
+{
+"name": "Essential Medicina",
+"category": "food_and_beverage_store",
+"confidence": 0.92,
+"at": [
+-119.279822,
+34.449295
+]
+},
+{
+"name": "Genesis Health Products",
+"category": "food_and_beverage_store",
+"confidence": 0.86,
+"at": [
+-119.258431,
+34.448099
+]
+},
+{
+"name": "Heavenly Honey Company of Ojai",
+"category": "food_and_beverage_store",
+"confidence": 0.86,
+"at": [
+-119.245667,
+34.447842
+]
+},
+{
+"name": "Ideal",
+"category": "food_and_beverage_store",
+"confidence": 0.96,
+"at": [
+-119.288676,
+34.426412
+]
+},
+{
+"name": "Lake Casitas Park Store",
+"category": "food_and_beverage_store",
+"confidence": 0.77,
+"at": [
+-119.337393,
+34.416079
+]
+},
+{
+"name": "Long Ranches",
+"category": "food_and_beverage_store",
+"confidence": 0.92,
+"at": [
+-119.213417,
+34.442138
+]
+},
+{
+"name": "Market 33",
+"category": "food_and_beverage_store",
+"confidence": 0.92,
+"at": [
+-119.271886,
+34.447224
+]
+},
+{
+"name": "Mira Monte Liquor",
+"category": "food_and_beverage_store",
+"confidence": 0.92,
+"at": [
+-119.288628,
+34.425134
+]
+},
+{
+"name": "Natural Living Products",
+"category": "food_and_beverage_store",
+"confidence": 0.65,
+"at": [
+-119.250728,
+34.446952
+]
+},
+{
+"name": "Ojai Cafe Emporium",
+"category": "food_and_beverage_store",
+"confidence": 0.92,
+"at": [
+-119.24299,
+34.447223
+]
+},
+{
+"name": "Ojai Energetics",
+"category": "food_and_beverage_store",
+"confidence": 1.0,
+"at": [
+-119.249039,
+34.447833
+]
+},
+{
+"name": "Ojai Liquors Inc",
+"category": "food_and_beverage_store",
+"confidence": 0.92,
+"at": [
+-119.249467,
+34.447058
+]
+},
+{
+"name": "Pat's Liquor",
+"category": "food_and_beverage_store",
+"confidence": 0.92,
+"at": [
+-119.239218,
+34.448392
+]
+},
+{
+"name": "Point de Chene Wine and Beer",
+"category": "food_and_beverage_store",
+"confidence": 1.0,
+"at": [
+-119.245867,
+34.44832
+]
+},
+{
+"name": "Rainbow Bridge Natural Food",
+"category": "food_and_beverage_store",
+"confidence": 0.99,
+"at": [
+-119.245304,
+34.448624
+]
+},
+{
+"name": "Red Barn Liquor",
+"category": "food_and_beverage_store",
+"confidence": 1.0,
+"at": [
+-119.288678,
+34.428025
+]
+},
+{
+"name": "Red Barn Smoke Shop",
+"category": "food_and_beverage_store",
+"confidence": 0.99,
+"at": [
+-119.288308,
+34.428063
+]
+},
+{
+"name": "Starr Market",
+"category": "food_and_beverage_store",
+"confidence": 0.65,
+"at": [
+-119.247609,
+34.447142
+]
+},
+{
+"name": "The Miracle Plant",
+"category": "food_and_beverage_store",
+"confidence": 0.75,
+"at": [
+-119.289036,
+34.422946
+]
+},
+{
+"name": "The Raw Food World",
+"category": "food_and_beverage_store",
+"confidence": 0.77,
+"at": [
+-119.237414,
+34.443503
+]
+},
+{
+"name": "Vons",
+"category": "food_and_beverage_store",
+"confidence": 0.96,
+"at": [
+-119.262441,
+34.44129
+]
+},
+{
+"name": "Watkins Ranch Butcher Shop",
+"category": "food_and_beverage_store",
+"confidence": 0.92,
+"at": [
+-119.276296,
+34.448188
+]
+},
+{
+"name": "Westridge Market IGA",
+"category": "food_and_beverage_store",
+"confidence": 0.98,
+"at": [
+-119.238034,
+34.448441
+]
+},
+{
+"name": "Westridge Midtown Market IGA",
+"category": "food_and_beverage_store",
+"confidence": 0.99,
+"at": [
+-119.247919,
+34.44717
+]
+},
+{
+"name": "A&i Minimart And Gas, Inc.",
+"category": "gas_station",
+"confidence": 0.75,
+"at": [
+-119.277852,
+34.44904
+]
+},
+{
+"name": "Chevron",
+"category": "gas_station",
+"confidence": 0.99,
+"at": [
+-119.243334,
+34.448263
+]
+},
+{
+"name": "Shell",
+"category": "gas_station",
+"confidence": 0.92,
+"at": [
+-119.239854,
+34.448302
+]
+},
+{
+"name": "Shell",
+"category": "gas_station",
+"confidence": 0.92,
+"at": [
+-119.262302,
+34.442038
+]
+},
+{
+"name": "Matilija Lake and Dam",
+"category": "geographic_entities",
+"confidence": 0.52,
+"at": [
+-119.309979,
+34.48786
+]
+},
+{
+"name": "Soule Park Golf Course",
+"category": "golf_course",
+"confidence": 0.99,
+"at": [
+-119.231477,
+34.44339
+]
+},
+{
+"name": "City of Ojai Public Works Department",
+"category": "government_office",
+"confidence": 0.7,
+"at": [
+-119.245777,
+34.444315
+]
+},
+{
+"name": "Ojai, California",
+"category": "government_office",
+"confidence": 0.97,
+"at": [
+-119.244758,
+34.447897
+]
+},
+{
+"name": "\u5967\u6d77\u93ae",
+"category": "government_office",
+"confidence": 0.76,
+"at": [
+-119.242,
+34.4481
+]
+},
+{
+"name": "AIReal Yoga in Ojai with Susan Bronstein",
+"category": "gym",
+"confidence": 0.4,
+"at": [
+-119.237269,
+34.443375
+]
+},
+{
+"name": "Bryant Street Gym",
+"category": "gym",
+"confidence": 0.92,
+"at": [
+-119.23696,
+34.443517
+]
+},
+{
+"name": "Curves",
+"category": "gym",
+"confidence": 0.92,
+"at": [
+-119.251133,
+34.446383
+]
+},
+{
+"name": "Ojai Arts Exchange",
+"category": "gym",
+"confidence": 0.77,
+"at": [
+-119.25999,
+34.442129
+]
+},
+{
+"name": "SHED Health Center",
+"category": "gym",
+"confidence": 0.77,
+"at": [
+-119.280266,
+34.449605
+]
+},
+{
+"name": "Shangri-La Pavilion",
+"category": "gym",
+"confidence": 0.92,
+"at": [
+-119.255396,
+34.436973
+]
+},
+{
+"name": "The Ojai",
+"category": "gym",
+"confidence": 0.15,
+"at": [
+-119.24515,
+34.446692
+]
+},
+{
+"name": "Blue Ojai",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.92,
+"at": [
+-119.248791,
+34.447286
+]
+},
+{
+"name": "Daley Landscape, Inc.",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.92,
+"at": [
+-119.236813,
+34.457671
+]
+},
+{
+"name": "Down Home Furnishings",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.92,
+"at": [
+-119.244789,
+34.447976
+]
+},
+{
+"name": "Flora Gardens",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.92,
+"at": [
+-119.294106,
+34.429211
+]
+},
+{
+"name": "Frontier Paint - Catalina Paints",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.99,
+"at": [
+-119.293577,
+34.42967
+]
+},
+{
+"name": "Husted Maytag Home Appliance",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.92,
+"at": [
+-119.237811,
+34.44285
+]
+},
+{
+"name": "K T Construction",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.92,
+"at": [
+-119.285283,
+34.416658
+]
+},
+{
+"name": "Meiners Oaks Hardware",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.92,
+"at": [
+-119.275314,
+34.447954
+]
+},
+{
+"name": "Meiners Oaks Nursery",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.92,
+"at": [
+-119.278347,
+34.449063
+]
+},
+{
+"name": "Messermeister",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.92,
+"at": [
+-119.235905,
+34.446966
+]
+},
+{
+"name": "Ojai Lumber Company",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.99,
+"at": [
+-119.221254,
+34.448083
+]
+},
+{
+"name": "Orchard Drive Wholesale Nursery",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.77,
+"at": [
+-119.286257,
+34.428773
+]
+},
+{
+"name": "Outdoor Lighting Perspectives of Ojai",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.36,
+"at": [
+-119.29186,
+34.43434
+]
+},
+{
+"name": "Painterjohn : Home Painter",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.36,
+"at": [
+-119.289456,
+34.429551
+]
+},
+{
+"name": "Plant Based",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.92,
+"at": [
+-119.243832,
+34.448178
+]
+},
+{
+"name": "Sanctum",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.92,
+"at": [
+-119.244448,
+34.447791
+]
+},
+{
+"name": "Tala Design",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.92,
+"at": [
+-119.244331,
+34.447675
+]
+},
+{
+"name": "The Ivy In Ojai, Llc",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.92,
+"at": [
+-119.244551,
+34.448089
+]
+},
+{
+"name": "Topa Topa Ranch & Nursery",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.66,
+"at": [
+-119.184135,
+34.45329
+]
+},
+{
+"name": "Tri Valley Tree Service",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.55,
+"at": [
+-119.248485,
+34.447776
+]
+},
+{
+"name": "True Value",
+"category": "hardware_home_and_garden_store",
+"confidence": 0.78,
+"at": [
+-119.262039,
+34.440799
+]
+},
+{
+"name": "Arbolada Medical Group",
+"category": "health_care",
+"confidence": 0.95,
+"at": [
+-119.265206,
+34.44296
+]
+},
+{
+"name": "Bruce Whyddon Gladstone",
+"category": "health_care",
+"confidence": 0.95,
+"at": [
+-119.251992,
+34.445922
+]
+},
+{
+"name": "Center For Advanced Medicine",
+"category": "health_care",
+"confidence": 0.95,
+"at": [
+-119.263008,
+34.442682
+]
+},
+{
+"name": "Centers For Family Health",
+"category": "health_care",
+"confidence": 0.39,
+"at": [
+-119.263023,
+34.44295
+]
+},
+{
+"name": "Deborah Christine Murphy",
+"category": "health_care",
+"confidence": 0.95,
+"at": [
+-119.247773,
+34.446447
+]
+},
+{
+"name": "Deborah Maragopoulos - The Hormone Queen",
+"category": "health_care",
+"confidence": 0.32,
+"at": [
+-119.25816,
+34.448112
+]
+},
+{
+"name": "Dr. Rochelle L. Wilson, Do",
+"category": "health_care",
+"confidence": 0.65,
+"at": [
+-119.231561,
+34.44922
+]
+},
+{
+"name": "Dr. Young's Organic Garden Ojai",
+"category": "health_care",
+"confidence": 0.54,
+"at": [
+-119.26095,
+34.449339
+]
+},
+{
+"name": "European Center For Health",
+"category": "health_care",
+"confidence": 0.96,
+"at": [
+-119.235666,
+34.448174
+]
+},
+{
+"name": "Evolve Treatment Centers Location 4",
+"category": "health_care",
+"confidence": 0.95,
+"at": [
+-119.265044,
+34.443531
+]
+},
+{
+"name": "Fred M. Fauvre Md A Professional Corporation",
+"category": "health_care",
+"confidence": 0.5,
+"at": [
+-119.265206,
+34.44296
+]
+},
+{
+"name": "Jonathan S Wong",
+"category": "health_care",
+"confidence": 0.95,
+"at": [
+-119.265416,
+34.443665
+]
+},
+{
+"name": "Katherine Ann Bliss",
+"category": "health_care",
+"confidence": 0.95,
+"at": [
+-119.263531,
+34.441649
+]
+},
+{
+"name": "Ojai Valley Emergency Physicians Medical Group Inc.",
+"category": "health_care",
+"confidence": 0.95,
+"at": [
+-119.265206,
+34.44296
+]
+},
+{
+"name": "Raymond P Sims Md",
+"category": "health_care",
+"confidence": 0.95,
+"at": [
+-119.265206,
+34.44296
+]
+},
+{
+"name": "Sandra Blase",
+"category": "health_care",
+"confidence": 0.95,
+"at": [
+-119.237859,
+34.447158
+]
+},
+{
+"name": "Chaparral High School",
+"category": "high_school",
+"confidence": 0.97,
+"at": [
+-119.241794,
+34.448273
+]
+},
+{
+"name": "Nordhoff High School",
+"category": "high_school",
+"confidence": 1.0,
+"at": [
+-119.267268,
+34.44197
+]
+},
+{
+"name": "California State Route 150",
+"category": "historic_site",
+"confidence": 0.75,
+"at": [
+-119.279422,
+34.440612
+]
+},
+{
+"name": "Charles M. Pratt House",
+"category": "historic_site",
+"confidence": 0.92,
+"at": [
+-119.256071,
+34.462815
+]
+},
+{
+"name": "Creekside Village Ojai",
+"category": "historic_site",
+"confidence": 0.72,
+"at": [
+-119.261019,
+34.443132
+]
+},
+{
+"name": "Downtown Ojai",
+"category": "historic_site",
+"confidence": 0.99,
+"at": [
+-119.244242,
+34.447955
+]
+},
+{
+"name": "Matilija Reservoir",
+"category": "historic_site",
+"confidence": 0.54,
+"at": [
+-119.310372,
+34.487961
+]
+},
+{
+"name": "Ojai Gardens Apartment",
+"category": "historic_site",
+"confidence": 0.92,
+"at": [
+-119.2475,
+34.453125
+]
+},
+{
+"name": "Ojai Love Center",
+"category": "historic_site",
+"confidence": 0.76,
+"at": [
+-119.254058,
+34.437037
+]
+},
+{
+"name": "Ojai Miramonte Apartments",
+"category": "historic_site",
+"confidence": 0.92,
+"at": [
+-119.290707,
+34.420787
+]
+},
+{
+"name": "Roth Apartments",
+"category": "historic_site",
+"confidence": 0.92,
+"at": [
+-119.272572,
+34.448425
+]
+},
+{
+"name": "Shelf Road",
+"category": "historic_site",
+"confidence": 0.52,
+"at": [
+-119.235464,
+34.464893
+]
+},
+{
+"name": "The Ojai Valley",
+"category": "historic_site",
+"confidence": 0.78,
+"at": [
+-119.202049,
+34.439888
+]
+},
+{
+"name": "Whispering Oaks",
+"category": "historic_site",
+"confidence": 0.63,
+"at": [
+-119.235336,
+34.448156
+]
+},
+{
+"name": "A & J Home Remodeling LLC",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.236882,
+34.44921
+]
+},
+{
+"name": "Alpha Builders Group Inc.",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.247773,
+34.446447
+]
+},
+{
+"name": "Aqua-Flo Supply",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.221126,
+34.447855
+]
+},
+{
+"name": "Arcade Glass",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.239643,
+34.442489
+]
+},
+{
+"name": "Ashly Piano Crafts",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.239643,
+34.442489
+]
+},
+{
+"name": "Blue Heron Landscape",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.283094,
+34.456691
+]
+},
+{
+"name": "Brian Howe Construction",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.291932,
+34.422696
+]
+},
+{
+"name": "Brooks Chimney Sweeping",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.287189,
+34.432636
+]
+},
+{
+"name": "California Custom Painting",
+"category": "home_service",
+"confidence": 0.31,
+"at": [
+-119.250964,
+34.453091
+]
+},
+{
+"name": "California Natural Pools",
+"category": "home_service",
+"confidence": 0.88,
+"at": [
+-119.280158,
+34.449537
+]
+},
+{
+"name": "Call Oscar Tree Service",
+"category": "home_service",
+"confidence": 0.95,
+"at": [
+-119.278362,
+34.449208
+]
+},
+{
+"name": "Chad Carper Construction",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.201934,
+34.462781
+]
+},
+{
+"name": "Channel Islands Excavation",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.253561,
+34.432459
+]
+},
+{
+"name": "Copus Ralph H",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.292656,
+34.432772
+]
+},
+{
+"name": "Coverpro",
+"category": "home_service",
+"confidence": 0.55,
+"at": [
+-119.237859,
+34.447158
+]
+},
+{
+"name": "Craig A Young Construction Lic",
+"category": "home_service",
+"confidence": 0.65,
+"at": [
+-119.235621,
+34.448757
+]
+},
+{
+"name": "DJSquire Designs",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.249004,
+34.447604
+]
+},
+{
+"name": "DTL Excavating",
+"category": "home_service",
+"confidence": 0.91,
+"at": [
+-119.239824,
+34.445833
+]
+},
+{
+"name": "Dirty Filters",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.29394,
+34.421906
+]
+},
+{
+"name": "Ecologic Lifestyle Travel Guide",
+"category": "home_service",
+"confidence": 0.95,
+"at": [
+-119.247773,
+34.446447
+]
+},
+{
+"name": "Everready Termite And Pest Control",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.274861,
+34.447742
+]
+},
+{
+"name": "Fairweather Heating & Air Conditioning, Inc.",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.288835,
+34.42815
+]
+},
+{
+"name": "Forced Air",
+"category": "home_service",
+"confidence": 0.55,
+"at": [
+-119.239946,
+34.442914
+]
+},
+{
+"name": "Freed Designs Inc",
+"category": "home_service",
+"confidence": 0.65,
+"at": [
+-119.239946,
+34.442914
+]
+},
+{
+"name": "Garage Door Repair Ojai Ca",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.237175,
+34.446972
+]
+},
+{
+"name": "Garage Doors Of Ojai",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.286613,
+34.443241
+]
+},
+{
+"name": "Global Jet Painting Llc",
+"category": "home_service",
+"confidence": 0.95,
+"at": [
+-119.250728,
+34.446952
+]
+},
+{
+"name": "Haney Landscaping Pools & Spas",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.240456,
+34.459679
+]
+},
+{
+"name": "Hansen Well-do Service",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.238053,
+34.444787
+]
+},
+{
+"name": "J. M. Laszlo Heating and Cooling",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.244204,
+34.451283
+]
+},
+{
+"name": "JC Construction",
+"category": "home_service",
+"confidence": 0.27,
+"at": [
+-119.304769,
+34.493671
+]
+},
+{
+"name": "Janelle Interiors",
+"category": "home_service",
+"confidence": 0.45,
+"at": [
+-119.24453,
+34.448581
+]
+},
+{
+"name": "Janelle Interiors",
+"category": "home_service",
+"confidence": 0.97,
+"at": [
+-119.258225,
+34.442172
+]
+},
+{
+"name": "Journey Garage Door",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.244583,
+34.44883
+]
+},
+{
+"name": "Juan's Carpet Cleaning",
+"category": "home_service",
+"confidence": 0.51,
+"at": [
+-119.207568,
+34.448012
+]
+},
+{
+"name": "Kenton Arbor Service",
+"category": "home_service",
+"confidence": 0.41,
+"at": [
+-119.303322,
+34.41914
+]
+},
+{
+"name": "Ladybird Designs",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.288688,
+34.417736
+]
+},
+{
+"name": "Laura Crary Interior Design",
+"category": "home_service",
+"confidence": 0.55,
+"at": [
+-119.24561,
+34.449444
+]
+},
+{
+"name": "Limitless Construction Inc.",
+"category": "home_service",
+"confidence": 0.28,
+"at": [
+-119.27865,
+34.45542
+]
+},
+{
+"name": "Love Heals Designs Inc.",
+"category": "home_service",
+"confidence": 0.95,
+"at": [
+-119.243249,
+34.448699
+]
+},
+{
+"name": "Luthern Church Of The Holy",
+"category": "home_service",
+"confidence": 0.95,
+"at": [
+-119.263834,
+34.44273
+]
+},
+{
+"name": "Mahnken Cabinets",
+"category": "home_service",
+"confidence": 0.96,
+"at": [
+-119.292056,
+34.437921
+]
+},
+{
+"name": "Maraya Interior Design",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.235634,
+34.448655
+]
+},
+{
+"name": "Mckays Painting",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.285156,
+34.427115
+]
+},
+{
+"name": "Meiners Oaks Sash & Door",
+"category": "home_service",
+"confidence": 0.65,
+"at": [
+-119.276094,
+34.448162
+]
+},
+{
+"name": "New Creations Upholstery",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.293202,
+34.429119
+]
+},
+{
+"name": "Ojai Door & Window",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.236088,
+34.448567
+]
+},
+{
+"name": "Ojai Rain Gutters by Donald Davidson Construction",
+"category": "home_service",
+"confidence": 0.32,
+"at": [
+-119.284491,
+34.431341
+]
+},
+{
+"name": "Ojai Termite & Pest Control, Inc.",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.288418,
+34.429154
+]
+},
+{
+"name": "Ojai Valley Fire Safe Council",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.237859,
+34.447158
+]
+},
+{
+"name": "Peariso Tree Care",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.281558,
+34.458416
+]
+},
+{
+"name": "RMC Construction & Roofing",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.29552,
+34.439326
+]
+},
+{
+"name": "RTK Studios",
+"category": "home_service",
+"confidence": 0.95,
+"at": [
+-119.249282,
+34.448937
+]
+},
+{
+"name": "Rainforest Plant Co.",
+"category": "home_service",
+"confidence": 0.23,
+"at": [
+-119.239904,
+34.456528
+]
+},
+{
+"name": "Ramirez Landscaping Services",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.287113,
+34.441744
+]
+},
+{
+"name": "Rataway Fragrance",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.294248,
+34.421948
+]
+},
+{
+"name": "Rem Electric",
+"category": "home_service",
+"confidence": 0.65,
+"at": [
+-119.243249,
+34.448699
+]
+},
+{
+"name": "SERVPRO of Ojai/Montecito",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.24895,
+34.44775
+]
+},
+{
+"name": "Studio Landscape Corp",
+"category": "home_service",
+"confidence": 0.55,
+"at": [
+-119.236417,
+34.446226
+]
+},
+{
+"name": "Sunny Side Christian Pre School and Daycare",
+"category": "home_service",
+"confidence": 0.71,
+"at": [
+-119.26386,
+34.44276
+]
+},
+{
+"name": "Terramor",
+"category": "home_service",
+"confidence": 0.95,
+"at": [
+-119.250728,
+34.446952
+]
+},
+{
+"name": "Titus Painting",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.2399,
+34.442973
+]
+},
+{
+"name": "Top Gun Builders",
+"category": "home_service",
+"confidence": 0.37,
+"at": [
+-119.241972,
+34.460211
+]
+},
+{
+"name": "Topa's Custom Upholstery",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.239643,
+34.442489
+]
+},
+{
+"name": "Ventura County Tree Service",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.276922,
+34.448773
+]
+},
+{
+"name": "Ventura Roofing Co, INC",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.26315,
+34.458814
+]
+},
+{
+"name": "Wann's Plumbing",
+"category": "home_service",
+"confidence": 0.92,
+"at": [
+-119.284012,
+34.449371
+]
+},
+{
+"name": "Western Building Contractor",
+"category": "home_service",
+"confidence": 0.16,
+"at": [
+-119.246811,
+34.451457
+]
+},
+{
+"name": "Ojai Hilltop Retreat",
+"category": "hospital",
+"confidence": 0.72,
+"at": [
+-119.273825,
+34.452746
+]
+},
+{
+"name": "Ojai Hospital",
+"category": "hospital",
+"confidence": 0.52,
+"at": [
+-119.23931,
+34.45417
+]
+},
+{
+"name": "Ojai Valley Community Hospital",
+"category": "hospital",
+"confidence": 0.98,
+"at": [
+-119.264565,
+34.442964
+]
+},
+{
+"name": "Ojai view preserve",
+"category": "hot_springs",
+"confidence": 0.57,
+"at": [
+-119.243939,
+34.46593
+]
+},
+{
+"name": "Capri Hotel",
+"category": "hotel",
+"confidence": 0.99,
+"at": [
+-119.232478,
+34.448884
+]
+},
+{
+"name": "Casa De La Luna",
+"category": "hotel",
+"confidence": 0.47,
+"at": [
+-119.287087,
+34.440825
+]
+},
+{
+"name": "Chantico Inn and Suites Ojai",
+"category": "hotel",
+"confidence": 1.0,
+"at": [
+-119.251069,
+34.446621
+]
+},
+{
+"name": "Iguana Inns Of Ojai",
+"category": "hotel",
+"confidence": 0.75,
+"at": [
+-119.247773,
+34.446447
+]
+},
+{
+"name": "Ojai Secret Garden & Vacation Rentals",
+"category": "hotel",
+"confidence": 0.92,
+"at": [
+-119.181152,
+34.461965
+]
+},
+{
+"name": "Ojai Serenity Suites",
+"category": "hotel",
+"confidence": 0.92,
+"at": [
+-119.226442,
+34.448047
+]
+},
+{
+"name": "Ojai Valley Inn & Spa - Herb Garden Pool",
+"category": "hotel",
+"confidence": 0.66,
+"at": [
+-119.256019,
+34.436508
+]
+},
+{
+"name": "Peaceful, Beautiful Ojai Guest Cottage",
+"category": "hotel",
+"confidence": 0.52,
+"at": [
+-119.20974,
+34.442367
+]
+},
+{
+"name": "Oak Haven",
+"category": "housing_or_property_service",
+"confidence": 0.39,
+"at": [
+-119.272431,
+34.450082
+]
+},
+{
+"name": "Ojai Valley Estates",
+"category": "housing_or_property_service",
+"confidence": 0.92,
+"at": [
+-119.274389,
+34.450763
+]
+},
+{
+"name": "Ojai Villa Mobile Estates",
+"category": "housing_or_property_service",
+"confidence": 0.92,
+"at": [
+-119.290903,
+34.427942
+]
+},
+{
+"name": "Blue Iguana Inn",
+"category": "inn",
+"confidence": 0.99,
+"at": [
+-119.28074,
+34.431911
+]
+},
+{
+"name": "Casa Ojai",
+"category": "inn",
+"confidence": 1.0,
+"at": [
+-119.23007,
+34.449021
+]
+},
+{
+"name": "Emerald Iguana Inn",
+"category": "inn",
+"confidence": 0.99,
+"at": [
+-119.248465,
+34.453674
+]
+},
+{
+"name": "Hummingbird Inn",
+"category": "inn",
+"confidence": 0.99,
+"at": [
+-119.230739,
+34.449252
+]
+},
+{
+"name": "Ojai Rancho Inn",
+"category": "inn",
+"confidence": 0.99,
+"at": [
+-119.253064,
+34.4445
+]
+},
+{
+"name": "Su Nido Inn",
+"category": "inn",
+"confidence": 1.0,
+"at": [
+-119.243134,
+34.450181
+]
+},
+{
+"name": "Chabad of Ojai Valley",
+"category": "jewish_place_of_worship",
+"confidence": 0.92,
+"at": [
+-119.237302,
+34.451102
+]
+},
+{
+"name": "Jewish Community Center of Ojai",
+"category": "jewish_place_of_worship",
+"confidence": 0.92,
+"at": [
+-119.280651,
+34.449674
+]
+},
+{
+"name": "Lower Rose Lake",
+"category": "lake",
+"confidence": 0.6,
+"at": [
+-119.276538,
+34.448477
+]
+},
+{
+"name": "Rose Valley Lower Lake",
+"category": "lake",
+"confidence": 0.97,
+"at": [
+-119.247,
+34.4491
+]
+},
+{
+"name": "Upper Rose Lake",
+"category": "lake",
+"confidence": 0.54,
+"at": [
+-119.254233,
+34.449756
+]
+},
+{
+"name": "Coin house laundry",
+"category": "laundry_service",
+"confidence": 0.92,
+"at": [
+-119.263282,
+34.441645
+]
+},
+{
+"name": "Easy Clean",
+"category": "laundry_service",
+"confidence": 0.55,
+"at": [
+-119.288389,
+34.427578
+]
+},
+{
+"name": "Miramonte Quick Clean",
+"category": "laundry_service",
+"confidence": 0.92,
+"at": [
+-119.288744,
+34.427623
+]
+},
+{
+"name": "Royal Cleaners of Ojai",
+"category": "laundry_service",
+"confidence": 0.92,
+"at": [
+-119.263349,
+34.441459
+]
+},
+{
+"name": "Blatz Law Office",
+"category": "legal_service",
+"confidence": 0.92,
+"at": [
+-119.24561,
+34.449444
+]
+},
+{
+"name": "Cabinets Unlimited",
+"category": "legal_service",
+"confidence": 0.65,
+"at": [
+-119.237306,
+34.443391
+]
+},
+{
+"name": "Hadden & Gillivan",
+"category": "legal_service",
+"confidence": 0.92,
+"at": [
+-119.230104,
+34.45274
+]
+},
+{
+"name": "James Doyle",
+"category": "legal_service",
+"confidence": 0.95,
+"at": [
+-119.237737,
+34.446943
+]
+},
+{
+"name": "Venskus and Assoicates",
+"category": "legal_service",
+"confidence": 0.96,
+"at": [
+-119.25187,
+34.44478
+]
+},
+{
+"name": "Meiners Oaks Library",
+"category": "library",
+"confidence": 0.97,
+"at": [
+-119.277784,
+34.449275
+]
+},
+{
+"name": "Meiners Oaks Library",
+"category": "library",
+"confidence": 0.75,
+"at": [
+-119.276083,
+34.444423
+]
+},
+{
+"name": "Ojai Library",
+"category": "library",
+"confidence": 1.0,
+"at": [
+-119.246745,
+34.447444
+]
+},
+{
+"name": "Caravan Outpost",
+"category": "lodging",
+"confidence": 0.99,
+"at": [
+-119.237646,
+34.44556
+]
+},
+{
+"name": "Fitness, Inc.",
+"category": "lodging",
+"confidence": 0.95,
+"at": [
+-119.246529,
+34.448219
+]
+},
+{
+"name": "Shelter Ojai, Llc",
+"category": "lodging",
+"confidence": 0.95,
+"at": [
+-119.253096,
+34.444681
+]
+},
+{
+"name": "Love Heals Llc",
+"category": "manufacturer",
+"confidence": 0.92,
+"at": [
+-119.244551,
+34.448089
+]
+},
+{
+"name": "Oxnard Sheet Metal",
+"category": "manufacturer",
+"confidence": 0.26,
+"at": [
+-119.285177,
+34.41779
+]
+},
+{
+"name": "Susan Cummings",
+"category": "manufacturer",
+"confidence": 0.92,
+"at": [
+-119.242174,
+34.447732
+]
+},
+{
+"name": "Sustainable Packaging Industries",
+"category": "manufacturer",
+"confidence": 0.92,
+"at": [
+-119.249086,
+34.44765
+]
+},
+{
+"name": "Valent Customs",
+"category": "manufacturer",
+"confidence": 0.94,
+"at": [
+-119.237636,
+34.446796
+]
+},
+{
+"name": "2 Seas Agency",
+"category": "media_service",
+"confidence": 0.92,
+"at": [
+-119.261719,
+34.440834
+]
+},
+{
+"name": "Acid Dipped Music",
+"category": "media_service",
+"confidence": 0.92,
+"at": [
+-119.238662,
+34.44394
+]
+},
+{
+"name": "Better Company",
+"category": "media_service",
+"confidence": 0.36,
+"at": [
+-119.278514,
+34.450356
+]
+},
+{
+"name": "Bondfire Inc.",
+"category": "media_service",
+"confidence": 0.44,
+"at": [
+-119.259962,
+34.442041
+]
+},
+{
+"name": "Canada Studio",
+"category": "media_service",
+"confidence": 0.63,
+"at": [
+-119.24978,
+34.453259
+]
+},
+{
+"name": "Carbonite Sound",
+"category": "media_service",
+"confidence": 0.51,
+"at": [
+-119.237997,
+34.443376
+]
+},
+{
+"name": "Eros Creative and Sound",
+"category": "media_service",
+"confidence": 0.92,
+"at": [
+-119.233328,
+34.456085
+]
+},
+{
+"name": "FilmFix.com",
+"category": "media_service",
+"confidence": 0.92,
+"at": [
+-119.249004,
+34.447603
+]
+},
+{
+"name": "Gina Nemo Photography",
+"category": "media_service",
+"confidence": 0.38,
+"at": [
+-119.248877,
+34.447745
+]
+},
+{
+"name": "Mandala Studios",
+"category": "media_service",
+"confidence": 0.92,
+"at": [
+-119.276108,
+34.448126
+]
+},
+{
+"name": "Mangusta Productions",
+"category": "media_service",
+"confidence": 0.92,
+"at": [
+-119.244621,
+34.448582
+]
+},
+{
+"name": "Ojai Quarterly and Monthly",
+"category": "media_service",
+"confidence": 0.92,
+"at": [
+-119.243804,
+34.448643
+]
+},
+{
+"name": "Ojai Valley News",
+"category": "media_service",
+"confidence": 0.92,
+"at": [
+-119.246046,
+34.449508
+]
+},
+{
+"name": "Paul Hendershot Design",
+"category": "media_service",
+"confidence": 0.46,
+"at": [
+-119.296461,
+34.42988
+]
+},
+{
+"name": "Quartermile Films",
+"category": "media_service",
+"confidence": 0.92,
+"at": [
+-119.238079,
+34.443957
+]
+},
+{
+"name": "Ravenswork",
+"category": "media_service",
+"confidence": 0.65,
+"at": [
+-119.243249,
+34.448699
+]
+},
+{
+"name": "Sugarcube Press",
+"category": "media_service",
+"confidence": 0.77,
+"at": [
+-119.249383,
+34.452148
+]
+},
+{
+"name": "The Mastering Lab",
+"category": "media_service",
+"confidence": 0.92,
+"at": [
+-119.236871,
+34.446572
+]
+},
+{
+"name": "Ventura County Sun",
+"category": "media_service",
+"confidence": 0.3,
+"at": [
+-119.24561,
+34.44944
+]
+},
+{
+"name": "Veritas Theater",
+"category": "media_service",
+"confidence": 0.24,
+"at": [
+-119.248791,
+34.447699
+]
+},
+{
+"name": "V\u00e9rit\u00e9TV",
+"category": "media_service",
+"confidence": 0.08,
+"at": [
+-119.24666,
+34.44382
+]
+},
+{
+"name": "Lifeline",
+"category": "medical_service",
+"confidence": 0.75,
+"at": [
+-119.288389,
+34.427578
+]
+},
+{
+"name": "Ojai Cannabis",
+"category": "medical_service",
+"confidence": 0.92,
+"at": [
+-119.237846,
+34.442717
+]
+},
+{
+"name": "Ojai Greens",
+"category": "medical_service",
+"confidence": 0.99,
+"at": [
+-119.238386,
+34.442511
+]
+},
+{
+"name": "Besant Hill School of Happy Valley",
+"category": "middle_school",
+"confidence": 0.92,
+"at": [
+-119.180875,
+34.439813
+]
+},
+{
+"name": "Matilija Junior High School",
+"category": "middle_school",
+"confidence": 0.92,
+"at": [
+-119.254225,
+34.445778
+]
+},
+{
+"name": "Big Mountain",
+"category": "mountain",
+"confidence": 0.08,
+"at": [
+-119.262096,
+34.441746
+]
+},
+{
+"name": "Nordhoff Peak",
+"category": "mountain",
+"confidence": 0.97,
+"at": [
+-119.241861,
+34.49807
+]
+},
+{
+"name": "Reyes Peak",
+"category": "mountain",
+"confidence": 0.91,
+"at": [
+-119.292054,
+34.427264
+]
+},
+{
+"name": "Ojai Film Society",
+"category": "movie_theater",
+"confidence": 0.55,
+"at": [
+-119.243616,
+34.454321
+]
+},
+{
+"name": "Ojai Playhouse",
+"category": "movie_theater",
+"confidence": 1.0,
+"at": [
+-119.246137,
+34.44764
+]
+},
+{
+"name": "Beatrice Wood Center for the Arts",
+"category": "museum",
+"confidence": 0.91,
+"at": [
+-119.190448,
+34.437814
+]
+},
+{
+"name": "Gallery 525",
+"category": "museum",
+"confidence": 0.92,
+"at": [
+-119.280257,
+34.449269
+]
+},
+{
+"name": "Ojai Valley Museum",
+"category": "museum",
+"confidence": 0.96,
+"at": [
+-119.2479,
+34.447819
+]
+},
+{
+"name": "Bowlful of Blues",
+"category": "music_venue",
+"confidence": 0.92,
+"at": [
+-119.245494,
+34.446004
+]
+},
+{
+"name": "Chamber On The Mountain",
+"category": "music_venue",
+"confidence": 0.94,
+"at": [
+-119.186399,
+34.439294
+]
+},
+{
+"name": "Libbey Bowl",
+"category": "music_venue",
+"confidence": 0.96,
+"at": [
+-119.24544,
+34.445859
+]
+},
+{
+"name": "Matilija Auditorium",
+"category": "music_venue",
+"confidence": 0.95,
+"at": [
+-119.254567,
+34.446065
+]
+},
+{
+"name": "Ojai Storytelling Festival",
+"category": "music_venue",
+"confidence": 0.17,
+"at": [
+-119.243854,
+34.447033
+]
+},
+{
+"name": "Ojai Underground Exchange",
+"category": "music_venue",
+"confidence": 0.92,
+"at": [
+-119.238986,
+34.446087
+]
+},
+{
+"name": "Oyes",
+"category": "music_venue",
+"confidence": 0.92,
+"at": [
+-119.24329,
+34.449009
+]
+},
+{
+"name": "The Canyon at The Libbey Bowl",
+"category": "music_venue",
+"confidence": 0.98,
+"at": [
+-119.245457,
+34.445996
+]
+},
+{
+"name": "The Townies, Inc.",
+"category": "music_venue",
+"confidence": 0.57,
+"at": [
+-119.248909,
+34.447758
+]
+},
+{
+"name": "Topa Topa Folk Fest",
+"category": "music_venue",
+"confidence": 0.77,
+"at": [
+-119.245838,
+34.446576
+]
+},
+{
+"name": "Brian Lisus Violins",
+"category": "musical_instrument_and_pro_audio_store",
+"confidence": 0.92,
+"at": [
+-119.202792,
+34.464486
+]
+},
+{
+"name": "Cardinali Brothers Music",
+"category": "musical_instrument_and_pro_audio_store",
+"confidence": 0.92,
+"at": [
+-119.276996,
+34.448608
+]
+},
+{
+"name": "Musitek Corporation",
+"category": "musical_instrument_and_pro_audio_store",
+"confidence": 0.41,
+"at": [
+-119.24437,
+34.44639
+]
+},
+{
+"name": "Maricopa Trail head",
+"category": "nature_reserve",
+"confidence": 0.92,
+"at": [
+-119.269744,
+34.44462
+]
+},
+{
+"name": "From the Heart of Ojai",
+"category": "non_alcoholic_beverage_venue",
+"confidence": 0.97,
+"at": [
+-119.24525,
+34.44817
+]
+},
+{
+"name": "Noted.",
+"category": "office_supply_store",
+"confidence": 0.92,
+"at": [
+-119.242877,
+34.447799
+]
+},
+{
+"name": "Awaken To Joy",
+"category": "outpatient_care_facility",
+"confidence": 0.92,
+"at": [
+-119.238557,
+34.449111
+]
+},
+{
+"name": "Clinicas del Camino Real",
+"category": "outpatient_care_facility",
+"confidence": 0.92,
+"at": [
+-119.263049,
+34.442403
+]
+},
+{
+"name": "Healing In America",
+"category": "outpatient_care_facility",
+"confidence": 0.92,
+"at": [
+-119.247983,
+34.449297
+]
+},
+{
+"name": "Ojai CARES Cancer Awareness, Resources, Education & Support",
+"category": "outpatient_care_facility",
+"confidence": 0.92,
+"at": [
+-119.235577,
+34.4487
+]
+},
+{
+"name": "Ojai Multi-Specialty Clinic",
+"category": "outpatient_care_facility",
+"confidence": 0.92,
+"at": [
+-119.265564,
+34.443472
+]
+},
+{
+"name": "Robin A Bernhoft, Md - Bernhoft Center For Advanced Medicine",
+"category": "outpatient_care_facility",
+"confidence": 0.55,
+"at": [
+-119.263008,
+34.442682
+]
+},
+{
+"name": "Cluff Park",
+"category": "park",
+"confidence": 0.92,
+"at": [
+-119.25025,
+34.447254
+]
+},
+{
+"name": "Daly Ranch Park",
+"category": "park",
+"confidence": 0.94,
+"at": [
+-119.240048,
+34.460715
+]
+},
+{
+"name": "Dennison Park",
+"category": "park",
+"confidence": 0.92,
+"at": [
+-119.202488,
+34.435989
+]
+},
+{
+"name": "Libbey Park",
+"category": "park",
+"confidence": 0.98,
+"at": [
+-119.245316,
+34.447073
+]
+},
+{
+"name": "Matilija Canyon Ojai Ca",
+"category": "park",
+"confidence": 0.97,
+"at": [
+-119.288563,
+34.424995
+]
+},
+{
+"name": "Meiners Oaks Park",
+"category": "park",
+"confidence": 0.42,
+"at": [
+-119.27176,
+34.44768
+]
+},
+{
+"name": "Ojai Community Demonstration Garden",
+"category": "park",
+"confidence": 0.58,
+"at": [
+-119.247027,
+34.443562
+]
+},
+{
+"name": "Ojai Meadows Preserve",
+"category": "park",
+"confidence": 0.98,
+"at": [
+-119.269805,
+34.444569
+]
+},
+{
+"name": "Ojai Ranger District",
+"category": "park",
+"confidence": 0.74,
+"at": [
+-119.232053,
+34.449053
+]
+},
+{
+"name": "Ojai Valley Trail Bike Path",
+"category": "park",
+"confidence": 0.95,
+"at": [
+-119.294467,
+34.416527
+]
+},
+{
+"name": "Pratt Trail Loop",
+"category": "park",
+"confidence": 0.97,
+"at": [
+-119.2439,
+34.447823
+]
+},
+{
+"name": "Riverview Ranch",
+"category": "park",
+"confidence": 0.93,
+"at": [
+-119.29253,
+34.43786
+]
+},
+{
+"name": "Rotary Community Park",
+"category": "park",
+"confidence": 0.93,
+"at": [
+-119.231535,
+34.445681
+]
+},
+{
+"name": "Rotary Community Park",
+"category": "park",
+"confidence": 0.77,
+"at": [
+-119.259418,
+34.441884
+]
+},
+{
+"name": "Sarzotti Park",
+"category": "park",
+"confidence": 0.99,
+"at": [
+-119.236895,
+34.451969
+]
+},
+{
+"name": "Soule County Park",
+"category": "park",
+"confidence": 0.97,
+"at": [
+-119.22797,
+34.440981
+]
+},
+{
+"name": "Soule Dog Park",
+"category": "park",
+"confidence": 0.64,
+"at": [
+-119.22847,
+34.441498
+]
+},
+{
+"name": "Soule Park, Ojai CA",
+"category": "park",
+"confidence": 0.75,
+"at": [
+-119.228054,
+34.440576
+]
+},
+{
+"name": "Ventura River Preserve",
+"category": "park",
+"confidence": 0.62,
+"at": [
+-119.291732,
+34.442678
+]
+},
+{
+"name": "Kim Maxwell Studio",
+"category": "performing_arts_venue",
+"confidence": 0.92,
+"at": [
+-119.248856,
+34.447876
+]
+},
+{
+"name": "Ojai Youth Entertainers Studio",
+"category": "performing_arts_venue",
+"confidence": 0.92,
+"at": [
+-119.242587,
+34.448902
+]
+},
+{
+"name": "Senga Classic Stage Company",
+"category": "performing_arts_venue",
+"confidence": 0.92,
+"at": [
+-119.281966,
+34.4339
+]
+},
+{
+"name": "Earthtonics Botanical Skincare",
+"category": "personal_care_and_beauty_store",
+"confidence": 0.75,
+"at": [
+-119.239643,
+34.442489
+]
+},
+{
+"name": "Ojai Dirt Candy",
+"category": "personal_care_and_beauty_store",
+"confidence": 0.97,
+"at": [
+-119.247359,
+34.44871
+]
+},
+{
+"name": "A Secret Beauty",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.24561,
+34.449444
+]
+},
+{
+"name": "ARIA Nails By Patsy",
+"category": "personal_or_beauty_service",
+"confidence": 0.76,
+"at": [
+-119.244387,
+34.447752
+]
+},
+{
+"name": "Amber Colbern",
+"category": "personal_or_beauty_service",
+"confidence": 0.31,
+"at": [
+-119.24621,
+34.44628
+]
+},
+{
+"name": "Arcade Hair Co",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.244877,
+34.448704
+]
+},
+{
+"name": "B-Fabulous",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.277043,
+34.44859
+]
+},
+{
+"name": "Boh\u00e8me",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.246126,
+34.450467
+]
+},
+{
+"name": "Braid and Makeup Studio",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.239806,
+34.445932
+]
+},
+{
+"name": "Brenton's",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.24614,
+34.45046
+]
+},
+{
+"name": "Busy Babes Beauty",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.244128,
+34.448018
+]
+},
+{
+"name": "Contempo Hair Design",
+"category": "personal_or_beauty_service",
+"confidence": 0.55,
+"at": [
+-119.246217,
+34.446286
+]
+},
+{
+"name": "Cuts & Curls",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.242865,
+34.44769
+]
+},
+{
+"name": "Cuts & More",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.288981,
+34.422943
+]
+},
+{
+"name": "Dee Bee Styles",
+"category": "personal_or_beauty_service",
+"confidence": 0.42,
+"at": [
+-119.27213,
+34.44687
+]
+},
+{
+"name": "Delilah",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.243476,
+34.448777
+]
+},
+{
+"name": "Earthtonics",
+"category": "personal_or_beauty_service",
+"confidence": 0.55,
+"at": [
+-119.267157,
+34.444751
+]
+},
+{
+"name": "Enhanced Day Spa & Boutique",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.279831,
+34.44922
+]
+},
+{
+"name": "Facials of Essence",
+"category": "personal_or_beauty_service",
+"confidence": 0.51,
+"at": [
+-119.241288,
+34.445627
+]
+},
+{
+"name": "Glo West Beauty",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.244465,
+34.447982
+]
+},
+{
+"name": "Habitattoo",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.199177,
+34.472442
+]
+},
+{
+"name": "Hair-Em Beauty Salon",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.271894,
+34.446834
+]
+},
+{
+"name": "Halos Salon & Beauty Retail",
+"category": "personal_or_beauty_service",
+"confidence": 0.99,
+"at": [
+-119.262221,
+34.441023
+]
+},
+{
+"name": "Kristy's Nails",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.24281,
+34.44763
+]
+},
+{
+"name": "Little Koyote Salon",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.276064,
+34.448536
+]
+},
+{
+"name": "Mary Nelson Skincare & Spa At The Lavender Inn",
+"category": "personal_or_beauty_service",
+"confidence": 0.55,
+"at": [
+-119.24505,
+34.448999
+]
+},
+{
+"name": "Medicine Mama",
+"category": "personal_or_beauty_service",
+"confidence": 0.08,
+"at": [
+-119.245262,
+34.442592
+]
+},
+{
+"name": "Naomi Wiatt - Hairstylist",
+"category": "personal_or_beauty_service",
+"confidence": 0.39,
+"at": [
+-119.245926,
+34.449371
+]
+},
+{
+"name": "Ojai Hair Co",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.238056,
+34.448196
+]
+},
+{
+"name": "Ojai Skin Revision",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.249202,
+34.447622
+]
+},
+{
+"name": "RISE",
+"category": "personal_or_beauty_service",
+"confidence": 0.99,
+"at": [
+-119.235807,
+34.448315
+]
+},
+{
+"name": "Rockafella Barber Shop and Shave Parlor",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.264726,
+34.441903
+]
+},
+{
+"name": "Sanctuary",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.24412,
+34.448367
+]
+},
+{
+"name": "Soule Salon",
+"category": "personal_or_beauty_service",
+"confidence": 0.95,
+"at": [
+-119.235621,
+34.448757
+]
+},
+{
+"name": "Styled West",
+"category": "personal_or_beauty_service",
+"confidence": 0.99,
+"at": [
+-119.260339,
+34.44237
+]
+},
+{
+"name": "Tara's Nails & Spa",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.28886,
+34.423085
+]
+},
+{
+"name": "Time For A Hair Cut",
+"category": "personal_or_beauty_service",
+"confidence": 0.92,
+"at": [
+-119.276111,
+34.448563
+]
+},
+{
+"name": "Fred Leivo",
+"category": "pharmacy_and_drug_store",
+"confidence": 0.41,
+"at": [
+-119.24577,
+34.44793
+]
+},
+{
+"name": "Good Neighbor Pharmacy",
+"category": "pharmacy_and_drug_store",
+"confidence": 0.8,
+"at": [
+-119.26479,
+34.44245
+]
+},
+{
+"name": "Medical Arts Pharmacy",
+"category": "pharmacy_and_drug_store",
+"confidence": 0.92,
+"at": [
+-119.26522,
+34.443008
+]
+},
+{
+"name": "Medicine Shoppe",
+"category": "pharmacy_and_drug_store",
+"confidence": 0.99,
+"at": [
+-119.235702,
+34.448572
+]
+},
+{
+"name": "Ojai Rexall Drugs",
+"category": "pharmacy_and_drug_store",
+"confidence": 0.92,
+"at": [
+-119.262238,
+34.441007
+]
+},
+{
+"name": "Ojai Village Pharmacy",
+"category": "pharmacy_and_drug_store",
+"confidence": 0.99,
+"at": [
+-119.245772,
+34.448053
+]
+},
+{
+"name": "Ojai Village Pharmacy",
+"category": "pharmacy_and_drug_store",
+"confidence": 0.92,
+"at": [
+-119.288933,
+34.423093
+]
+},
+{
+"name": "Anna Kotula - Financial Advisor, Ameriprise Financial Services, LLC",
+"category": "physical_medicine_and_rehabilitation",
+"confidence": 0.92,
+"at": [
+-119.250791,
+34.446199
+]
+},
+{
+"name": "Balance Health Center",
+"category": "physical_medicine_and_rehabilitation",
+"confidence": 0.92,
+"at": [
+-119.249332,
+34.447915
+]
+},
+{
+"name": "Evolve Treatment Centers Ojai",
+"category": "physical_medicine_and_rehabilitation",
+"confidence": 0.99,
+"at": [
+-119.253335,
+34.451911
+]
+},
+{
+"name": "Pacific Therapy Services",
+"category": "physical_medicine_and_rehabilitation",
+"confidence": 0.31,
+"at": [
+-119.288808,
+34.423023
+]
+},
+{
+"name": "Swanner Physical Therapy",
+"category": "physical_medicine_and_rehabilitation",
+"confidence": 0.95,
+"at": [
+-119.263008,
+34.442682
+]
+},
+{
+"name": "Besant Hill School",
+"category": "place_of_learning",
+"confidence": 1.0,
+"at": [
+-119.186354,
+34.439193
+]
+},
+{
+"name": "Child Development Resources of Ventura County",
+"category": "place_of_learning",
+"confidence": 0.78,
+"at": [
+-119.23441,
+34.455114
+]
+},
+{
+"name": "Esoteric School Of Theosophy",
+"category": "place_of_learning",
+"confidence": 0.92,
+"at": [
+-119.264741,
+34.435055
+]
+},
+{
+"name": "Laurel Springs School",
+"category": "place_of_learning",
+"confidence": 1.0,
+"at": [
+-119.249592,
+34.447612
+]
+},
+{
+"name": "Learning Springs",
+"category": "place_of_learning",
+"confidence": 0.65,
+"at": [
+-119.243242,
+34.448551
+]
+},
+{
+"name": "Monica Ros School",
+"category": "place_of_learning",
+"confidence": 0.92,
+"at": [
+-119.197746,
+34.456502
+]
+},
+{
+"name": "Montessori School of Ojai",
+"category": "place_of_learning",
+"confidence": 0.92,
+"at": [
+-119.30838,
+34.424144
+]
+},
+{
+"name": "Mother of Divine Grace School",
+"category": "place_of_learning",
+"confidence": 0.92,
+"at": [
+-119.238474,
+34.443707
+]
+},
+{
+"name": "Oak Grove School",
+"category": "place_of_learning",
+"confidence": 0.92,
+"at": [
+-119.281146,
+34.441659
+]
+},
+{
+"name": "OceanPointe Dental Assisting Academy of Ojai",
+"category": "place_of_learning",
+"confidence": 0.92,
+"at": [
+-119.244224,
+34.449271
+]
+},
+{
+"name": "Ojai Valley School",
+"category": "place_of_learning",
+"confidence": 0.99,
+"at": [
+-119.257471,
+34.444164
+]
+},
+{
+"name": "Rock Tree Sky Learning Center",
+"category": "place_of_learning",
+"confidence": 0.45,
+"at": [
+-119.205331,
+34.454989
+]
+},
+{
+"name": "The Thacher School",
+"category": "place_of_learning",
+"confidence": 0.99,
+"at": [
+-119.183423,
+34.462739
+]
+},
+{
+"name": "Valley Oak Charter School",
+"category": "place_of_learning",
+"confidence": 0.92,
+"at": [
+-119.282718,
+34.437981
+]
+},
+{
+"name": "Villanova Preparatory School",
+"category": "place_of_learning",
+"confidence": 1.0,
+"at": [
+-119.264255,
+34.429632
+]
+},
+{
+"name": "Ojai Patrol Station",
+"category": "police_station",
+"confidence": 1.0,
+"at": [
+-119.246511,
+34.444589
+]
+},
+{
+"name": "Noah's Ark Preschool",
+"category": "preschool",
+"confidence": 0.92,
+"at": [
+-119.26674,
+34.443645
+]
+},
+{
+"name": "Ojai Community Preschool",
+"category": "preschool",
+"confidence": 0.58,
+"at": [
+-119.230559,
+34.453865
+]
+},
+{
+"name": "Community Memorial Health Center \u2013 Maricopa Highway",
+"category": "primary_care_or_general_clinic",
+"confidence": 0.65,
+"at": [
+-119.231561,
+34.44922
+]
+},
+{
+"name": "Life Choices",
+"category": "primary_care_or_general_clinic",
+"confidence": 0.95,
+"at": [
+-119.265206,
+34.44296
+]
+},
+{
+"name": "Ojai Valley Family Medicine Group",
+"category": "primary_care_or_general_clinic",
+"confidence": 0.92,
+"at": [
+-119.266158,
+34.443493
+]
+},
+{
+"name": "Opti-gone Associates Inc",
+"category": "primary_care_or_general_clinic",
+"confidence": 0.65,
+"at": [
+-119.250728,
+34.446952
+]
+},
+{
+"name": "Valley Oak Family Practice Medical Group",
+"category": "primary_care_or_general_clinic",
+"confidence": 0.35,
+"at": [
+-119.231561,
+34.44922
+]
+},
+{
+"name": "Valley Oak Family Practice Medical Group",
+"category": "primary_care_or_general_clinic",
+"confidence": 0.99,
+"at": [
+-119.263046,
+34.442999
+]
+},
+{
+"name": "Laura Stitches",
+"category": "printing_service",
+"confidence": 0.74,
+"at": [
+-119.23717,
+34.44698
+]
+},
+{
+"name": "Ojai Valley Sign",
+"category": "printing_service",
+"confidence": 0.92,
+"at": [
+-119.202069,
+34.439876
+]
+},
+{
+"name": "Casa Elar",
+"category": "private_lodging",
+"confidence": 1.0,
+"at": [
+-119.25502,
+34.43799
+]
+},
+{
+"name": "Lavender Creek Ranch",
+"category": "private_lodging",
+"confidence": 0.51,
+"at": [
+-119.161508,
+34.42878
+]
+},
+{
+"name": "A Secret Beauty",
+"category": "professional_service",
+"confidence": 0.95,
+"at": [
+-119.235621,
+34.448757
+]
+},
+{
+"name": "AMC Photography",
+"category": "professional_service",
+"confidence": 0.51,
+"at": [
+-119.25999,
+34.442129
+]
+},
+{
+"name": "BizText247.com Marketing",
+"category": "professional_service",
+"confidence": 0.92,
+"at": [
+-119.245837,
+34.447535
+]
+},
+{
+"name": "Brandi Crockett Photographer",
+"category": "professional_service",
+"confidence": 0.09,
+"at": [
+-119.247616,
+34.451732
+]
+},
+{
+"name": "Bridgehead Advisory",
+"category": "professional_service",
+"confidence": 0.19,
+"at": [
+-119.28802,
+34.43761
+]
+},
+{
+"name": "Californiagardens.com",
+"category": "professional_service",
+"confidence": 0.18,
+"at": [
+-119.306065,
+34.422334
+]
+},
+{
+"name": "Channel Islands Leasing",
+"category": "professional_service",
+"confidence": 0.92,
+"at": [
+-119.262741,
+34.439384
+]
+},
+{
+"name": "City Wide Jantorial",
+"category": "professional_service",
+"confidence": 0.92,
+"at": [
+-119.274607,
+34.450873
+]
+},
+{
+"name": "Firecareers",
+"category": "professional_service",
+"confidence": 0.22,
+"at": [
+-119.262504,
+34.441781
+]
+},
+{
+"name": "Fortis Quay",
+"category": "professional_service",
+"confidence": 0.28,
+"at": [
+-119.251823,
+34.445959
+]
+},
+{
+"name": "Harmon Canyon Ranches",
+"category": "professional_service",
+"confidence": 0.55,
+"at": [
+-119.28986,
+34.43869
+]
+},
+{
+"name": "Influence Ecology",
+"category": "professional_service",
+"confidence": 0.92,
+"at": [
+-119.238213,
+34.444311
+]
+},
+{
+"name": "K.Ruth Consulting",
+"category": "professional_service",
+"confidence": 0.92,
+"at": [
+-119.244037,
+34.448931
+]
+},
+{
+"name": "Krishnamurti Foundation of America",
+"category": "professional_service",
+"confidence": 0.42,
+"at": [
+-119.27742,
+34.44325
+]
+},
+{
+"name": "LPL Enterprises",
+"category": "professional_service",
+"confidence": 0.92,
+"at": [
+-119.249118,
+34.447639
+]
+},
+{
+"name": "Mountain Institute For Kung Fu",
+"category": "professional_service",
+"confidence": 0.95,
+"at": [
+-119.236147,
+34.451835
+]
+},
+{
+"name": "Niche Design Consulting",
+"category": "professional_service",
+"confidence": 0.25,
+"at": [
+-119.274398,
+34.447179
+]
+},
+{
+"name": "No More Nylons",
+"category": "professional_service",
+"confidence": 0.95,
+"at": [
+-119.243249,
+34.448699
+]
+},
+{
+"name": "Ojai Photographic Imagery",
+"category": "professional_service",
+"confidence": 0.92,
+"at": [
+-119.278525,
+34.430918
+]
+},
+{
+"name": "Paradise Artists",
+"category": "professional_service",
+"confidence": 0.92,
+"at": [
+-119.246605,
+34.448977
+]
+},
+{
+"name": "SOTA Enterprises Inc.",
+"category": "professional_service",
+"confidence": 0.5,
+"at": [
+-119.287992,
+34.441442
+]
+},
+{
+"name": "Scott-Marlow Agency",
+"category": "professional_service",
+"confidence": 0.92,
+"at": [
+-119.245774,
+34.449408
+]
+},
+{
+"name": "Spark Insights",
+"category": "professional_service",
+"confidence": 0.75,
+"at": [
+-119.239643,
+34.442489
+]
+},
+{
+"name": "The Promise Doctrine",
+"category": "professional_service",
+"confidence": 0.95,
+"at": [
+-119.243249,
+34.448699
+]
+},
+{
+"name": "Tribal Core",
+"category": "professional_service",
+"confidence": 0.77,
+"at": [
+-119.262149,
+34.440992
+]
+},
+{
+"name": "Ventura Camera Rentals",
+"category": "professional_service",
+"confidence": 0.77,
+"at": [
+-119.237071,
+34.443888
+]
+},
+{
+"name": "Whitney Hartmann Photography",
+"category": "professional_service",
+"confidence": 0.92,
+"at": [
+-119.246151,
+34.449032
+]
+},
+{
+"name": "Wrkprty @ Desk Yogi",
+"category": "professional_service",
+"confidence": 0.92,
+"at": [
+-119.23911,
+34.446083
+]
+},
+{
+"name": "Acorn Home Partners",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.252079,
+34.446104
+]
+},
+{
+"name": "Ainsley Hughes Real Estate",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.248401,
+34.448288
+]
+},
+{
+"name": "Ammar Bakhus",
+"category": "real_estate_service",
+"confidence": 0.55,
+"at": [
+-119.25364,
+34.444268
+]
+},
+{
+"name": "Andrew Stasse Company",
+"category": "real_estate_service",
+"confidence": 0.95,
+"at": [
+-119.2441,
+34.448338
+]
+},
+{
+"name": "CENTURY 21 Troop",
+"category": "real_estate_service",
+"confidence": 0.85,
+"at": [
+-119.249,
+34.4478
+]
+},
+{
+"name": "Cali Tree Service",
+"category": "real_estate_service",
+"confidence": 0.77,
+"at": [
+-119.261387,
+34.44153
+]
+},
+{
+"name": "Century 21 Ojai Valley",
+"category": "real_estate_service",
+"confidence": 0.95,
+"at": [
+-119.241352,
+34.447801
+]
+},
+{
+"name": "Claire Haskell Realtor - Liv Sothebys Realty",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.253711,
+34.444345
+]
+},
+{
+"name": "Clark & Clark Real Estate",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.2485,
+34.448314
+]
+},
+{
+"name": "Dale Hanson",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.244332,
+34.448692
+]
+},
+{
+"name": "Dammeyer & Associates",
+"category": "real_estate_service",
+"confidence": 0.34,
+"at": [
+-119.2485,
+34.448314
+]
+},
+{
+"name": "Dammeyer & Associates",
+"category": "real_estate_service",
+"confidence": 0.75,
+"at": [
+-119.289036,
+34.422946
+]
+},
+{
+"name": "Don and Cheree Edwards",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.288655,
+34.430138
+]
+},
+{
+"name": "Donna Sallen",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.288643,
+34.430127
+]
+},
+{
+"name": "El Sereno Estates",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.294784,
+34.434111
+]
+},
+{
+"name": "Erik Wilde RE",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.253711,
+34.444341
+]
+},
+{
+"name": "Full Circle Farm",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.167665,
+34.437643
+]
+},
+{
+"name": "Guernsey Real Estate",
+"category": "real_estate_service",
+"confidence": 0.39,
+"at": [
+-119.253713,
+34.44435
+]
+},
+{
+"name": "Heather Erickson Real Estate",
+"category": "real_estate_service",
+"confidence": 0.37,
+"at": [
+-119.248451,
+34.448223
+]
+},
+{
+"name": "Jack La Plante Realty",
+"category": "real_estate_service",
+"confidence": 0.42,
+"at": [
+-119.253713,
+34.444329
+]
+},
+{
+"name": "Jacob Real Estate",
+"category": "real_estate_service",
+"confidence": 0.27,
+"at": [
+-119.248455,
+34.448227
+]
+},
+{
+"name": "Jen Burkett Ojai Realtor",
+"category": "real_estate_service",
+"confidence": 0.3,
+"at": [
+-119.253752,
+34.444431
+]
+},
+{
+"name": "Jerry & Char Michaels",
+"category": "real_estate_service",
+"confidence": 0.95,
+"at": [
+-119.248621,
+34.448246
+]
+},
+{
+"name": "Jon Cotham Construction",
+"category": "real_estate_service",
+"confidence": 0.65,
+"at": [
+-119.239946,
+34.442914
+]
+},
+{
+"name": "Jon Riddell Real Estate",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.253717,
+34.444348
+]
+},
+{
+"name": "Keller Williams- Ojai",
+"category": "real_estate_service",
+"confidence": 0.99,
+"at": [
+-119.248407,
+34.447825
+]
+},
+{
+"name": "Kemper Realty",
+"category": "real_estate_service",
+"confidence": 0.34,
+"at": [
+-119.253709,
+34.44429
+]
+},
+{
+"name": "KiKi Cannon, Ojai Realtor at Liv Sotheby's",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.25371,
+34.44435
+]
+},
+{
+"name": "Kirk Ellison Realtor LIV Sotheby's International Realty - Ojai",
+"category": "real_estate_service",
+"confidence": 0.3,
+"at": [
+-119.253639,
+34.444271
+]
+},
+{
+"name": "Kristen Currier- Ojai Realtor At Liv Sotheby's International Realty",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.25364,
+34.444268
+]
+},
+{
+"name": "LIVinOjaiValley",
+"category": "real_estate_service",
+"confidence": 0.39,
+"at": [
+-119.25364,
+34.44427
+]
+},
+{
+"name": "Liv Sotheby's International Realty",
+"category": "real_estate_service",
+"confidence": 1.0,
+"at": [
+-119.25364,
+34.444268
+]
+},
+{
+"name": "Lynn Goodman-Real Estate Agent",
+"category": "real_estate_service",
+"confidence": 0.45,
+"at": [
+-119.23857,
+34.44848
+]
+},
+{
+"name": "Maharry And Cadenasso",
+"category": "real_estate_service",
+"confidence": 0.95,
+"at": [
+-119.248621,
+34.448246
+]
+},
+{
+"name": "Martha Fellows",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.249132,
+34.447636
+]
+},
+{
+"name": "Michaels & McClung Group / Keller Williams Realty",
+"category": "real_estate_service",
+"confidence": 0.85,
+"at": [
+-119.248619,
+34.448246
+]
+},
+{
+"name": "Mr. Raj Properties",
+"category": "real_estate_service",
+"confidence": 0.05,
+"at": [
+-119.179688,
+34.488448
+]
+},
+{
+"name": "Nathan Larramendy Gallery",
+"category": "real_estate_service",
+"confidence": 0.95,
+"at": [
+-119.246096,
+34.447254
+]
+},
+{
+"name": "NextHome Pacific Coast Realty",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.243876,
+34.448798
+]
+},
+{
+"name": "OHI HOME, LLC DBA Ojai Home",
+"category": "real_estate_service",
+"confidence": 0.76,
+"at": [
+-119.243223,
+34.446198
+]
+},
+{
+"name": "Ojai Luxury Real Estate",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.253744,
+34.444438
+]
+},
+{
+"name": "Ojai Property Group Inc.",
+"category": "real_estate_service",
+"confidence": 0.83,
+"at": [
+-119.263531,
+34.441649
+]
+},
+{
+"name": "Ojai Real Estate Search",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.248404,
+34.448305
+]
+},
+{
+"name": "Ojai Valley Board of Realtors",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.245978,
+34.449409
+]
+},
+{
+"name": "Ojai Valley Real Estate",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.24453,
+34.448581
+]
+},
+{
+"name": "Ojai Valley Real Estate",
+"category": "real_estate_service",
+"confidence": 0.54,
+"at": [
+-119.25364,
+34.44427
+]
+},
+{
+"name": "Parks Plus",
+"category": "real_estate_service",
+"confidence": 0.65,
+"at": [
+-119.243316,
+34.449729
+]
+},
+{
+"name": "Patty Waltcher, Ojai Realtor",
+"category": "real_estate_service",
+"confidence": 0.41,
+"at": [
+-119.23857,
+34.44848
+]
+},
+{
+"name": "Rancho Fino",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.177195,
+34.431934
+]
+},
+{
+"name": "Rancho Matilija",
+"category": "real_estate_service",
+"confidence": 0.69,
+"at": [
+-119.302386,
+34.439672
+]
+},
+{
+"name": "Re/Max",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.288628,
+34.430185
+]
+},
+{
+"name": "Realtor Brittney",
+"category": "real_estate_service",
+"confidence": 0.4,
+"at": [
+-119.24046,
+34.44846
+]
+},
+{
+"name": "Realtor Cathy Titus",
+"category": "real_estate_service",
+"confidence": 0.28,
+"at": [
+-119.25364,
+34.44427
+]
+},
+{
+"name": "RealtorRobby",
+"category": "real_estate_service",
+"confidence": 0.27,
+"at": [
+-119.253728,
+34.444317
+]
+},
+{
+"name": "Robin Williams Realtor",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.253717,
+34.44435
+]
+},
+{
+"name": "Rosario Ross Falvo",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.248406,
+34.448282
+]
+},
+{
+"name": "Ross Investors, Inc",
+"category": "real_estate_service",
+"confidence": 0.95,
+"at": [
+-119.24567,
+34.447333
+]
+},
+{
+"name": "Roy Grillo Realtor With Keller Williams",
+"category": "real_estate_service",
+"confidence": 0.55,
+"at": [
+-119.248621,
+34.448246
+]
+},
+{
+"name": "Selling with Kelly Thomas",
+"category": "real_estate_service",
+"confidence": 0.43,
+"at": [
+-119.25372,
+34.444318
+]
+},
+{
+"name": "Sharon Maharry & Company",
+"category": "real_estate_service",
+"confidence": 0.75,
+"at": [
+-119.238571,
+34.448482
+]
+},
+{
+"name": "Stephen Adelman - Beautiful Ojai Homes",
+"category": "real_estate_service",
+"confidence": 0.65,
+"at": [
+-119.25364,
+34.44427
+]
+},
+{
+"name": "Tami Winbury - Keller Williams Realty",
+"category": "real_estate_service",
+"confidence": 0.44,
+"at": [
+-119.24863,
+34.44825
+]
+},
+{
+"name": "Teresa Rooney",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.253751,
+34.444439
+]
+},
+{
+"name": "The Davis Group",
+"category": "real_estate_service",
+"confidence": 0.69,
+"at": [
+-119.253748,
+34.444429
+]
+},
+{
+"name": "Tonya Peralta @ Hey-Ojai at the Peralta | Michaels | Ferro | Wynn Real Estate Group",
+"category": "real_estate_service",
+"confidence": 0.95,
+"at": [
+-119.240544,
+34.448314
+]
+},
+{
+"name": "Tyler Brousseau, LIV Sotheby's Ojai",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.253717,
+34.444363
+]
+},
+{
+"name": "Victoria Adam - Ojai Realtor at LIV Sotheby's International Realty",
+"category": "real_estate_service",
+"confidence": 0.38,
+"at": [
+-119.253719,
+34.444342
+]
+},
+{
+"name": "Vivienne Moody Real Estate",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.253766,
+34.444428
+]
+},
+{
+"name": "Williamson VanKeulen Real Estate Family",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.253768,
+34.444422
+]
+},
+{
+"name": "Zimm Real Estate",
+"category": "real_estate_service",
+"confidence": 0.92,
+"at": [
+-119.28227,
+34.442782
+]
+},
+{
+"name": "Cozy Dell Trail",
+"category": "recreational_trail_or_path",
+"confidence": 0.97,
+"at": [
+-119.281306,
+34.475595
+]
+},
+{
+"name": "Fox Canyon Trail",
+"category": "recreational_trail_or_path",
+"confidence": 0.93,
+"at": [
+-119.244308,
+34.467626
+]
+},
+{
+"name": "Gridley Trailhead",
+"category": "recreational_trail_or_path",
+"confidence": 0.97,
+"at": [
+-119.223858,
+34.469061
+]
+},
+{
+"name": "Howard Creek Trail",
+"category": "recreational_trail_or_path",
+"confidence": 0.61,
+"at": [
+-119.279015,
+34.432938
+]
+},
+{
+"name": "Ojai Bike Trail",
+"category": "recreational_trail_or_path",
+"confidence": 0.95,
+"at": [
+-119.261256,
+34.441162
+]
+},
+{
+"name": "Ojai Bike Trail",
+"category": "recreational_trail_or_path",
+"confidence": 0.53,
+"at": [
+-119.291181,
+34.426453
+]
+},
+{
+"name": "Pratt Trailhead",
+"category": "recreational_trail_or_path",
+"confidence": 0.89,
+"at": [
+-119.249922,
+34.46036
+]
+},
+{
+"name": "Rice Canyon Trails",
+"category": "recreational_trail_or_path",
+"confidence": 0.65,
+"at": [
+-119.29619,
+34.458896
+]
+},
+{
+"name": "River Bottom Trailhead",
+"category": "recreational_trail_or_path",
+"confidence": 0.51,
+"at": [
+-119.288022,
+34.449
+]
+},
+{
+"name": "Rose Valley Falls Trail",
+"category": "recreational_trail_or_path",
+"confidence": 0.97,
+"at": [
+-119.29582,
+34.42099
+]
+},
+{
+"name": "Ventura River Preserve",
+"category": "recreational_trail_or_path",
+"confidence": 0.97,
+"at": [
+-119.298424,
+34.427087
+]
+},
+{
+"name": "Center for Spiritual Living Ojai",
+"category": "religious_organization",
+"confidence": 0.92,
+"at": [
+-119.242486,
+34.447842
+]
+},
+{
+"name": "Krotona Institute of Theosophy",
+"category": "religious_organization",
+"confidence": 1.0,
+"at": [
+-119.270813,
+34.437338
+]
+},
+{
+"name": "Redbox",
+"category": "rental_service",
+"confidence": 0.92,
+"at": [
+-119.262346,
+34.441295
+]
+},
+{
+"name": "U-Haul Neighborhood Dealer",
+"category": "rental_service",
+"confidence": 0.92,
+"at": [
+-119.235909,
+34.446492
+]
+},
+{
+"name": "Pregnancy Hotline",
+"category": "reproductive_perinatal_and_womens_care",
+"confidence": 0.75,
+"at": [
+-119.265206,
+34.44296
+]
+},
+{
+"name": "Ojai Valley",
+"category": "resort",
+"confidence": 0.95,
+"at": [
+-119.242884,
+34.448056
+]
+},
+{
+"name": "Ojai Valley Inn",
+"category": "resort",
+"confidence": 1.0,
+"at": [
+-119.254728,
+34.437515
+]
+},
+{
+"name": "Agave Maria's Restaurant & Cantina",
+"category": "restaurant",
+"confidence": 0.99,
+"at": [
+-119.243283,
+34.447506
+]
+},
+{
+"name": "Air Pizza",
+"category": "restaurant",
+"confidence": 0.96,
+"at": [
+-119.288481,
+34.42541
+]
+},
+{
+"name": "Aj Chinese Express",
+"category": "restaurant",
+"confidence": 0.99,
+"at": [
+-119.288428,
+34.428326
+]
+},
+{
+"name": "Asian Fusion Garden",
+"category": "restaurant",
+"confidence": 0.95,
+"at": [
+-119.237467,
+34.448682
+]
+},
+{
+"name": "Auberge At Ojai",
+"category": "restaurant",
+"confidence": 0.92,
+"at": [
+-119.250037,
+34.447642
+]
+},
+{
+"name": "Boccali's Pizza & Pasta",
+"category": "restaurant",
+"confidence": 0.97,
+"at": [
+-119.204246,
+34.446193
+]
+},
+{
+"name": "Ca' Marco Ristorante Italiano",
+"category": "restaurant",
+"confidence": 0.97,
+"at": [
+-119.234306,
+34.448627
+]
+},
+{
+"name": "Caf\u00e9 Verd\u00e9 At Ojai Valley Inn & Spa",
+"category": "restaurant",
+"confidence": 0.77,
+"at": [
+-119.259015,
+34.439174
+]
+},
+{
+"name": "Casa de Lago",
+"category": "restaurant",
+"confidence": 0.92,
+"at": [
+-119.238882,
+34.448015
+]
+},
+{
+"name": "Cold Spring Tavern 10k",
+"category": "restaurant",
+"confidence": 0.52,
+"at": [
+-119.244138,
+34.447844
+]
+},
+{
+"name": "Condor Bar",
+"category": "restaurant",
+"confidence": 0.97,
+"at": [
+-119.24653,
+34.448219
+]
+},
+{
+"name": "Domino's",
+"category": "restaurant",
+"confidence": 0.98,
+"at": [
+-119.289089,
+34.422747
+]
+},
+{
+"name": "Don Lalos Mexican Food",
+"category": "restaurant",
+"confidence": 0.96,
+"at": [
+-119.280765,
+34.449491
+]
+},
+{
+"name": "Eggs N Potatoes",
+"category": "restaurant",
+"confidence": 0.92,
+"at": [
+-119.261718,
+34.440465
+]
+},
+{
+"name": "El Jarro | Mexican Restaurant",
+"category": "restaurant",
+"confidence": 0.96,
+"at": [
+-119.27607,
+34.448279
+]
+},
+{
+"name": "Exotic Thai Restaurant",
+"category": "restaurant",
+"confidence": 0.95,
+"at": [
+-119.237216,
+34.448109
+]
+},
+{
+"name": "Food Harmonics",
+"category": "restaurant",
+"confidence": 0.75,
+"at": [
+-119.244691,
+34.448079
+]
+},
+{
+"name": "Giorgio's Pizza & Subs",
+"category": "restaurant",
+"confidence": 0.92,
+"at": [
+-119.236705,
+34.448585
+]
+},
+{
+"name": "Hakane Sushi",
+"category": "restaurant",
+"confidence": 0.99,
+"at": [
+-119.23763,
+34.448539
+]
+},
+{
+"name": "Hip Vegan",
+"category": "restaurant",
+"confidence": 0.99,
+"at": [
+-119.243077,
+34.449053
+]
+},
+{
+"name": "Home Kitchen",
+"category": "restaurant",
+"confidence": 0.95,
+"at": [
+-119.261516,
+34.440642
+]
+},
+{
+"name": "Izakaya Full Moon",
+"category": "restaurant",
+"confidence": 0.99,
+"at": [
+-119.236448,
+34.448541
+]
+},
+{
+"name": "Jim & Rob's Fresh Grill",
+"category": "restaurant",
+"confidence": 0.89,
+"at": [
+-119.248571,
+34.447664
+]
+},
+{
+"name": "Jolly Kone",
+"category": "restaurant",
+"confidence": 0.92,
+"at": [
+-119.276465,
+34.448458
+]
+},
+{
+"name": "Jones Management Ojai, Inc",
+"category": "restaurant",
+"confidence": 0.95,
+"at": [
+-119.288543,
+34.423992
+]
+},
+{
+"name": "Joplin's",
+"category": "restaurant",
+"confidence": 0.98,
+"at": [
+-119.23892,
+34.448006
+]
+},
+{
+"name": "La Cocina",
+"category": "restaurant",
+"confidence": 0.77,
+"at": [
+-119.24653,
+34.448219
+]
+},
+{
+"name": "La Fuente Mexican Restaurant",
+"category": "restaurant",
+"confidence": 0.96,
+"at": [
+-119.242826,
+34.447437
+]
+},
+{
+"name": "Little Gem",
+"category": "restaurant",
+"confidence": 0.41,
+"at": [
+-119.243816,
+34.448143
+]
+},
+{
+"name": "Little Sama Ojai",
+"category": "restaurant",
+"confidence": 0.92,
+"at": [
+-119.243502,
+34.447648
+]
+},
+{
+"name": "Live To Eat",
+"category": "restaurant",
+"confidence": 0.95,
+"at": [
+-119.237338,
+34.448648
+]
+},
+{
+"name": "Los Caporales Restaurant",
+"category": "restaurant",
+"confidence": 0.92,
+"at": [
+-119.244382,
+34.447615
+]
+},
+{
+"name": "Los Comales - Fresh Grill",
+"category": "restaurant",
+"confidence": 0.97,
+"at": [
+-119.289036,
+34.422946
+]
+},
+{
+"name": "Meiners Heritage Table",
+"category": "restaurant",
+"confidence": 0.93,
+"at": [
+-119.280401,
+34.449342
+]
+},
+{
+"name": "Mira Monte Fresh Grill",
+"category": "restaurant",
+"confidence": 0.92,
+"at": [
+-119.288918,
+34.422866
+]
+},
+{
+"name": "Nocciola",
+"category": "restaurant",
+"confidence": 0.99,
+"at": [
+-119.250342,
+34.447551
+]
+},
+{
+"name": "O-Hi Frostie",
+"category": "restaurant",
+"confidence": 0.92,
+"at": [
+-119.263226,
+34.441586
+]
+},
+{
+"name": "OBC",
+"category": "restaurant",
+"confidence": 0.97,
+"at": [
+-119.239371,
+34.447864
+]
+},
+{
+"name": "OJAI O JAPANESE RESTAURANT",
+"category": "restaurant",
+"confidence": 0.85,
+"at": [
+-119.244507,
+34.445674
+]
+},
+{
+"name": "Ojai Deer Lodge",
+"category": "restaurant",
+"confidence": 0.97,
+"at": [
+-119.277376,
+34.454241
+]
+},
+{
+"name": "Ojai Pizza Company",
+"category": "restaurant",
+"confidence": 0.97,
+"at": [
+-119.243926,
+34.447777
+]
+},
+{
+"name": "Ojai Rotie",
+"category": "restaurant",
+"confidence": 0.98,
+"at": [
+-119.24183,
+34.447929
+]
+},
+{
+"name": "Ojai Tortilla House",
+"category": "restaurant",
+"confidence": 0.96,
+"at": [
+-119.245811,
+34.448273
+]
+},
+{
+"name": "Ojai-O Japanese Restaurant",
+"category": "restaurant",
+"confidence": 1.0,
+"at": [
+-119.289494,
+34.422234
+]
+},
+{
+"name": "Olivella",
+"category": "restaurant",
+"confidence": 0.99,
+"at": [
+-119.256601,
+34.437719
+]
+},
+{
+"name": "Osteria Monte Grappa",
+"category": "restaurant",
+"confidence": 0.92,
+"at": [
+-119.244925,
+34.448075
+]
+},
+{
+"name": "Papa Lennon's",
+"category": "restaurant",
+"confidence": 0.99,
+"at": [
+-119.280222,
+34.449322
+]
+},
+{
+"name": "Pinyon Ojai",
+"category": "restaurant",
+"confidence": 0.99,
+"at": [
+-119.242784,
+34.447821
+]
+},
+{
+"name": "Productos La Flor De Michoacan",
+"category": "restaurant",
+"confidence": 0.96,
+"at": [
+-119.281881,
+34.450032
+]
+},
+{
+"name": "Radio Roma",
+"category": "restaurant",
+"confidence": 0.99,
+"at": [
+-119.244362,
+34.447561
+]
+},
+{
+"name": "Rory's Place",
+"category": "restaurant",
+"confidence": 0.99,
+"at": [
+-119.246189,
+34.447617
+]
+},
+{
+"name": "Sakura Ojai",
+"category": "restaurant",
+"confidence": 0.92,
+"at": [
+-119.244724,
+34.448712
+]
+},
+{
+"name": "Seafresh Ojai",
+"category": "restaurant",
+"confidence": 1.0,
+"at": [
+-119.24078,
+34.448012
+]
+},
+{
+"name": "Spin Rotisserie & Spaghetteria",
+"category": "restaurant",
+"confidence": 0.92,
+"at": [
+-119.288632,
+34.425269
+]
+},
+{
+"name": "Suzanne's Cuisine",
+"category": "restaurant",
+"confidence": 0.92,
+"at": [
+-119.251701,
+34.446188
+]
+},
+{
+"name": "The Habit Burger Grill",
+"category": "restaurant",
+"confidence": 0.98,
+"at": [
+-119.288373,
+34.428815
+]
+},
+{
+"name": "The Moon's Nest Inn",
+"category": "restaurant",
+"confidence": 0.65,
+"at": [
+-119.245209,
+34.449092
+]
+},
+{
+"name": "The Nest",
+"category": "restaurant",
+"confidence": 1.0,
+"at": [
+-119.243204,
+34.447669
+]
+},
+{
+"name": "The Oak",
+"category": "restaurant",
+"confidence": 0.94,
+"at": [
+-119.256717,
+34.437862
+]
+},
+{
+"name": "The Oak",
+"category": "restaurant",
+"confidence": 0.99,
+"at": [
+-119.258484,
+34.436279
+]
+},
+{
+"name": "The Ranch House",
+"category": "restaurant",
+"confidence": 1.0,
+"at": [
+-119.277951,
+34.443024
+]
+},
+{
+"name": "Tres Hermanas",
+"category": "restaurant",
+"confidence": 0.55,
+"at": [
+-119.243817,
+34.448142
+]
+},
+{
+"name": "Yume Japanese Burger Cafe",
+"category": "restaurant",
+"confidence": 0.99,
+"at": [
+-119.244671,
+34.447948
+]
+},
+{
+"name": "Zaidee's Bar and Grill",
+"category": "restaurant",
+"confidence": 0.98,
+"at": [
+-119.23154,
+34.445644
+]
+},
+{
+"name": "Zhena's Gypsy Tea Co",
+"category": "restaurant",
+"confidence": 0.92,
+"at": [
+-119.237297,
+34.446976
+]
+},
+{
+"name": "Riverview Trailhead",
+"category": "river",
+"confidence": 0.7,
+"at": [
+-119.28747,
+34.449429
+]
+},
+{
+"name": "Lost Arrow Studios",
+"category": "rv_park",
+"confidence": 0.53,
+"at": [
+-119.28448,
+34.444317
+]
+},
+{
+"name": "Ojai Oaks Mobile Home Park",
+"category": "rv_park",
+"confidence": 0.89,
+"at": [
+-119.292554,
+34.421208
+]
+},
+{
+"name": "Antique Mall Ojai",
+"category": "second_hand_store",
+"confidence": 0.6,
+"at": [
+-119.245693,
+34.448368
+]
+},
+{
+"name": "Enid & Edgar Vintage",
+"category": "second_hand_store",
+"confidence": 0.92,
+"at": [
+-119.278053,
+34.448792
+]
+},
+{
+"name": "Gratitude Vintage & Thrift",
+"category": "second_hand_store",
+"confidence": 0.92,
+"at": [
+-119.236993,
+34.448704
+]
+},
+{
+"name": "Help Of Ojai 2nd Helpings Thrift Store",
+"category": "second_hand_store",
+"confidence": 0.77,
+"at": [
+-119.237965,
+34.448126
+]
+},
+{
+"name": "Ojai Design x Vintage",
+"category": "second_hand_store",
+"confidence": 0.47,
+"at": [
+-119.248768,
+34.44714
+]
+},
+{
+"name": "Second Helpings Thrift Store",
+"category": "second_hand_store",
+"confidence": 0.83,
+"at": [
+-119.237539,
+34.448246
+]
+},
+{
+"name": "St Thomas Aquinas Thrift Shop",
+"category": "second_hand_store",
+"confidence": 0.92,
+"at": [
+-119.243817,
+34.448142
+]
+},
+{
+"name": "The Lennon Closet fine consignment",
+"category": "second_hand_store",
+"confidence": 0.92,
+"at": [
+-119.24476,
+34.448106
+]
+},
+{
+"name": "Treasures of Ojai",
+"category": "second_hand_store",
+"confidence": 0.93,
+"at": [
+-119.245732,
+34.448399
+]
+},
+{
+"name": "Trend Select Consignment",
+"category": "second_hand_store",
+"confidence": 0.92,
+"at": [
+-119.243704,
+34.448655
+]
+},
+{
+"name": "V Is For Vintage",
+"category": "second_hand_store",
+"confidence": 0.65,
+"at": [
+-119.246096,
+34.447254
+]
+},
+{
+"name": "Valley of the Moon",
+"category": "second_hand_store",
+"confidence": 0.73,
+"at": [
+-119.237533,
+34.448467
+]
+},
+{
+"name": "You Call We Haul",
+"category": "second_hand_store",
+"confidence": 0.92,
+"at": [
+-119.280906,
+34.447603
+]
+},
+{
+"name": "Snappt",
+"category": "security_service",
+"confidence": 0.9,
+"at": [
+-119.248921,
+34.447535
+]
+},
+{
+"name": "At Home In Ojai",
+"category": "senior_living_facility",
+"confidence": 0.92,
+"at": [
+-119.276434,
+34.451074
+]
+},
+{
+"name": "CASA BELLA , INC.",
+"category": "senior_living_facility",
+"confidence": 0.92,
+"at": [
+-119.284561,
+34.444096
+]
+},
+{
+"name": "Continuing Care Center",
+"category": "senior_living_facility",
+"confidence": 0.89,
+"at": [
+-119.26447,
+34.44288
+]
+},
+{
+"name": "Gables of Ojai",
+"category": "senior_living_facility",
+"confidence": 0.92,
+"at": [
+-119.243102,
+34.453714
+]
+},
+{
+"name": "Glen Park At Ojai",
+"category": "senior_living_facility",
+"confidence": 0.65,
+"at": [
+-119.276434,
+34.451074
+]
+},
+{
+"name": "Manor Of Ojai Residential Care",
+"category": "senior_living_facility",
+"confidence": 0.99,
+"at": [
+-119.248316,
+34.451818
+]
+},
+{
+"name": "Maravilla",
+"category": "senior_living_facility",
+"confidence": 0.92,
+"at": [
+-119.255207,
+34.439913
+]
+},
+{
+"name": "Mountain Vista of Ojai",
+"category": "senior_living_facility",
+"confidence": 1.0,
+"at": [
+-119.240256,
+34.451158
+]
+},
+{
+"name": "Ojai Health & Rehabilitation",
+"category": "senior_living_facility",
+"confidence": 0.99,
+"at": [
+-119.243104,
+34.453014
+]
+},
+{
+"name": "Ojai Meadows Senior Living",
+"category": "senior_living_facility",
+"confidence": 0.68,
+"at": [
+-119.27207,
+34.446888
+]
+},
+{
+"name": "St Joseph's Health & Retirement Center",
+"category": "senior_living_facility",
+"confidence": 0.55,
+"at": [
+-119.213726,
+34.44805
+]
+},
+{
+"name": "The Artesian of Ojai",
+"category": "senior_living_facility",
+"confidence": 0.92,
+"at": [
+-119.273429,
+34.44752
+]
+},
+{
+"name": "The Olive Branch of Ojai",
+"category": "senior_living_facility",
+"confidence": 0.92,
+"at": [
+-119.239191,
+34.452487
+]
+},
+{
+"name": "The Villa At Ojai LLC",
+"category": "senior_living_facility",
+"confidence": 0.37,
+"at": [
+-119.232522,
+34.449863
+]
+},
+{
+"name": "Theosophical Society-Ojai Valley Branch",
+"category": "senior_living_facility",
+"confidence": 0.48,
+"at": [
+-119.269347,
+34.437229
+]
+},
+{
+"name": "Ojai Business Center",
+"category": "shipping_or_delivery_service",
+"confidence": 0.99,
+"at": [
+-119.24908,
+34.447715
+]
+},
+{
+"name": "Ojai Post Office",
+"category": "shipping_or_delivery_service",
+"confidence": 0.97,
+"at": [
+-119.245752,
+34.447532
+]
+},
+{
+"name": "UPS Authorized Shipping Outlet",
+"category": "shipping_or_delivery_service",
+"confidence": 0.85,
+"at": [
+-119.248921,
+34.447535
+]
+},
+{
+"name": "United States Postal Service",
+"category": "shipping_or_delivery_service",
+"confidence": 0.97,
+"at": [
+-119.245721,
+34.447538
+]
+},
+{
+"name": "Alaska Guide Creations",
+"category": "shopping",
+"confidence": 0.77,
+"at": [
+-119.243823,
+34.450434
+]
+},
+{
+"name": "American ValueMetrics - Business Valuation",
+"category": "shopping",
+"confidence": 0.77,
+"at": [
+-119.280728,
+34.428136
+]
+},
+{
+"name": "Carly Home",
+"category": "shopping",
+"confidence": 0.77,
+"at": [
+-119.280257,
+34.449269
+]
+},
+{
+"name": "Maricopa",
+"category": "shopping",
+"confidence": 0.92,
+"at": [
+-119.263865,
+34.441727
+]
+},
+{
+"name": "Ojai True Value Hardware",
+"category": "shopping",
+"confidence": 0.97,
+"at": [
+-119.26203,
+34.4408
+]
+},
+{
+"name": "The Crystal Corner",
+"category": "shopping",
+"confidence": 0.92,
+"at": [
+-119.247336,
+34.448879
+]
+},
+{
+"name": "Ojai Valley Shopping Center",
+"category": "shopping_mall",
+"confidence": 0.92,
+"at": [
+-119.263531,
+34.441649
+]
+},
+{
+"name": "Red Horse Plaza",
+"category": "shopping_mall",
+"confidence": 0.92,
+"at": [
+-119.288735,
+34.425424
+]
+},
+{
+"name": "Ojai Skate Park",
+"category": "skate_park",
+"confidence": 0.95,
+"at": [
+-119.241399,
+34.448398
+]
+},
+{
+"name": "Community Juice",
+"category": "smoothie_juice_bar",
+"confidence": 0.76,
+"at": [
+-119.277138,
+34.448565
+]
+},
+{
+"name": "Natures Blend",
+"category": "smoothie_juice_bar",
+"confidence": 0.92,
+"at": [
+-119.280257,
+34.449269
+]
+},
+{
+"name": "Revel - Kombucha Bar & Acai",
+"category": "smoothie_juice_bar",
+"confidence": 0.95,
+"at": [
+-119.244034,
+34.448414
+]
+},
+{
+"name": "The Blend Superfood Bar",
+"category": "smoothie_juice_bar",
+"confidence": 0.99,
+"at": [
+-119.243837,
+34.448252
+]
+},
+{
+"name": "American Legend Mustang",
+"category": "social_or_community_service",
+"confidence": 0.92,
+"at": [
+-119.285491,
+34.45735
+]
+},
+{
+"name": "American Legion",
+"category": "social_or_community_service",
+"confidence": 0.99,
+"at": [
+-119.237495,
+34.447947
+]
+},
+{
+"name": "Autism International Foundation",
+"category": "social_or_community_service",
+"confidence": 0.92,
+"at": [
+-119.242854,
+34.450612
+]
+},
+{
+"name": "Greater Goods",
+"category": "social_or_community_service",
+"confidence": 0.92,
+"at": [
+-119.27781,
+34.449182
+]
+},
+{
+"name": "Hendricks Community",
+"category": "social_or_community_service",
+"confidence": 0.16,
+"at": [
+-119.249009,
+34.447667
+]
+},
+{
+"name": "Just One Look Foundation",
+"category": "social_or_community_service",
+"confidence": 0.92,
+"at": [
+-119.245827,
+34.44757
+]
+},
+{
+"name": "Krishnamurti Foundation America",
+"category": "social_or_community_service",
+"confidence": 0.97,
+"at": [
+-119.18325,
+34.458911
+]
+},
+{
+"name": "Lotus Outreach International",
+"category": "social_or_community_service",
+"confidence": 0.92,
+"at": [
+-119.245826,
+34.459618
+]
+},
+{
+"name": "Natl Disaster Search Dog Foundation",
+"category": "social_or_community_service",
+"confidence": 0.37,
+"at": [
+-119.241419,
+34.44781
+]
+},
+{
+"name": "O-Higher Ed",
+"category": "social_or_community_service",
+"confidence": 0.42,
+"at": [
+-119.181825,
+34.464648
+]
+},
+{
+"name": "Oak Tree House Adult Day Care Center",
+"category": "social_or_community_service",
+"confidence": 0.92,
+"at": [
+-119.247821,
+34.444168
+]
+},
+{
+"name": "Ojai Music Academy",
+"category": "social_or_community_service",
+"confidence": 0.64,
+"at": [
+-119.292354,
+34.443124
+]
+},
+{
+"name": "Ojai Senior Center",
+"category": "social_or_community_service",
+"confidence": 0.65,
+"at": [
+-119.247909,
+34.444403
+]
+},
+{
+"name": "Ojai Valley Chamber of Commerce",
+"category": "social_or_community_service",
+"confidence": 0.92,
+"at": [
+-119.245607,
+34.449676
+]
+},
+{
+"name": "Ojai Valley Grange",
+"category": "social_or_community_service",
+"confidence": 0.92,
+"at": [
+-119.281966,
+34.4339
+]
+},
+{
+"name": "Ojai Valley Woman's Club",
+"category": "social_or_community_service",
+"confidence": 1.0,
+"at": [
+-119.242435,
+34.44779
+]
+},
+{
+"name": "Reins of Hope",
+"category": "social_or_community_service",
+"confidence": 0.41,
+"at": [
+-119.252113,
+34.446071
+]
+},
+{
+"name": "Rotary Club of Ojai",
+"category": "social_or_community_service",
+"confidence": 0.92,
+"at": [
+-119.272628,
+34.44522
+]
+},
+{
+"name": "Rotary Club of Ojai West",
+"category": "social_or_community_service",
+"confidence": 0.3,
+"at": [
+-119.262504,
+34.441782
+]
+},
+{
+"name": "Sun Horse Foundation",
+"category": "social_or_community_service",
+"confidence": 0.27,
+"at": [
+-119.27087,
+34.44988
+]
+},
+{
+"name": "TEDxThacher School",
+"category": "social_or_community_service",
+"confidence": 0.53,
+"at": [
+-119.178777,
+34.465669
+]
+},
+{
+"name": "Taormina Theosophical Manor",
+"category": "social_or_community_service",
+"confidence": 0.31,
+"at": [
+-119.271884,
+34.439294
+]
+},
+{
+"name": "The Agora Foundation",
+"category": "social_or_community_service",
+"confidence": 0.92,
+"at": [
+-119.262436,
+34.44166
+]
+},
+{
+"name": "The Immeasurable",
+"category": "social_or_community_service",
+"confidence": 0.97,
+"at": [
+-119.18307,
+34.46006
+]
+},
+{
+"name": "The River Ganga Foundation",
+"category": "social_or_community_service",
+"confidence": 0.32,
+"at": [
+-119.274122,
+34.444652
+]
+},
+{
+"name": "Twice Sold Tales Bookstore/OVLFF",
+"category": "social_or_community_service",
+"confidence": 0.97,
+"at": [
+-119.246641,
+34.447518
+]
+},
+{
+"name": "Dr Viktoriya Anatoliyivna Nelson, MD",
+"category": "specialized_health_care",
+"confidence": 0.92,
+"at": [
+-119.262962,
+34.442271
+]
+},
+{
+"name": "Ear, Nose, Throat Of Ojai, P.c.",
+"category": "specialized_health_care",
+"confidence": 0.92,
+"at": [
+-119.263733,
+34.441909
+]
+},
+{
+"name": "Ojai Valley Alano Club",
+"category": "specialized_medical_facility",
+"confidence": 0.95,
+"at": [
+-119.280512,
+34.44933
+]
+},
+{
+"name": "Action Preparedness Training",
+"category": "specialty_school",
+"confidence": 0.92,
+"at": [
+-119.291652,
+34.422918
+]
+},
+{
+"name": "Ca Realty Training - Ojai",
+"category": "specialty_school",
+"confidence": 0.55,
+"at": [
+-119.248621,
+34.448246
+]
+},
+{
+"name": "Dave Cipriani Music Lessons",
+"category": "specialty_school",
+"confidence": 0.05,
+"at": [
+-119.290032,
+34.422268
+]
+},
+{
+"name": "Janis' Art Workshop",
+"category": "specialty_school",
+"confidence": 0.27,
+"at": [
+-119.251347,
+34.446474
+]
+},
+{
+"name": "Ojai Pottery & Clay School",
+"category": "specialty_school",
+"confidence": 0.92,
+"at": [
+-119.241346,
+34.446358
+]
+},
+{
+"name": "Robin's Nest Art School",
+"category": "specialty_school",
+"confidence": 0.92,
+"at": [
+-119.282476,
+34.43813
+]
+},
+{
+"name": "Sunshine Driving School",
+"category": "specialty_school",
+"confidence": 0.92,
+"at": [
+-119.2766,
+34.42956
+]
+},
+{
+"name": "The Center for The Work",
+"category": "specialty_school",
+"confidence": 0.99,
+"at": [
+-119.243161,
+34.44972
+]
+},
+{
+"name": "Topa Institute",
+"category": "specialty_school",
+"confidence": 0.93,
+"at": [
+-119.176493,
+34.436477
+]
+},
+{
+"name": "US Realty Training",
+"category": "specialty_school",
+"confidence": 0.85,
+"at": [
+-119.248406,
+34.448191
+]
+},
+{
+"name": "HEARUSA",
+"category": "specialty_store",
+"confidence": 0.93,
+"at": [
+-119.263854,
+34.442103
+]
+},
+{
+"name": "Heavenly Honey",
+"category": "specialty_store",
+"confidence": 0.99,
+"at": [
+-119.245733,
+34.447928
+]
+},
+{
+"name": "Mrscopycat",
+"category": "specialty_store",
+"confidence": 0.55,
+"at": [
+-119.239643,
+34.442489
+]
+},
+{
+"name": "My Hearing Centers",
+"category": "specialty_store",
+"confidence": 0.92,
+"at": [
+-119.263931,
+34.441723
+]
+},
+{
+"name": "Nelson Audiology - Ojai",
+"category": "specialty_store",
+"confidence": 0.85,
+"at": [
+-119.265317,
+34.44303
+]
+},
+{
+"name": "Sespe Creek Collective",
+"category": "specialty_store",
+"confidence": 1.0,
+"at": [
+-119.237811,
+34.44285
+]
+},
+{
+"name": "Ojai Valley School Upper Campus Tennis Courts",
+"category": "sport_court",
+"confidence": 0.77,
+"at": [
+-119.229649,
+34.449021
+]
+},
+{
+"name": "Ojai Valley Tennis Tournament",
+"category": "sport_court",
+"confidence": 0.92,
+"at": [
+-119.24626,
+34.449084
+]
+},
+{
+"name": "Tennis | Ojai Recreation Dept",
+"category": "sport_court",
+"confidence": 0.95,
+"at": [
+-119.236147,
+34.451835
+]
+},
+{
+"name": "Weil Tennis Academy",
+"category": "sport_court",
+"confidence": 1.0,
+"at": [
+-119.239188,
+34.444369
+]
+},
+{
+"name": "Ojai Valley Athletic Club",
+"category": "sport_league",
+"confidence": 0.99,
+"at": [
+-119.241245,
+34.44449
+]
+},
+{
+"name": "Ojai Valley Pickleball",
+"category": "sport_league",
+"confidence": 0.92,
+"at": [
+-119.246984,
+34.444473
+]
+},
+{
+"name": "Carapace Dance and Arts Center",
+"category": "sport_or_fitness_facility",
+"confidence": 0.92,
+"at": [
+-119.288866,
+34.422897
+]
+},
+{
+"name": "Dynamics N Motion",
+"category": "sport_or_fitness_facility",
+"confidence": 0.55,
+"at": [
+-119.237306,
+34.443391
+]
+},
+{
+"name": "Equine Xscape",
+"category": "sport_or_fitness_facility",
+"confidence": 0.78,
+"at": [
+-119.285288,
+34.457401
+]
+},
+{
+"name": "Infinite Horsemanship",
+"category": "sport_or_fitness_facility",
+"confidence": 0.92,
+"at": [
+-119.224091,
+34.445143
+]
+},
+{
+"name": "Lake Casitas Recreation Area",
+"category": "sport_or_fitness_facility",
+"confidence": 0.99,
+"at": [
+-119.338012,
+34.416472
+]
+},
+{
+"name": "Lees 1 On 1 Personal Training",
+"category": "sport_or_fitness_facility",
+"confidence": 0.65,
+"at": [
+-119.234581,
+34.448766
+]
+},
+{
+"name": "OSO Ranch Performance Plus Paint Horses",
+"category": "sport_or_fitness_facility",
+"confidence": 0.92,
+"at": [
+-119.288311,
+34.458134
+]
+},
+{
+"name": "Ojai Aerial",
+"category": "sport_or_fitness_facility",
+"confidence": 0.97,
+"at": [
+-119.245413,
+34.447887
+]
+},
+{
+"name": "Ojai Angler Fishing Guide Service",
+"category": "sport_or_fitness_facility",
+"confidence": 0.92,
+"at": [
+-119.337282,
+34.416588
+]
+},
+{
+"name": "Ojai Bobcat Crossfit",
+"category": "sport_or_fitness_facility",
+"confidence": 0.32,
+"at": [
+-119.23617,
+34.452278
+]
+},
+{
+"name": "Ojai Recreation Department",
+"category": "sport_or_fitness_facility",
+"confidence": 0.97,
+"at": [
+-119.236282,
+34.452691
+]
+},
+{
+"name": "Ojai Rock Climbing",
+"category": "sport_or_fitness_facility",
+"confidence": 0.92,
+"at": [
+-119.247429,
+34.448879
+]
+},
+{
+"name": "Ojai Valley Trail Riding Company",
+"category": "sport_or_fitness_facility",
+"confidence": 0.98,
+"at": [
+-119.288277,
+34.458147
+]
+},
+{
+"name": "Paulina Bellydance Productions",
+"category": "sport_or_fitness_facility",
+"confidence": 0.92,
+"at": [
+-119.24368,
+34.447003
+]
+},
+{
+"name": "Starlight Dance Academy",
+"category": "sport_or_fitness_facility",
+"confidence": 0.92,
+"at": [
+-119.238947,
+34.44386
+]
+},
+{
+"name": "Welborn Tennis",
+"category": "sport_or_fitness_facility",
+"confidence": 0.26,
+"at": [
+-119.24309,
+34.45163
+]
+},
+{
+"name": "Living Aikido",
+"category": "sport_or_recreation_club",
+"confidence": 0.92,
+"at": [
+-119.280187,
+34.449305
+]
+},
+{
+"name": "Ojai Valley Martial Arts",
+"category": "sport_or_recreation_club",
+"confidence": 0.92,
+"at": [
+-119.238654,
+34.442538
+]
+},
+{
+"name": "Ojai Valley Taekwondo Academy",
+"category": "sport_or_recreation_club",
+"confidence": 0.92,
+"at": [
+-119.237577,
+34.448213
+]
+},
+{
+"name": "Bicycles of Ojai",
+"category": "sporting_goods_store",
+"confidence": 0.92,
+"at": [
+-119.249303,
+34.448097
+]
+},
+{
+"name": "Jive Surf",
+"category": "sporting_goods_store",
+"confidence": 0.75,
+"at": [
+-119.237191,
+34.446985
+]
+},
+{
+"name": "Ojai Board Shop",
+"category": "sporting_goods_store",
+"confidence": 0.92,
+"at": [
+-119.249338,
+34.448125
+]
+},
+{
+"name": "Ojai Electric Bikes",
+"category": "sporting_goods_store",
+"confidence": 0.92,
+"at": [
+-119.258353,
+34.442214
+]
+},
+{
+"name": "Ojai Pool Store",
+"category": "sporting_goods_store",
+"confidence": 0.95,
+"at": [
+-119.28022,
+34.449622
+]
+},
+{
+"name": "The Mob Shop",
+"category": "sporting_goods_store",
+"confidence": 0.94,
+"at": [
+-119.247505,
+34.447816
+]
+},
+{
+"name": "Wave Tribe",
+"category": "sporting_goods_store",
+"confidence": 0.75,
+"at": [
+-119.237859,
+34.447158
+]
+},
+{
+"name": "Wild Desert Swim",
+"category": "sporting_goods_store",
+"confidence": 0.92,
+"at": [
+-119.280196,
+34.449552
+]
+},
+{
+"name": "Highlands Golf, Llc.dba Soule",
+"category": "sports_and_recreation",
+"confidence": 0.95,
+"at": [
+-119.231608,
+34.445709
+]
+},
+{
+"name": "Ojai Tennis",
+"category": "sports_and_recreation",
+"confidence": 0.69,
+"at": [
+-119.254452,
+34.442553
+]
+},
+{
+"name": "Ojai Valley Trail",
+"category": "sports_and_recreation",
+"confidence": 0.7,
+"at": [
+-119.280496,
+34.432159
+]
+},
+{
+"name": "Pratt Trail - Ojai National Forest",
+"category": "sports_and_recreation",
+"confidence": 0.76,
+"at": [
+-119.236784,
+34.446881
+]
+},
+{
+"name": "Rich Tauber, Southern California Fishing Guide",
+"category": "sports_and_recreation",
+"confidence": 0.26,
+"at": [
+-119.33808,
+34.41648
+]
+},
+{
+"name": "Ventura River Preserve",
+"category": "sports_and_recreation",
+"confidence": 0.97,
+"at": [
+-119.290064,
+34.451719
+]
+},
+{
+"name": "Amazon Locker - Skein",
+"category": "storage_facility",
+"confidence": 0.8,
+"at": [
+-119.28933,
+34.422595
+]
+},
+{
+"name": "Bryant Circle Mini Storage",
+"category": "storage_facility",
+"confidence": 0.92,
+"at": [
+-119.239167,
+34.441939
+]
+},
+{
+"name": "Condor Self Storage of Ojai",
+"category": "storage_facility",
+"confidence": 0.92,
+"at": [
+-119.2374,
+34.445143
+]
+},
+{
+"name": "Ojai Self Storage",
+"category": "storage_facility",
+"confidence": 0.92,
+"at": [
+-119.237842,
+34.444132
+]
+},
+{
+"name": "Adonisone Inflight Systems Llc.",
+"category": "supplier_or_distributor",
+"confidence": 0.75,
+"at": [
+-119.239128,
+34.443349
+]
+},
+{
+"name": "Blue Rhino Propane Exchange",
+"category": "supplier_or_distributor",
+"confidence": 0.92,
+"at": [
+-119.221254,
+34.448083
+]
+},
+{
+"name": "Blue Rhino Propane Exchange",
+"category": "supplier_or_distributor",
+"confidence": 0.92,
+"at": [
+-119.27529,
+34.447963
+]
+},
+{
+"name": "Greater Ventura Oral & Facial Surgery Dental Implant Experts",
+"category": "surgery",
+"confidence": 0.85,
+"at": [
+-119.262751,
+34.442976
+]
+},
+{
+"name": "Hessam Siavash, DDS, MD, PHD",
+"category": "surgery",
+"confidence": 0.92,
+"at": [
+-119.263152,
+34.442085
+]
+},
+{
+"name": "Hooman Zarrinkelk DDS Inc",
+"category": "surgery",
+"confidence": 0.92,
+"at": [
+-119.263254,
+34.442666
+]
+},
+{
+"name": "Ojai Valley Inn and Spa Pool",
+"category": "swimming_pool",
+"confidence": 0.97,
+"at": [
+-119.256687,
+34.437658
+]
+},
+{
+"name": "Behavioural Science Technology International",
+"category": "technical_service",
+"confidence": 0.95,
+"at": [
+-119.243249,
+34.448699
+]
+},
+{
+"name": "Bitvision Technology Group",
+"category": "technical_service",
+"confidence": 1.0,
+"at": [
+-119.249836,
+34.446842
+]
+},
+{
+"name": "Diamond Research",
+"category": "technical_service",
+"confidence": 0.92,
+"at": [
+-119.284914,
+34.423679
+]
+},
+{
+"name": "Elixir Technologies",
+"category": "technical_service",
+"confidence": 0.92,
+"at": [
+-119.229214,
+34.448992
+]
+},
+{
+"name": "Gizmo Wizards",
+"category": "technical_service",
+"confidence": 0.92,
+"at": [
+-119.239643,
+34.442489
+]
+},
+{
+"name": "Global Machining Services, Inc",
+"category": "technical_service",
+"confidence": 0.65,
+"at": [
+-119.239946,
+34.442914
+]
+},
+{
+"name": "Healing America School Of Energy Medicine",
+"category": "technical_service",
+"confidence": 0.95,
+"at": [
+-119.247983,
+34.449297
+]
+},
+{
+"name": "Musitek",
+"category": "technical_service",
+"confidence": 0.77,
+"at": [
+-119.251603,
+34.448046
+]
+},
+{
+"name": "Ojai Solar Electric Co",
+"category": "technical_service",
+"confidence": 0.95,
+"at": [
+-119.237859,
+34.447158
+]
+},
+{
+"name": "Ojai Valley Taxidermy",
+"category": "technical_service",
+"confidence": 0.92,
+"at": [
+-119.280421,
+34.45354
+]
+},
+{
+"name": "Ranch House Restaurants",
+"category": "technical_service",
+"confidence": 0.95,
+"at": [
+-119.277963,
+34.443029
+]
+},
+{
+"name": "Salvagedata Recovery Services",
+"category": "technical_service",
+"confidence": 0.92,
+"at": [
+-119.249836,
+34.446842
+]
+},
+{
+"name": "Topa Topa Technology Group",
+"category": "technical_service",
+"confidence": 0.95,
+"at": [
+-119.251992,
+34.445922
+]
+},
+{
+"name": "Method Machine Lab",
+"category": "theatre_venue",
+"confidence": 0.91,
+"at": [
+-119.245154,
+34.448049
+]
+},
+{
+"name": "Serendipity Toys",
+"category": "toys_and_games_store",
+"confidence": 0.92,
+"at": [
+-119.244451,
+34.448602
+]
+},
+{
+"name": "Kelly Mobile Services",
+"category": "travel_and_transportation",
+"confidence": 0.92,
+"at": [
+-119.291978,
+34.440672
+]
+},
+{
+"name": "Ojai City Hall / Ojai City Hall",
+"category": "travel_and_transportation",
+"confidence": 0.97,
+"at": [
+-119.247629,
+34.4451
+]
+},
+{
+"name": "Ojai Trolley Services",
+"category": "travel_and_transportation",
+"confidence": 0.73,
+"at": [
+-119.245795,
+34.444326
+]
+},
+{
+"name": "Ojai Vacation Center",
+"category": "travel_and_transportation",
+"confidence": 0.92,
+"at": [
+-119.230216,
+34.449065
+]
+},
+{
+"name": "Pink Moment Express",
+"category": "travel_and_transportation",
+"confidence": 0.16,
+"at": [
+-119.249027,
+34.447819
+]
+},
+{
+"name": "Appellation Wine Tours",
+"category": "travel_service",
+"confidence": 0.92,
+"at": [
+-119.265582,
+34.444966
+]
+},
+{
+"name": "Cloud Climbers Jeep Tours",
+"category": "travel_service",
+"confidence": 0.92,
+"at": [
+-119.253789,
+34.450444
+]
+},
+{
+"name": "Ojai Visitors Bureau",
+"category": "travel_service",
+"confidence": 0.67,
+"at": [
+-119.248621,
+34.448246
+]
+},
+{
+"name": "Ojai's Best WebCam",
+"category": "travel_service",
+"confidence": 0.85,
+"at": [
+-119.229794,
+34.448799
+]
+},
+{
+"name": "Peaceful Self Retreats",
+"category": "travel_service",
+"confidence": 0.92,
+"at": [
+-119.26094,
+34.443267
+]
+},
+{
+"name": "Studio Sauvageau",
+"category": "travel_service",
+"confidence": 0.92,
+"at": [
+-119.243817,
+34.448142
+]
+},
+{
+"name": "Topa Topa Travel",
+"category": "travel_service",
+"confidence": 0.66,
+"at": [
+-119.245703,
+34.449377
+]
+},
+{
+"name": "Visit Ojai",
+"category": "travel_service",
+"confidence": 0.47,
+"at": [
+-119.230084,
+34.449134
+]
+},
+{
+"name": "Kumon Math and Reading Center",
+"category": "tutoring_service",
+"confidence": 0.92,
+"at": [
+-119.251879,
+34.445916
+]
+},
+{
+"name": "The literacy Room",
+"category": "tutoring_service",
+"confidence": 0.92,
+"at": [
+-119.23809,
+34.443654
+]
+},
+{
+"name": "Bator International Inc",
+"category": "vehicle_dealer",
+"confidence": 0.92,
+"at": [
+-119.26908,
+34.44756
+]
+},
+{
+"name": "Deckwar Tapered Shims",
+"category": "vehicle_parts_store",
+"confidence": 0.92,
+"at": [
+-119.289492,
+34.435513
+]
+},
+{
+"name": "NAPA Auto Parts",
+"category": "vehicle_parts_store",
+"confidence": 0.92,
+"at": [
+-119.239204,
+34.448197
+]
+},
+{
+"name": "Adamson Automotive & Towing",
+"category": "vehicle_service",
+"confidence": 0.85,
+"at": [
+-119.242718,
+34.447856
+]
+},
+{
+"name": "Dockside Engine Service",
+"category": "vehicle_service",
+"confidence": 0.92,
+"at": [
+-119.280935,
+34.45508
+]
+},
+{
+"name": "Ojaieyes Optometry",
+"category": "vision_or_eye_care_clinic",
+"confidence": 0.55,
+"at": [
+-119.244713,
+34.449126
+]
+},
+{
+"name": "Topa Topa Optometry",
+"category": "vision_or_eye_care_clinic",
+"confidence": 0.92,
+"at": [
+-119.263825,
+34.441894
+]
+},
+{
+"name": "Golden State Water Co",
+"category": "water_utility_provider",
+"confidence": 0.65,
+"at": [
+-119.237811,
+34.44285
+]
+},
+{
+"name": "Meiners Oaks Water District",
+"category": "water_utility_provider",
+"confidence": 0.92,
+"at": [
+-119.277415,
+34.448838
+]
+},
+{
+"name": "Pure Drinking Water",
+"category": "water_utility_provider",
+"confidence": 0.92,
+"at": [
+-119.288951,
+34.42615
+]
+},
+{
+"name": "Siete Robles Mutual Water Company",
+"category": "water_utility_provider",
+"confidence": 0.65,
+"at": [
+-119.251869,
+34.444777
+]
+},
+{
+"name": "Ventura River Water District",
+"category": "water_utility_provider",
+"confidence": 0.92,
+"at": [
+-119.297202,
+34.429057
+]
+},
+{
+"name": "AA Relaxing Station",
+"category": "wellness_service",
+"confidence": 0.94,
+"at": [
+-119.243288,
+34.448785
+]
+},
+{
+"name": "ANGELICA GRIFFITH Precision Healing",
+"category": "wellness_service",
+"confidence": 0.94,
+"at": [
+-119.237224,
+34.447224
+]
+},
+{
+"name": "About Serenity Salon & Day Spa",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.23791,
+34.448701
+]
+},
+{
+"name": "Bamboo Creek Spa",
+"category": "wellness_service",
+"confidence": 0.94,
+"at": [
+-119.234595,
+34.448685
+]
+},
+{
+"name": "Be Calm of Ojai",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.239094,
+34.456423
+]
+},
+{
+"name": "Body Essentials",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.249022,
+34.447555
+]
+},
+{
+"name": "Bogue Milk Soap",
+"category": "wellness_service",
+"confidence": 0.1,
+"at": [
+-119.249025,
+34.447817
+]
+},
+{
+"name": "Breathe Aromatherapy & Wellness Spa",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.25087,
+34.445969
+]
+},
+{
+"name": "Clover Soul Healing",
+"category": "wellness_service",
+"confidence": 0.95,
+"at": [
+-119.237849,
+34.444131
+]
+},
+{
+"name": "Desk Yogi",
+"category": "wellness_service",
+"confidence": 0.75,
+"at": [
+-119.243899,
+34.449126
+]
+},
+{
+"name": "Don's Massage",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.23706,
+34.44719
+]
+},
+{
+"name": "Earthtonics",
+"category": "wellness_service",
+"confidence": 0.91,
+"at": [
+-119.243008,
+34.446496
+]
+},
+{
+"name": "Epic Tomol Collective",
+"category": "wellness_service",
+"confidence": 0.95,
+"at": [
+-119.264494,
+34.441865
+]
+},
+{
+"name": "Faith Rose Massage",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.245837,
+34.449361
+]
+},
+{
+"name": "Heal with Heat - Clearlight Infrared Saunas",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.24572,
+34.447457
+]
+},
+{
+"name": "Juniper Lane Skin Studio",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.267157,
+34.444751
+]
+},
+{
+"name": "Krishnamurti Retreat",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.183425,
+34.459538
+]
+},
+{
+"name": "Meditation Mount",
+"category": "wellness_service",
+"confidence": 0.95,
+"at": [
+-119.165694,
+34.450838
+]
+},
+{
+"name": "New Day Massage",
+"category": "wellness_service",
+"confidence": 0.95,
+"at": [
+-119.265388,
+34.442718
+]
+},
+{
+"name": "New Leaf Skin Care, Spa and Boutique",
+"category": "wellness_service",
+"confidence": 0.95,
+"at": [
+-119.244357,
+34.447747
+]
+},
+{
+"name": "OHM Sanctuary",
+"category": "wellness_service",
+"confidence": 0.84,
+"at": [
+-119.29634,
+34.43815
+]
+},
+{
+"name": "Ojai + Fox - Health, Beauty & Wellness Spa",
+"category": "wellness_service",
+"confidence": 0.99,
+"at": [
+-119.241352,
+34.447801
+]
+},
+{
+"name": "Ojai Digestive Health",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.266385,
+34.442976
+]
+},
+{
+"name": "Ojai Fox",
+"category": "wellness_service",
+"confidence": 1.0,
+"at": [
+-119.241465,
+34.447951
+]
+},
+{
+"name": "Ojai Lymphatic Therapy Center",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.265814,
+34.443046
+]
+},
+{
+"name": "Ojai Massage",
+"category": "wellness_service",
+"confidence": 0.93,
+"at": [
+-119.244362,
+34.447561
+]
+},
+{
+"name": "Ojai Nutrition Group",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.25183,
+34.445933
+]
+},
+{
+"name": "Ojai Valley Medspa",
+"category": "wellness_service",
+"confidence": 0.55,
+"at": [
+-119.251992,
+34.445922
+]
+},
+{
+"name": "Refuge Boutique Spa",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.288667,
+34.430132
+]
+},
+{
+"name": "Robyn Freetly Mobile Massage Therapy",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.244092,
+34.451292
+]
+},
+{
+"name": "Rowsie Vain",
+"category": "wellness_service",
+"confidence": 0.09,
+"at": [
+-119.286675,
+34.429089
+]
+},
+{
+"name": "Skin & Body Therapy",
+"category": "wellness_service",
+"confidence": 0.77,
+"at": [
+-119.243832,
+34.448178
+]
+},
+{
+"name": "Skin by Allison",
+"category": "wellness_service",
+"confidence": 0.43,
+"at": [
+-119.240889,
+34.446519
+]
+},
+{
+"name": "Somatic Sanctuary",
+"category": "wellness_service",
+"confidence": 0.94,
+"at": [
+-119.251284,
+34.446415
+]
+},
+{
+"name": "Soul Body Ojai",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.24594,
+34.449427
+]
+},
+{
+"name": "Spa Cafe",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.259013,
+34.439126
+]
+},
+{
+"name": "Spa Ojai",
+"category": "wellness_service",
+"confidence": 0.98,
+"at": [
+-119.258986,
+34.439041
+]
+},
+{
+"name": "Summer's Dawn Massage",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.279521,
+34.449127
+]
+},
+{
+"name": "Teja Anand",
+"category": "wellness_service",
+"confidence": 0.06,
+"at": [
+-119.23751,
+34.45341
+]
+},
+{
+"name": "The Day Spa of Ojai",
+"category": "wellness_service",
+"confidence": 0.94,
+"at": [
+-119.243199,
+34.44947
+]
+},
+{
+"name": "The Day Spa of Ojai",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.227865,
+34.448391
+]
+},
+{
+"name": "The Healed Space",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.245651,
+34.449474
+]
+},
+{
+"name": "The Little Garden Spa",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.239506,
+34.45249
+]
+},
+{
+"name": "The Oaks at Ojai",
+"category": "wellness_service",
+"confidence": 0.92,
+"at": [
+-119.246515,
+34.448063
+]
+},
+{
+"name": "Attitude Adjustment Shop",
+"category": "wholesaler",
+"confidence": 0.97,
+"at": [
+-119.262489,
+34.441909
+]
+},
+{
+"name": "Boccali Vineyards & Winery",
+"category": "winery",
+"confidence": 0.9,
+"at": [
+-119.203964,
+34.445875
+]
+},
+{
+"name": "Casa Barranca Organic Winery & Tasting Room",
+"category": "winery",
+"confidence": 0.92,
+"at": [
+-119.245651,
+34.44785
+]
+},
+{
+"name": "Casa Barranca Winery, Ojai,  Ca",
+"category": "winery",
+"confidence": 0.77,
+"at": [
+-119.254663,
+34.448824
+]
+},
+{
+"name": "End of the Road Winery",
+"category": "winery",
+"confidence": 0.92,
+"at": [
+-119.267666,
+34.455333
+]
+},
+{
+"name": "Feros Ferio Winery",
+"category": "winery",
+"confidence": 0.96,
+"at": [
+-119.244255,
+34.447956
+]
+},
+{
+"name": "Majestic Oak Vineyard",
+"category": "winery",
+"confidence": 0.99,
+"at": [
+-119.244139,
+34.447821
+]
+},
+{
+"name": "Majestic Oak Vinyard",
+"category": "winery",
+"confidence": 0.97,
+"at": [
+-119.29426,
+34.43174
+]
+},
+{
+"name": "Noble Oaks Vineyard & Winery",
+"category": "winery",
+"confidence": 0.65,
+"at": [
+-119.254857,
+34.43282
+]
+},
+{
+"name": "Side Street Wine",
+"category": "winery",
+"confidence": 0.79,
+"at": [
+-119.237545,
+34.446318
+]
+},
+{
+"name": "The Ojai Vineyard",
+"category": "winery",
+"confidence": 0.94,
+"at": [
+-119.243575,
+34.447335
+]
+},
+{
+"name": "Topa Mountain Winery",
+"category": "winery",
+"confidence": 0.53,
+"at": [
+-119.256709,
+34.442783
+]
+},
+{
+"name": "Ojai AYSO 147",
+"category": "youth_organization",
+"confidence": 0.87,
+"at": [
+-119.26174,
+34.440822
+]
+},
+{
+"name": "Ojai Valley Youth Foundation",
+"category": "youth_organization",
+"confidence": 0.85,
+"at": [
+-119.267199,
+34.444477
+]
+},
+{
+"name": "The C.R.E.W.",
+"category": "youth_organization",
+"confidence": 0.92,
+"at": [
+-119.297955,
+34.42408
+]
+}
+]
