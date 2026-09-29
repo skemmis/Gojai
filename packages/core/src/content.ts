@@ -42,10 +42,10 @@ export const PLAIN: CardDef = { id: "plain", name: "", value: 0, suit: null, rar
 // ─── Guides (the rule-benders) ────────────────────────────────────────────────
 
 export const GUIDES: GuideDef[] = [
-  { id: "krishnamurti", name: "Krishnamurti", title: "The Pathless", rarity: "rare", text: "Combos have no cap.", flavor: "Truth is a pathless land." },
+  { id: "krishnamurti", name: "Krishnamurti", title: "The Pathless", rarity: "rare", text: "Matching cards count one step more: a pair ×3, three of a kind ×4.", flavor: "Truth is a pathless land." },
   { id: "blavatsky", name: "Blavatsky", title: "The Secret Doctrine", rarity: "rare", text: "Block no longer wears off between your turns." },
   { id: "leadbeater", name: "Leadbeater", title: "The Clairvoyant", rarity: "common", text: "Start each fight with 6 block." },
-  { id: "besant", name: "Besant", title: "The Orator", rarity: "common", text: "Spade combos deal +4 damage." },
+  { id: "besant", name: "Besant", title: "The Orator", rarity: "common", text: "Matched spades deal +4 damage." },
   { id: "libbey", name: "Libbey", title: "The Glassmaker", rarity: "common", text: "Diamonds draw 1 extra card.", flavor: "He rebuilt the town in his image. Mission Revival, naturally." },
   { id: "sound_bath", name: "The Sound Bath", title: "Gong Practitioner", rarity: "common", text: "Each card you discard unplayed: +1 block next turn." },
   { id: "life_coach", name: "The Life Coach", title: "Certified", rarity: "common", text: "Your first play each fight deals double." },
@@ -100,9 +100,9 @@ export const ENEMIES: EnemyDef[] = [
     catch: { value: 15, suit: "hearts", effects: [{ k: "onDiscardBlock", n: 6 }], text: "Unplayed at end of turn: 6 block next turn." } },
 
   // Boss
-  { id: "order_of_star", name: "The Order of the Star", tier: "boss", hp: 60, suits: ["hearts"], passive: none, intents: [[atk(8)], [buff(2)], [atk(5, 2)], [hex("junk_permit"), blk(10)]], text: "The organization he dissolved in 1929. It did not take the hint.",
+  { id: "order_of_star", name: "The Order of the Star", tier: "boss", hp: 52, suits: ["hearts"], passive: none, intents: [[atk(8)], [buff(2)], [atk(5, 2)], [hex("junk_permit"), blk(10)]], text: "The organization he dissolved in 1929. It did not take the hint.",
     catch: { value: 20, suit: "spades", effects: [{ k: "pierce" }], text: "Ignores immunity." } },
-  { id: "masters", name: "The Masters of the Wisdom", tier: "boss", hp: 72, suits: ["hearts", "diamonds"], passive: { k: "silence" }, intents: [[atk(11)], [blk(12)], [atk(4, 3)], [hex("junk_like", 3)]], text: "Ascended. Your first play each fight has no power.",
+  { id: "masters", name: "The Masters of the Wisdom", tier: "boss", hp: 64, suits: ["hearts", "diamonds"], passive: { k: "silence" }, intents: [[atk(11)], [blk(12)], [atk(4, 3)], [hex("junk_like", 3)]], text: "Ascended. Your first play each fight has no power.",
     catch: { value: 20, suit: "hearts", effects: [{ k: "wild" }], text: "Counts as every suit." } },
 ];
 

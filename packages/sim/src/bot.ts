@@ -1,13 +1,15 @@
 /**
- * A heuristic player. Not smart, but consistent: each action it takes the
- * play worth most right now: a kill if it can, block up to the enemy's
- * incoming attack, otherwise damage, with draw and recall valued when
- * there are actions left to use them. Good enough to rank cards and find
- * broken things; not a measure of how well a human can play.
+ * A heuristic player. Not smart, but consistent: each turn it tries every
+ * order of up to 3 cards from its hand (so it sees pairs), scores each
+ * sequence (a kill if it can, block up to the enemy's incoming attack,
+ * otherwise damage, with draw and recall valued when there's an action
+ * left to use them) and plays the first card of the best one. Good enough
+ * to rank cards and find broken things; not a measure of how well a human
+ * can play.
  */
 import { incoming, isJunk, playError, previewPlay, sumEffect, type Card, type Run } from "@gojai/core";
 
-export type Move = { k: "play"; uids: number[] } | { k: "end" };
+export type Move = { k: "play"; uid: number } | { k: "end" };
 
 export interface Decision {
   move: Move;
@@ -15,62 +17,70 @@ export interface Decision {
   margin: number;
 }
 
-/** Every legal play from this hand. */
-export function legalPlays(run: Run): number[][] {
-  const cards = run.hand.filter((c) => !isJunk(c));
-  const out: number[][] = [];
-  const seen = new Set<string>();
-  const add = (uids: number[]) => {
-    const key = uids.slice().sort((a, b) => a - b).join(",");
-    if (seen.has(key) || playError(run, uids)) return;
-    seen.add(key);
-    out.push(uids);
-  };
-  for (const c of cards) add([c.uid]);
-  // Ace + any card
-  for (const a of cards.filter((c) => c.value === 1)) for (const b of cards) if (b.uid !== a.uid) add([a.uid, b.uid]);
-  // Same-value combos
-  const byValue = new Map<number, Card[]>();
-  for (const c of cards) byValue.set(c.value, [...(byValue.get(c.value) ?? []), c]);
-  for (const group of byValue.values()) {
-    const n = group.length;
-    for (let mask = 3; mask < 1 << n; mask++) {
-      const pick = group.filter((_, i) => mask & (1 << i));
-      if (pick.length >= 2 && pick.length <= 4) add(pick.map((c) => c.uid));
+/** Every card you could play right now. */
+export function legalPlays(run: Run): Card[] {
+  return run.hand.filter((c) => !isJunk(c) && !playError(run, c.uid));
+}
+
+/** Score playing `seq` in order this turn. Temporarily marks cards played to get matching right. */
+function scoreSequence(run: Run, seq: Card[]): number {
+  const f = run.fight!;
+  const e = f.enemy;
+  const saved = { plays: f.turnPlays, actions: f.actions, count: f.plays };
+  let threat = Math.max(0, incoming(run) - f.block);
+  let hp = e.hp;
+  let eBlock = e.block;
+  let score = 0;
+  try {
+    for (let i = 0; i < seq.length; i++) {
+      const c = seq[i];
+      const p = previewPlay(run, c.uid);
+      if (!p) return -Infinity;
+      const soaked = Math.min(eBlock, p.damage);
+      eBlock -= soaked;
+      const through = p.damage - soaked;
+      if (through >= hp) return score + 1000 + (through === hp ? 60 : 0) - i;
+      hp -= through;
+      score += through;
+      const useful = Math.min(p.block, threat);
+      threat -= useful;
+      score += useful * 1.3 + (p.block - useful) * 0.05;
+      const future = i < seq.length - 1 || f.actions - p.cost > seq.length - 1 - i ? 2.5 : 0.2;
+      score += Math.min(p.draw, run.draw.length + run.discard.length) * future;
+      score += Math.min(p.recall, run.discard.length) * future * 1.2;
+      // Cards that pay off when let go are better held
+      score -= sumEffect(c, "onDiscardDamage") + sumEffect(c, "onDiscardBlock");
+      f.turnPlays = [...f.turnPlays, c];
+      f.actions -= p.cost;
+      f.plays++;
     }
+    return score;
+  } finally {
+    f.turnPlays = saved.plays;
+    f.actions = saved.actions;
+    f.plays = saved.count;
   }
-  return out;
 }
 
 export function chooseMove(run: Run): Decision {
   const f = run.fight!;
-  const e = f.enemy;
-  const threat = Math.max(0, incoming(run) - f.block);
-  const options: { move: Move; score: number }[] = [{ move: { k: "end" }, score: 0 }];
-
-  for (const uids of legalPlays(run)) {
-    const p = previewPlay(run, uids)!;
-    const spent = uids.map((u) => run.hand.find((c) => c.uid === u)!);
-    const actionsAfter = f.actions - p.cost;
-    let score: number;
-    if (p.kills) {
-      score = 1000 + (p.exact ? 60 : 0) - p.total * 0.1;
-    } else {
-      const through = Math.max(0, p.damage - e.block);
-      score = through * 1.0;
-      score += Math.min(p.block, threat) * 1.3 + Math.max(0, p.block - threat) * 0.05;
-      // Cards drawn or recalled only matter if there's an action left to play them
-      const future = actionsAfter > 0 ? 2.5 : 0.2;
-      score += Math.min(p.draw, run.draw.length + run.discard.length) * future;
-      score += Math.min(p.recall, run.discard.length) * future * 1.2;
-      // Cards that pay off when let go are better held
-      score -= spent.reduce((s, c) => s + sumEffect(c, "onDiscardDamage") + sumEffect(c, "onDiscardBlock"), 0);
-      // Spend an action on the biggest thing; small free plays are always fine
-      if (p.cost === 0) score += 0.5;
+  const cards = legalPlays(run);
+  const depth = Math.min(f.actions, cards.length, 3);
+  // Best sequence starting with each card
+  const bestFirst = new Map<number, number>();
+  const walk = (seq: Card[]) => {
+    if (seq.length) {
+      const s = scoreSequence(run, seq);
+      const k = seq[0].uid;
+      if (s > (bestFirst.get(k) ?? -Infinity)) bestFirst.set(k, s);
     }
-    options.push({ move: { k: "play", uids }, score });
-  }
+    if (seq.length >= Math.max(1, depth)) return;
+    for (const c of cards) if (!seq.includes(c)) walk([...seq, c]);
+  };
+  if (cards.length) walk([]);
 
+  const options: { move: Move; score: number }[] = [{ move: { k: "end" }, score: 0 }];
+  for (const [uid, score] of bestFirst) options.push({ move: { k: "play", uid }, score });
   options.sort((a, b) => b.score - a.score);
   const [a, b] = options;
   const margin = b ? Math.abs(a.score - b.score) / Math.max(1, Math.abs(a.score)) : 1;

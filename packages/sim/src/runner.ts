@@ -95,7 +95,7 @@ function fightLoop(run: Run, margins: number[]) {
     if (guard++ > 3000) throw new Error(`stuck fight, seed ${run.seed}: ${JSON.stringify({ e: f.enemy, block: f.block, hp: run.hp, log: f.log.slice(-6) })}`);
     const d = chooseMove(run);
     margins.push(d.margin);
-    if (d.move.k === "play") play(run, d.move.uids);
+    if (d.move.k === "play") play(run, d.move.uid);
     else endTurn(run);
   }
 }

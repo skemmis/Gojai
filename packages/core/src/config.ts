@@ -7,7 +7,6 @@ export const DEFAULT_CONFIG = {
   actionsPerTurn: 3,
   drawPerTurn: 5,
   maxHand: 10,
-  comboCap: 10,
   maxGuides: 5,
   startGold: 50,
   startSuits: ["hearts", "spades"] as ("hearts" | "diamonds" | "spades" | "clubs")[],

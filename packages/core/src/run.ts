@@ -37,7 +37,7 @@ export function newRun(seed: number): Run {
       fights: 0,
       turns: 0,
       plays: 0,
-      combos: 0,
+      matches: 0,
       endTurns: 0,
       powerUses: { hearts: 0, diamonds: 0, spades: 0, clubs: 0 },
       powerTotal: { hearts: 0, diamonds: 0, spades: 0, clubs: 0 },

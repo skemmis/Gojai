@@ -9,6 +9,7 @@ import {
   intent,
   incoming,
   hitSize,
+  multiplier,
   takeRewardCard,
   takeRewardGuide,
   leaveReward,
@@ -193,26 +194,27 @@ function MapScreen({ run, act }: { run: Run; act: Act }) {
 
 function FightScreen({ run, act, onPowers }: { run: Run; act: Act; onPowers: (s: Suit[]) => void }) {
   const f = run.fight!;
-  const [sel, setSel] = useState<number[]>([]);
+  const [sel, setSel] = useState<number | null>(null);
   const e = f.enemy;
   const def = ENEMY_BY_ID[e.id];
-  const toggle = (uid: number) => setSel((s) => (s.includes(uid) ? s.filter((u) => u !== uid) : [...s, uid]));
-  const valid = sel.filter((u) => run.hand.some((c) => c.uid === u));
+  const valid = sel !== null && run.hand.some((c) => c.uid === sel) ? sel : null;
+  // Tap a card to see what it does; tap it again (or Play) to play it
+  const tap = (uid: number) => (uid === valid ? doPlay(uid) : setSel(uid));
 
-  const doPlay = () => {
+  function doPlay(uid: number) {
     let powers: Suit[] = [];
     const ok = act((r) => {
-      play(r, valid);
+      play(r, uid);
       powers = r.fight?.lastPlay?.powers ?? [];
       if (r.fight?.phase === "won" && r.fight.exact) powers = [];
     });
     if (ok) {
-      setSel([]);
+      setSel(null);
       if (powers.length) onPowers(powers);
     }
-  };
+  }
   const doAct = (fn: (r: Run) => void) => {
-    if (act(fn)) setSel([]);
+    if (act(fn)) setSel(null);
   };
 
   const hpPct = Math.max(0, (e.hp / e.maxHp) * 100);
@@ -246,16 +248,17 @@ function FightScreen({ run, act, onPowers }: { run: Run; act: Act; onPowers: (s:
         <p className="trick">{def?.text}</p>
       </div>
 
-      {f.phase === "play" && <PlayBar run={run} sel={valid} onPlay={doPlay} onEnd={() => doAct(endTurn)} />}
+      {f.phase === "play" && <PlayBar run={run} sel={valid} onPlay={() => valid !== null && doPlay(valid)} onEnd={() => doAct(endTurn)} />}
 
       <div className="hand">
         {sortCards(run.hand).map((c) => (
           <CardView
             key={c.uid}
             card={c}
-            selected={valid.includes(c.uid)}
-            onClick={() => toggle(c.uid)}
+            selected={valid === c.uid}
+            onClick={() => tap(c.uid)}
             disabled={f.phase === "play" && isJunk(c)}
+            badge={f.phase === "play" && !isJunk(c) && multiplier(run, c) > 1 ? `×${multiplier(run, c)}` : undefined}
           />
         ))}
         {run.hand.length === 0 && <p className="dim">Your hand is empty.</p>}
@@ -309,10 +312,10 @@ function Intent({ run }: { run: Run }) {
   );
 }
 
-function PlayBar({ run, sel, onPlay, onEnd }: { run: Run; sel: number[]; onPlay: () => void; onEnd: () => void }) {
+function PlayBar({ run, sel, onPlay, onEnd }: { run: Run; sel: number | null; onPlay: () => void; onEnd: () => void }) {
   const f = run.fight!;
-  const err = sel.length ? playError(run, sel) : null;
-  const pv = sel.length ? previewPlay(run, sel) : null;
+  const err = sel !== null ? playError(run, sel) : null;
+  const pv = sel !== null ? previewPlay(run, sel) : null;
   const max = Math.max(CONFIG.actionsPerTurn, f.actions);
   return (
     <div className="panel bar">
@@ -328,7 +331,14 @@ function PlayBar({ run, sel, onPlay, onEnd }: { run: Run; sel: number[]; onPlay:
         </span>
       </div>
       <div className="preview">
-        {!sel.length && <span className="dim">Pick a card or combo (same value ≤{CONFIG.comboCap}, or Ace + any). Each play costs 1 action.</span>}
+        {sel === null && (
+          <span className="dim">
+            {f.turnPlays.length
+              ? `Played: ${f.turnPlays.map(cardName).join(", ")}. `
+              : ""}
+            Tap a card to see it, tap again to play. Match a value you've played this turn in another suit: ×2.
+          </span>
+        )}
         {err && <span className="warn">{err}</span>}
         {pv && (
           <>
@@ -343,6 +353,7 @@ function PlayBar({ run, sel, onPlay, onEnd }: { run: Run; sel: number[]; onPlay:
                 {p.immune && " BLOCKED"}
               </span>
             ))}
+            {pv.mult > 1 && <span className="exact">{pv.mult === 2 ? "PAIR ×2" : `MATCH ×${pv.mult}`}</span>}
             {pv.cost === 0 && <span className="ok">free</span>}
             {pv.exact ? <span className="exact">EXACT: catch!</span> : pv.kills ? <span className="kill">KILL</span> : null}
           </>
@@ -587,7 +598,7 @@ function OverScreen({ run, onNew }: { run: Run; onNew: () => void }) {
     ["Died to", killer],
     ["Fights", st.fights],
     ["Turns", st.turns],
-    ["Plays / combos", `${st.plays} / ${st.combos}`],
+    ["Plays / matched", `${st.plays} / ${st.matches}`],
     ["Catches", st.catches],
     ["Perfect fights", st.perfects],
     ["HP lost", st.hpLost],

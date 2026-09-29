@@ -124,10 +124,10 @@ out.push(table(["suit", "share of powers fired", "avg N"], SUITS.map((s) => [s, 
 for (const s of SUITS) if (uses[s] / useSum < 0.12) flags.push(`${s} power is rarely used (${pc(uses[s] / useSum)} of powers).`);
 const plays = all.reduce((a, r) => a + r.stats.plays, 0);
 const immune = all.reduce((a, r) => a + r.stats.immuneHits, 0);
-const combos = all.reduce((a, r) => a + r.stats.combos, 0);
+const matched = all.reduce((a, r) => a + r.stats.matches, 0);
 const fights = all.reduce((a, r) => a + r.stats.fights, 0);
 const perfects = all.reduce((a, r) => a + r.stats.perfects, 0);
-out.push(`Plays: ${plays}. Combos: ${pc(combos / plays)} of plays. Powers blocked by immunity: ${immune}. Perfect fights: ${pc(perfects / fights)}. Catches per run: ${f1(mean(all.map((r) => r.stats.catches)))}.`);
+out.push(`Plays: ${plays}. Matched (pair or better): ${pc(matched / plays)} of plays. Powers blocked by immunity: ${immune}. Perfect fights: ${pc(perfects / fights)}. Catches per run: ${f1(mean(all.map((r) => r.stats.catches)))}.`);
 
 // ─── Cards: picked vs passed ─────────────────────────────────────────────────
 

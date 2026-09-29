@@ -29,7 +29,7 @@ export type Rarity = "plain" | "common" | "rare" | "catch" | "junk";
 export interface CardDef {
   id: string;
   name: string;
-  value: number; // 1 = Ace (the companion: combos with any card)
+  value: number; // 1 = Ace
   suit: Suit | null;
   rarity: Rarity;
   effects: Effect[];
@@ -116,6 +116,8 @@ export interface Fight {
   actions: number;
   turn: number;
   plays: number;
+  /** Cards played this turn, for matching. */
+  turnPlays: Card[];
   hpLost: number;
   phase: "play" | "won" | "lost";
   exact: boolean;
@@ -154,7 +156,8 @@ export interface RunStats {
   fights: number;
   turns: number;
   plays: number;
-  combos: number;
+  /** Plays that got the matching bonus. */
+  matches: number;
   endTurns: number;
   powerUses: Record<Suit, number>;
   powerTotal: Record<Suit, number>;

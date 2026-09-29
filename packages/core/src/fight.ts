@@ -1,18 +1,22 @@
 /**
  * The fight, Slay the Spire style, played with a standard deck.
  *
- * Each turn you draw 5 and get 3 ACTIONS. Playing a card costs 1 action;
- * so does a combo (cards of the same value totalling ≤ 10, or an Ace plus
- * any card), which is how you squeeze more out of a turn. Each suit does
- * one job, with N = the play's total value:
+ * Each turn you draw 5 and get 3 ACTIONS. Each card you play costs 1
+ * action, so you play any 3 cards a turn. Each suit does one job, with
+ * N = the card's value:
  *
  *   ♣ clubs    recall: your best card(s) come back from the discard pile
  *   ♦ diamonds draw 1 + floor(N / 4)
  *   ♥ hearts   N block against this turn's attacks
  *   ♠ spades   N damage (the only suit that hits)
  *
- * Powers resolve in that order, unless the enemy is immune to the suit.
- * The enemy's next move (its INTENT) is always visible, so you know when
+ * MATCHING: play a card of the same value as one you already played this
+ * turn, in a different suit, and it counts double (a pair). A third of
+ * that value in yet another suit counts triple. So 7♥ then 7♠ blocks 7
+ * and hits 14.
+ *
+ * A wild card fires every suit's power, in the order above, unless the
+ * enemy is immune to the suit. The enemy's next move (its INTENT) is always visible, so you know when
  * to block and when to go all in. End your turn: unplayed cards are
  * discarded, the enemy acts, your block wears off, and you draw again.
  *
@@ -98,15 +102,6 @@ export function recall(run: Run, n: number): Card[] {
   return best;
 }
 
-function takeFromHand(run: Run, uids: number[]): Card[] {
-  const out: Card[] = [];
-  for (const uid of uids) {
-    const i = run.hand.findIndex((c) => c.uid === uid);
-    if (i >= 0) out.push(...run.hand.splice(i, 1));
-  }
-  return out;
-}
-
 function log(run: Run, msg: string) {
   run.fight?.log.push(msg);
 }
@@ -176,6 +171,7 @@ export function startFight(run: Run, enemyId: string): void {
     actions: 0,
     turn: 0,
     plays: 0,
+    turnPlays: [],
     hpLost: 0,
     phase: "play",
     exact: false,
@@ -191,6 +187,7 @@ export function startFight(run: Run, enemyId: string): void {
 function startTurn(run: Run) {
   const f = run.fight!;
   f.turn++;
+  f.turnPlays = [];
   run.stats.turns++;
   f.actions = CONFIG.actionsPerTurn + (f.turn === 1 && hasGuide(run, "ojai_day") ? 1 : 0);
   drawCards(run, CONFIG.drawPerTurn + (hasGuide(run, "oak_grove") ? 1 : 0));
@@ -198,29 +195,42 @@ function startTurn(run: Run) {
 
 // ─── Playing ─────────────────────────────────────────────────────────────────
 
-export function actionCost(cs: Card[]): number {
-  return cs.every((c) => has(c, "free")) ? 0 : 1;
+export function actionCost(c: Card): number {
+  return has(c, "free") ? 0 : 1;
 }
 
-/** null if the play is legal, else the reason it isn't. */
-export function playError(run: Run, uids: number[]): string | null {
+/** null if the card can be played, else the reason it can't. */
+export function playError(run: Run, uid: number): string | null {
   const f = run.fight;
   if (!f || f.phase !== "play") return "Not your move.";
-  if (uids.length === 0) return "Pick a card.";
-  const cards = uids.map((u) => run.hand.find((c) => c.uid === u));
-  if (cards.some((c) => !c)) return "That card isn't in your hand.";
-  const cs = cards as Card[];
-  if (cs.some(isJunk)) return "Junk can't be played.";
-  if (f.actions < actionCost(cs)) return "No actions left. End your turn.";
-  if (cs.length === 1) return null;
-  const aces = cs.filter((c) => c.value === 1).length;
-  if (cs.length === 2 && aces >= 1) return null; // Ace + any card
-  const v = cs[0].value;
-  if (!cs.every((c) => c.value === v)) return "A combo is cards of the same value, or an Ace plus one card.";
-  if (cs.length > 4) return "Four cards at most.";
-  const total = cs.reduce((s, c) => s + c.value, 0);
-  if (total > CONFIG.comboCap && !hasGuide(run, "krishnamurti")) return `A combo can total ${CONFIG.comboCap} at most.`;
+  const c = run.hand.find((x) => x.uid === uid);
+  if (!c) return "That card isn't in your hand.";
+  if (isJunk(c)) return "Junk can't be played.";
+  if (f.actions < actionCost(c)) return "No actions left. End your turn.";
   return null;
+}
+
+/**
+ * Matching: how many cards of the same value, in a different suit, you've
+ * already played this turn. A pair doubles the card's value; three of a
+ * kind triples it.
+ */
+export function matches(run: Run, c: Card): number {
+  const mine = cardSuits(run, c);
+  const other = new Set<string>();
+  for (const p of run.fight!.turnPlays) {
+    if (p.value !== c.value) continue;
+    const theirs = cardSuits(run, p);
+    if (theirs.length > 1 || mine.length > 1) other.add(`wild${p.uid}`); // wild cards match anything
+    else if (theirs[0] !== mine[0]) other.add(theirs[0]);
+  }
+  return other.size;
+}
+
+export function multiplier(run: Run, c: Card): number {
+  const m = matches(run, c);
+  if (m === 0) return 1;
+  return 1 + m + (hasGuide(run, "krishnamurti") ? 1 : 0);
 }
 
 export interface PowerPreview {
@@ -231,7 +241,9 @@ export interface PowerPreview {
 }
 
 export interface PlayPreview {
+  /** The card's value after the matching bonus. */
   total: number;
+  mult: number;
   damage: number;
   block: number;
   draw: number;
@@ -242,30 +254,29 @@ export interface PlayPreview {
   exact: boolean;
 }
 
-function playNumbers(run: Run, cs: Card[]): PlayPreview {
+function playNumbers(run: Run, c: Card): PlayPreview {
   const f = run.fight!;
   const e = f.enemy;
-  const total = cs.reduce((s, c) => s + c.value, 0);
-  const suits = new Set<Suit>();
-  for (const c of cs) for (const s of cardSuits(run, c)) suits.add(s);
-  const pierce = cs.some((c) => has(c, "pierce")) || (f.plays === 0 && hasGuide(run, "ceremony"));
+  const mult = multiplier(run, c);
+  const total = c.value * mult;
+  const suits = cardSuits(run, c);
+  const pierce = has(c, "pierce") || (f.plays === 0 && hasGuide(run, "ceremony"));
   const silenced = f.plays === 0 && e.passive.k === "silence";
   const blocked = (s: Suit) => silenced || (!pierce && e.suits.includes(s));
 
-  let damage = cs.reduce((s, c) => s + sumEffect(c, "dmg"), 0);
-  let block = cs.reduce((s, c) => s + sumEffect(c, "block"), 0);
-  let draw = cs.reduce((s, c) => s + sumEffect(c, "draw"), 0);
+  let damage = sumEffect(c, "dmg");
+  let block = sumEffect(c, "block");
+  let draw = sumEffect(c, "draw") + (hasGuide(run, "arcade") && c.value >= 10 ? 1 : 0);
   let recallN = 0;
-  if (hasGuide(run, "arcade")) draw += cs.filter((c) => c.value >= 10).length;
   const powers: PowerPreview[] = [];
   for (const s of POWER_ORDER) {
-    if (!suits.has(s)) continue;
+    if (!suits.includes(s)) continue;
     const immune = blocked(s);
     let amount = 0;
     if (s === "clubs") amount = 1 + Math.floor(total / CONFIG.clubsPer) + (hasGuide(run, "farmers_market") ? 1 : 0);
     if (s === "diamonds") amount = 1 + Math.floor(total / CONFIG.diamondsPer) + (hasGuide(run, "libbey") ? 1 : 0);
     if (s === "hearts") amount = total + (hasGuide(run, "crystal_shop") ? 2 : 0);
-    if (s === "spades") amount = total + (cs.length > 1 && hasGuide(run, "besant") ? 4 : 0);
+    if (s === "spades") amount = total + (mult > 1 && hasGuide(run, "besant") ? 4 : 0);
     powers.push({ suit: s, amount, immune });
     if (immune) continue;
     if (s === "clubs") recallN += amount;
@@ -278,29 +289,30 @@ function playNumbers(run: Run, cs: Card[]): PlayPreview {
   const through = Math.max(0, damage - e.block);
   return {
     total,
+    mult,
     damage,
     block,
     draw,
     recall: recallN,
-    cost: actionCost(cs),
+    cost: actionCost(c),
     powers,
     kills: through >= e.hp,
     exact: through === e.hp,
   };
 }
 
-export function previewPlay(run: Run, uids: number[]): PlayPreview | null {
-  if (playError(run, uids)) return null;
-  const cs = uids.map((u) => run.hand.find((c) => c.uid === u)!) as Card[];
-  return playNumbers(run, cs);
+export function previewPlay(run: Run, uid: number): PlayPreview | null {
+  if (playError(run, uid)) return null;
+  return playNumbers(run, run.hand.find((c) => c.uid === uid)!);
 }
 
-export function play(run: Run, uids: number[]): void {
-  const err = playError(run, uids);
+export function play(run: Run, uid: number): void {
+  const err = playError(run, uid);
   if (err) throw new Error(err);
   const f = run.fight!;
-  const cs = takeFromHand(run, uids);
-  const p = playNumbers(run, cs);
+  const c = run.hand.find((x) => x.uid === uid)!;
+  const p = playNumbers(run, c);
+  run.hand.splice(run.hand.indexOf(c), 1);
   f.actions -= p.cost;
 
   for (const pw of p.powers) {
@@ -311,7 +323,8 @@ export function play(run: Run, uids: number[]): void {
     run.stats.powerUses[pw.suit]++;
     run.stats.powerTotal[pw.suit] += pw.amount;
   }
-  run.discard.push(...cs);
+  run.discard.push(c);
+  f.turnPlays.push(c);
   if (p.recall) {
     const back = recall(run, p.recall);
     if (back.length) log(run, `Clubs: ${back.map(cardName).join(", ")} back to your hand.`);
@@ -321,9 +334,9 @@ export function play(run: Run, uids: number[]): void {
 
   f.plays++;
   run.stats.plays++;
-  if (cs.length > 1) run.stats.combos++;
+  if (p.mult > 1) run.stats.matches++;
   f.lastPlay = {
-    cards: cs.map((c) => c.uid),
+    cards: [c.uid],
     damage: p.damage,
     powers: p.powers.filter((x) => !x.immune).map((x) => x.suit),
     immune: p.powers.filter((x) => x.immune).map((x) => x.suit),
@@ -333,7 +346,8 @@ export function play(run: Run, uids: number[]): void {
     run.stats.maxHitFloor = run.floor;
   }
   const bits = [p.damage ? `${p.damage} damage` : "", p.block ? `${p.block} block` : ""].filter(Boolean).join(", ");
-  log(run, `You play ${cs.map(cardName).join(" + ")}${bits ? `: ${bits}` : ""}.`);
+  const tag = p.mult === 2 ? " (pair ×2)" : p.mult > 2 ? ` (match ×${p.mult})` : "";
+  log(run, `You play ${cardName(c)}${tag}${bits ? `: ${bits}` : ""}.`);
   if (p.damage) hitEnemy(run, p.damage);
 }
 

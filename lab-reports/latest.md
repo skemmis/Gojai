@@ -1,22 +1,19 @@
 # Balance lab report
 
-1000 greedy + 1000 explore runs, seed 1, 7.8s. Greedy = sensible picks. Explore = random reward picks, for fair card ratings.
+1000 greedy + 1000 explore runs, seed 1, 34.0s. Greedy = sensible picks. Explore = random reward picks, for fair card ratings.
 
 ## Flags
-- Card "The Channeler" looks like a must-pick (Δ +6.3).
-- Guide "Krishnamurti" looks broken (Δ +5.0).
-- Guide "The Oak Grove" looks broken (Δ +4.8).
-- Guide "The Farmers Market" hurts runs that take it (Δ -1.1).
-- Guide "Libbey" hurts runs that take it (Δ -1.3).
-- Guide "The Crystal Shop" hurts runs that take it (Δ -1.3).
-- Guide "The Silent Retreat" hurts runs that take it (Δ -1.6).
+- clubs power is rarely used (12% of powers).
+- Card "Shelf Road" looks like a trap (Δ -1.7).
+- Guide "Libbey" hurts runs that take it (Δ -1.7).
+- Guide "The Farmers Market" hurts runs that take it (Δ -1.8).
 
 ## How far runs get (floors cleared)
 
 | policy | mean | p10 | median | p90 | best |
 |---|---|---|---|---|---|
-| greedy | 20.9 | 7 | 15 | 47 | 95 |
-| explore | 12.8 | 7 | 11 | 15 | 63 |
+| greedy | 16.0 | 7 | 15 | 31 | 47 |
+| explore | 12.2 | 7 | 15 | 15 | 47 |
 
 ## Enemies
 
@@ -24,31 +21,31 @@ Death rate = share of encounters that ended the run. Catch rate = share won with
 
 | enemy | tier | met | death rate | HP lost | perfect | catch rate | avg turns |
 |---|---|---|---|---|---|---|---|
-| The Masters of the Wisdom | boss | 1800 | 64% | 18.6 | 9% | 28% | 4.8 |
-| The Order of the Star | boss | 2637 | 31% | 13.3 | 19% | 37% | 4.0 |
-| The Sound Healer | elite | 2256 | 1% | 10.2 | 25% | 36% | 3.6 |
-| The Developer | elite | 2149 | 0% | 4.0 | 46% | 31% | 5.0 |
-| The Manifestor | normal | 1161 | 0% | 2.4 | 65% | 39% | 2.4 |
-| The Influencer | normal | 1280 | 0% | 1.8 | 76% | 36% | 2.1 |
-| The Oak Grove Mom | elite | 2192 | 0% | 3.4 | 43% | 43% | 6.7 |
-| Parking Enforcement | normal | 1192 | 0% | 0.7 | 81% | 38% | 2.5 |
-| The Short-Term Rental | normal | 1188 | 0% | 0.3 | 91% | 38% | 2.4 |
-| The E-Bike Teen | normal | 1132 | 0% | 0.7 | 83% | 34% | 2.4 |
-| The Crystal Vendor | normal | 1143 | 0% | 0.6 | 83% | 37% | 3.4 |
-| The $9 Latte | normal | 1143 | 0% | 0.4 | 88% | 37% | 2.5 |
+| The Masters of the Wisdom | boss | 1455 | 79% | 23.9 | 0% | 24% | 3.9 |
+| The Order of the Star | boss | 2282 | 35% | 15.3 | 3% | 39% | 3.6 |
+| The Sound Healer | elite | 1567 | 2% | 14.4 | 3% | 38% | 3.8 |
+| The Developer | elite | 1510 | 1% | 6.2 | 28% | 32% | 5.3 |
+| The Oak Grove Mom | elite | 1468 | 1% | 6.9 | 16% | 41% | 7.5 |
+| The Manifestor | normal | 1101 | 0% | 3.2 | 53% | 42% | 2.5 |
+| Parking Enforcement | normal | 1153 | 0% | 1.3 | 64% | 41% | 2.7 |
+| The E-Bike Teen | normal | 1130 | 0% | 1.1 | 69% | 38% | 2.5 |
+| The Crystal Vendor | normal | 1180 | 0% | 1.4 | 64% | 35% | 3.5 |
+| The Short-Term Rental | normal | 1075 | 0% | 0.6 | 83% | 40% | 2.6 |
+| The $9 Latte | normal | 1125 | 0% | 0.9 | 74% | 40% | 2.7 |
+| The Influencer | normal | 1222 | 0% | 2.3 | 69% | 39% | 2.2 |
 
-Early fights (normal, floors 1-4): 2247 fought, death rate 0%, HP lost 1.1, perfect 80%, 2.6 turns.
+Early fights (normal, floors 1-4): 2261 fought, death rate 0%, HP lost 1.5, perfect 69%, 2.7 turns.
 
 ## Suit powers
 
 | suit | share of powers fired | avg N |
 |---|---|---|
-| hearts | 22% | 10.2 |
-| diamonds | 16% | 3.6 |
-| spades | 47% | 9.6 |
-| clubs | 15% | 3.4 |
+| hearts | 22% | 8.1 |
+| diamonds | 13% | 3.2 |
+| spades | 54% | 9.3 |
+| clubs | 12% | 3.0 |
 
-Plays: 201713. Combos: 31% of plays. Powers blocked by immunity: 43579. Perfect fights: 50%. Catches per run: 3.2.
+Plays: 179092. Matched (pair or better): 17% of plays. Powers blocked by immunity: 32536. Perfect fights: 38%. Catches per run: 2.7.
 
 ## Cards: picked vs passed (explore runs)
 
@@ -56,60 +53,60 @@ Plays: 201713. Combos: 31% of plays. Powers blocked by immunity: 43579. Perfect 
 
 | card | Δ floors | picked n |
 |---|---|---|
-| The Channeler | +6.3 | 347 |
-| Second Opinion | +1.9 | 123 |
-| Old Money | +1.2 | 134 |
-| Pink Moment | +1.1 | 328 |
-| Bike Lock | +0.6 | 140 |
-| Cold Plunge | +0.6 | 122 |
-| Wildflower | +0.0 | 129 |
-| Let Go | -0.0 | 108 |
-| Olive Oil Tasting | -0.2 | 139 |
-| Trust Fund | -0.4 | 320 |
-| The Oak | -0.4 | 126 |
-| Shelf Road | -0.9 | 117 |
-| Heirloom Tomato | -1.0 | 105 |
-| Mahatma Letter | -1.3 | 325 |
-| Sage Bundle | -1.4 | 117 |
-| Arcade Lease | -1.5 | 126 |
+| Bike Lock | +2.3 | 133 |
+| Pink Moment | +2.0 | 275 |
+| Arcade Lease | +0.9 | 133 |
+| Let Go | +0.9 | 123 |
+| Old Money | +0.6 | 119 |
+| The Channeler | +0.4 | 261 |
+| Cold Plunge | +0.2 | 126 |
+| The Oak | +0.1 | 113 |
+| Olive Oil Tasting | +0.1 | 127 |
+| Wildflower | -0.1 | 136 |
+| Trust Fund | -0.2 | 246 |
+| Second Opinion | -0.4 | 116 |
+| Mahatma Letter | -0.4 | 286 |
+| Sage Bundle | -0.5 | 138 |
+| Heirloom Tomato | -1.0 | 137 |
+| Shelf Road | -1.7 | 118 |
 
 Plain cards by value:
 
 | value | Δ floors | picked n |
 |---|---|---|
-| 1 | -1.0 | 208 |
-| 2 | -0.9 | 199 |
-| 3 | -0.7 | 187 |
-| 4 | -0.7 | 194 |
-| 5 | +0.1 | 197 |
-| 6 | -0.8 | 221 |
-| 7 | +0.4 | 204 |
-| 8 | +0.1 | 214 |
-| 9 | -0.8 | 190 |
-| 10 | +1.0 | 194 |
+| 1 | -0.9 | 196 |
+| 2 | -0.5 | 198 |
+| 3 | -0.9 | 208 |
+| 4 | +0.1 | 193 |
+| 5 | -0.8 | 189 |
+| 6 | +0.4 | 199 |
+| 7 | -0.9 | 208 |
+| 8 | -0.2 | 213 |
+| 9 | +0.1 | 176 |
+| 10 | -0.2 | 193 |
 
 ## Guides: picked vs passed (explore runs)
 
 | guide | does | Δ floors | picked n |
 |---|---|---|---|
-| Krishnamurti | Combos have no cap. | +5.0 | 52 |
-| The Oak Grove | Draw 1 more card each turn. | +4.8 | 48 |
-| The People's Market | Aces count as every suit. | +3.8 | 49 |
-| Blavatsky | Block no longer wears off between your turns. | +2.7 | 61 |
-| The Sound Bath | Each card you discard unplayed: +1 block next turn. | +2.2 | 146 |
-| Leadbeater | Start each fight with 6 block. | +2.2 | 143 |
-| Ojai Day | +1 action on the first turn of each fight. | +0.9 | 64 |
-| The Arcade | Playing a card worth 10+ draws 1. | +0.8 | 147 |
-| The Life Coach | Your first play each fight deals double. | +0.6 | 136 |
-| The Ceremony | Your first play each fight ignores immunity. | +0.6 | 159 |
-| Pink Moment | Perfect fights also heal 6. | +0.3 | 164 |
-| Meditation Mount | After each fight, heal 4. | -0.6 | 145 |
-| The Realtor | +6 gold per fight. Catches pay 20. | -0.8 | 144 |
-| Besant | Spade combos deal +4 damage. | -0.8 | 148 |
-| The Farmers Market | Clubs recall 1 extra card. | -1.1 | 142 |
-| Libbey | Diamonds draw 1 extra card. | -1.3 | 175 |
-| The Crystal Shop | Hearts block +2. | -1.3 | 158 |
-| The Silent Retreat | Enemy attacks are 1 lower. | -1.6 | 149 |
+| The Sound Bath | Each card you discard unplayed: +1 block next turn. | +1.7 | 115 |
+| The Ceremony | Your first play each fight ignores immunity. | +1.6 | 124 |
+| The Oak Grove | Draw 1 more card each turn. | +1.4 | 41 |
+| Leadbeater | Start each fight with 6 block. | +1.3 | 121 |
+| Pink Moment | Perfect fights also heal 6. | +1.0 | 142 |
+| Meditation Mount | After each fight, heal 4. | +0.9 | 124 |
+| The Silent Retreat | Enemy attacks are 1 lower. | +0.3 | 128 |
+| The Crystal Shop | Hearts block +2. | +0.3 | 139 |
+| Besant | Matched spades deal +4 damage. | +0.2 | 127 |
+| The Arcade | Playing a card worth 10+ draws 1. | +0.2 | 131 |
+| Krishnamurti | Matching cards count one step more: a pair ×3, three of a kind ×4. | -0.1 | 41 |
+| Blavatsky | Block no longer wears off between your turns. | -0.1 | 48 |
+| The Life Coach | Your first play each fight deals double. | -0.3 | 130 |
+| The People's Market | Aces count as every suit. | -0.4 | 38 |
+| The Realtor | +6 gold per fight. Catches pay 20. | -0.6 | 122 |
+| Ojai Day | +1 action on the first turn of each fight. | -0.9 | 52 |
+| Libbey | Diamonds draw 1 extra card. | -1.7 | 138 |
+| The Farmers Market | Clubs recall 1 extra card. | -1.8 | 142 |
 
 ## Guide pairs (combos)
 
@@ -117,17 +114,17 @@ Lift = how much deeper runs holding both Guides went than the two Guides' separa
 
 | pair | runs | mean depth | lift |
 |---|---|---|---|
-| The Arcade + Blavatsky | 35 | 40.7 | +5.6 |
-| Blavatsky + The Sound Bath | 28 | 41.0 | +5.4 |
-| Blavatsky + Leadbeater | 26 | 39.3 | +5.3 |
-| Ojai Day + The Sound Bath | 30 | 32.9 | +3.5 |
-| The Oak Grove + Pink Moment | 24 | 32.9 | +3.3 |
-| Leadbeater + The Oak Grove | 21 | 32.4 | +2.7 |
-| Besant + Blavatsky | 27 | 35.7 | +2.4 |
-| The Arcade + The Oak Grove | 27 | 33.1 | +2.2 |
+| The Oak Grove + The Sound Bath | 24 | 30.7 | +4.7 |
+| Blavatsky + The Sound Bath | 18 | 27.4 | +3.0 |
+| Besant + The Oak Grove | 20 | 26.2 | +2.7 |
+| The Life Coach + Ojai Day | 30 | 21.9 | +2.5 |
+| Blavatsky + The Crystal Shop | 20 | 23.8 | +2.5 |
+| Ojai Day + Pink Moment | 27 | 21.2 | +1.4 |
+| Blavatsky + The Farmers Market | 16 | 21.5 | +1.2 |
+| Leadbeater + The People's Market | 19 | 20.9 | +1.1 |
 
 ## Decisions
 
-Close calls (best and second-best move within 10%): 23% of 258320 decisions. Higher means more real choices per turn.
+Close calls (best and second-best move within 10%): 48% of 225214 decisions. Higher means more real choices per turn.
 
-Biggest single hit: 76 (median run's biggest: 16).
+Biggest single hit: 78 (median run's biggest: 24).

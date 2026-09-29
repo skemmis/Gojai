@@ -1,6 +1,6 @@
 # Combat (prototype v0)
 
-A roguelike deckbuilder in the spirit of Slay the Spire, played with a **standard deck of cards**. Built up from *Regicide* (combos, Aces as companions, enemies immune to a suit, catching). The poker and blackjack drafts are kept in `docs/COMBAT_*_PARKED.md`.
+A roguelike deckbuilder in the spirit of Slay the Spire, played with a **standard deck of cards**. It borrows two ideas from *Regicide*: enemies are immune to a suit, and an exact kill catches the enemy. The poker and blackjack drafts are kept in `docs/COMBAT_*_PARKED.md`.
 
 The feel we're after: walk to a spot, find a fight, pay a little attention (like a Pokémon battle). Early fights are easy. Elites and bosses make you think.
 
@@ -14,12 +14,8 @@ Every number lives in `packages/core/src/config.ts` or `content.ts`. The balance
 ## A turn
 
 1. **Draw 5.** When your draw pile runs out, your discard pile is shuffled back in.
-2. **You have 3 actions.** Each play costs 1 action. A play is one card, or a combo:
-   - two to four cards of the **same value** totalling 10 or less, or
-   - an **Ace plus any one card**.
-
-   Combos are how you get more out of 3 actions.
-3. **Each suit does one job**, with N = the play's total value, unless the enemy is immune to that suit:
+2. **You have 3 actions: play any 3 cards.** One card per action, in any order.
+3. **Each suit does one job**, with N = the card's value, unless the enemy is immune to that suit:
 
    | Suit | Job |
    |---|---|
@@ -28,8 +24,8 @@ Every number lives in `packages/core/src/config.ts` or `content.ts`. The balance
    | ♦ Diamonds | **Draw** 1 card, +1 per 4 value (A-3: 1, 4-7: 2, 8-10: 3). |
    | ♣ Clubs | **Recall** your best card from the discard pile to your hand, +1 per 5 value. |
 
-   An Ace♠ + 9♥ combo blocks 10 *and* deals 10, for one action.
-4. **End your turn.** Unplayed cards are discarded. The enemy does what it said it would. Your block wears off.
+4. **Matching:** play a card with the same value as one you already played this turn, in a **different suit**, and it counts **double** (a pair). A third one in yet another suit counts **triple**. 7♥ then 7♠ blocks 7 and hits 14. Two 7♠ don't match. Matching resets each turn.
+5. **End your turn.** Unplayed cards are discarded. The enemy does what it said it would. Your block wears off.
 
 ## Intents
 
@@ -47,7 +43,7 @@ Each enemy has HP, a suit it's immune to, a cycle of intents, and sometimes a tr
 ## Guides
 
 You can hold up to 5 Guides. Each one bends a rule. Some examples:
-- **Krishnamurti:** combos have no cap.
+- **Krishnamurti:** matching counts one step more (a pair ×3).
 - **Leadbeater:** start each fight with 6 block.
 - **Blavatsky:** your block doesn't wear off.
 - **Ojai Day:** +1 action on your first turn.
@@ -69,4 +65,4 @@ A run is endless and escalating, and your score is the floors cleared. Each floo
 2. **Catching** turns exact kills into collecting.
 3. **Co-op by design.** At a group boss, 2 to 4 players take turns against one shared enemy, each with their own hand. Bosses never end a run and their damage counts for your faction.
 4. **Live duels.** The loser pays gold or a card.
-5. **No status effects** (no strength, weakness or poison). Suits, combos, catching and Guides carry the depth instead.
+5. **No status effects** (no strength, weakness or poison). Suits, matching, catching and Guides carry the depth instead.
