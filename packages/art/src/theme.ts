@@ -7,7 +7,7 @@ export const color = {
   // Paper side (map, menus, cards, rewards)
   paper: "#ECE3CF",
   paperDeep: "#E0D3B7", // pressed / secondary panels
-  ink: "#1B1814",
+  ink: "#2A1E14", // same sepia ink as the illustrations (locked 2026-09-29)
   inkSoft: "#5B5347", // secondary text on paper
   rule: "#B8AA8E", // hairlines on paper
 

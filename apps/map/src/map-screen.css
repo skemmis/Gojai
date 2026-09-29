@@ -1,7 +1,7 @@
 /* Tokens from packages/art/src/theme.ts (see docs/ART_DIRECTION.md): ink on paper, pink only for live events. */
 .map-screen {
   position: absolute; inset: 0; background: var(--paper); color: var(--ink);
-  --paper: #ECE3CF; --paper-deep: #E0D3B7; --ink: #1B1814; --ink-soft: #5B5347; --rule: #B8AA8E;
+  --paper: #ECE3CF; --paper-deep: #E0D3B7; --ink: #2A1E14; --ink-soft: #5B5347; --rule: #B8AA8E;
   --blood: #C8261E; --spot: #1F4E79; --gilt-text: #8A6410; --pink: #E8488C;
   --display: "IM Fell English SC", "IM Fell English", Georgia, serif;
   --ui: "Libre Franklin", "Franklin Gothic Medium", system-ui, sans-serif;
@@ -118,7 +118,7 @@
 .map-screen .swatch { height: 16px; border: 1px solid var(--ink); }
 .map-screen .swatch.dashed { border: 1.5px dashed var(--ink); }
 .map-screen .swatch.deep { background: var(--paper-deep); }
-.map-screen .swatch.hatch { background: repeating-linear-gradient(135deg, transparent 0 3px, rgba(27, 24, 20, .55) 3px 4px); }
+.map-screen .swatch.hatch { background: repeating-linear-gradient(135deg, transparent 0 3px, rgba(42, 30, 20, .55) 3px 4px); }
 .map-screen .swatch.stipple { background: radial-gradient(var(--ink-soft) 0.8px, transparent 1px) 0 0 / 5px 5px; }
 .map-screen .key li { cursor: default; }
 .map-screen .pin.big.live { background: var(--pink); color: var(--ink); box-shadow: inset 0 0 0 2px var(--pink), inset 0 0 0 3px var(--ink); }
