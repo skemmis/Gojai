@@ -17,6 +17,8 @@ const PATHS = {
   up: "M12 3l8 9h-5v9H9v-9H4z",
   cross: "M9 2h6v7h7v6h-7v7H9v-7H2V9h7z",
   letter: "M2 5h20v14H2zM3.5 6.5L12 13l8.5-6.5",
+  draw: "M4 3h11v15H4zM6 5v11h7V5zM17 7h3v14H8v-2h10V7z",
+  recall: "M12 4a8 8 0 1 1-7.4 5H2l4-5 4 5H7.8A5 5 0 1 0 12 7z",
 } as const;
 export type IconName = keyof typeof PATHS;
 

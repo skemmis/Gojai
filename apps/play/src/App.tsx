@@ -33,6 +33,7 @@ import {
   CONFIG,
 } from "@gojai/core";
 import type { Run, Suit, EnemyAction } from "@gojai/core";
+import { FightScreen } from "./fight";
 import { CardView, CardPicker, GuideChip, Icon, PowerLine, SuitMark, POWER, sortCards, type IconName } from "./components";
 
 type Act = (fn: (r: Run) => void) => boolean;
@@ -83,6 +84,7 @@ export function App() {
         {run.phase === "event" && <EventScreen run={run} act={act} />}
         {run.phase === "over" && <OverScreen run={run} onNew={() => startNew(randomSeed())} />}
       </main>
+      {!night && (
       <footer className="row wrap">
         <span className="soft">Seed {run.seed}</span>
         <input className="seed" inputMode="numeric" placeholder="random" value={seedText} onChange={(e) => setSeedText(e.target.value)} />
@@ -90,6 +92,7 @@ export function App() {
           New run
         </button>
       </footer>
+      )}
     </div>
   );
 }
@@ -113,7 +116,7 @@ function StatusBar({ run }: { run: Run }) {
           </span>
         </span>
       </div>
-      {run.guides.length > 0 && (
+      {run.guides.length > 0 && run.phase !== "fight" && (
         <div className="guides">
           {run.guides.map((g, i) => (
             <GuideChip key={g + i} id={g} />
@@ -143,183 +146,6 @@ function MapScreen({ run, act }: { run: Run; act: Act }) {
         {boss ? "Face it" : "Walk to the spot"}
       </button>
     </section>
-  );
-}
-
-// ─── Fight ───────────────────────────────────────────────────────────────────
-
-function FightScreen({ run, act }: { run: Run; act: Act }) {
-  const f = run.fight!;
-  const [sel, setSel] = useState<number | null>(null);
-  const e = f.enemy;
-  const def = ENEMY_BY_ID[e.id];
-  const valid = sel !== null && run.hand.some((c) => c.uid === sel) ? sel : null;
-
-  const doPlay = (uid: number) => {
-    if (act((r) => play(r, uid))) setSel(null);
-  };
-  // Tap a card to see what it does; tap it again (or Play) to play it
-  const tap = (uid: number) => (uid === valid ? doPlay(uid) : setSel(uid));
-  const doEnd = () => {
-    if (act(endTurn)) setSel(null);
-  };
-
-  const hpPct = Math.max(0, (e.hp / e.maxHp) * 100);
-  const youPct = Math.max(0, (run.hp / run.maxHp) * 100);
-  const max = Math.max(CONFIG.actionsPerTurn, f.actions);
-  const pv = valid !== null ? previewPlay(run, valid) : null;
-
-  return (
-    <section className="fight">
-      <Intent run={run} />
-
-      <div className="foe">
-        <h2 className="name">{e.name}</h2>
-        <div className="meter">
-          <i style={{ width: `${hpPct}%` }} />
-          {pv && pv.damage > e.block && <u style={{ left: `${Math.max(0, ((e.hp - (pv.damage - e.block)) / e.maxHp) * 100)}%`, width: `${Math.min(hpPct, ((pv.damage - e.block) / e.maxHp) * 100)}%` }} />}
-        </div>
-        <div className="row between small">
-          <span>
-            <b className="num">{Math.max(0, e.hp)}</b> / {e.maxHp}
-            {e.block > 0 && (
-              <span className="blk">
-                <Icon name="shield" /> <b className="num">{e.block}</b>
-              </span>
-            )}
-          </span>
-          <span className="row gap-s">
-            <span className="soft">Immune</span>
-            {e.suits.map((s) => (
-              <SuitMark key={s} suit={s} />
-            ))}
-          </span>
-        </div>
-        <p className="trick">
-          <span className="badge">{e.tier}</span> {def?.text}
-        </p>
-      </div>
-
-      <div className="you row between">
-        <span className="me">
-          <b className="num">{run.hp}</b>
-          <span className="soft">/ {run.maxHp} HP</span>
-          <span className="blk" title="Your block">
-            <Icon name="shield" /> <b className="num">{f.block}</b>
-          </span>
-        </span>
-        <span className="actions" title={`${f.actions} actions left`}>
-          <small>Actions</small>
-          {Array.from({ length: max }, (_, i) => (
-            <i key={i} className={i < f.actions ? "on" : ""} />
-          ))}
-        </span>
-      </div>
-      <div className="thin">
-        <i style={{ width: `${youPct}%` }} />
-      </div>
-
-      <div className="hand">
-        {sortCards(run.hand).map((c) => {
-          const junk = isJunk(c);
-          const m = !junk ? multiplier(run, c) : 1;
-          return (
-            <CardView
-              key={c.uid}
-              card={c}
-              selected={valid === c.uid}
-              onClick={() => tap(c.uid)}
-              disabled={junk}
-              off={!!playError(run, c.uid)}
-              badge={m > 1 ? `×${m}` : undefined}
-              power={c.value * m}
-            />
-          );
-        })}
-        {run.hand.length === 0 && <p className="soft">Your hand is empty.</p>}
-      </div>
-
-      <PlayBar run={run} sel={valid} onPlay={() => valid !== null && doPlay(valid)} onEnd={doEnd} />
-
-      <div className="log">
-        {f.log.slice(-4).map((l, i, a) => (
-          <div key={f.log.length - a.length + i} className={i === a.length - 1 ? "" : "soft"}>
-            {l}
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function describe(run: Run, a: EnemyAction): { icon: IconName; text: string; attack: boolean } {
-  if (a.k === "attack") {
-    const n = hitSize(run, a.n);
-    return { icon: "blade", text: a.times && a.times > 1 ? `${n}×${a.times}` : `${n}`, attack: true };
-  }
-  if (a.k === "block") return { icon: "shield", text: `Block ${a.n}`, attack: false };
-  if (a.k === "buff") return { icon: "up", text: `Attacks +${a.n}`, attack: false };
-  if (a.k === "heal") return { icon: "cross", text: `Heal ${a.n}`, attack: false };
-  return { icon: "letter", text: `${a.count > 1 ? `${a.count} × ` : ""}${cardDef(a.card).name}`, attack: false };
-}
-
-/** What the enemy will do when you end your turn: block if it's attacking, go all in if not. */
-function Intent({ run }: { run: Run }) {
-  const f = run.fight!;
-  const hit = incoming(run);
-  const through = Math.max(0, hit - f.block);
-  return (
-    <div className="intent-wrap">
-      <div className="row gap-s center">
-        {intent(run).map((a, i) => {
-          const d = describe(run, a);
-          return (
-            <span key={i} className={`intent ${d.attack ? "atk" : ""}`}>
-              <Icon name={d.icon} /> {d.text}
-            </span>
-          );
-        })}
-      </div>
-      <div className="intent-note">
-        {hit > 0 ? (through ? <span className="blood-text">You'd take {through}</span> : "Fully guarded") : "Not attacking: go all in"}
-      </div>
-    </div>
-  );
-}
-
-function PlayBar({ run, sel, onPlay, onEnd }: { run: Run; sel: number | null; onPlay: () => void; onEnd: () => void }) {
-  const f = run.fight!;
-  const err = sel !== null ? playError(run, sel) : null;
-  const pv = sel !== null ? previewPlay(run, sel) : null;
-  return (
-    <div className="playbar">
-      <div className="preview">
-        {sel === null && (
-          <span className="soft">
-            {f.turnPlays.length ? `Played ${f.turnPlays.map(cardName).join(", ")}. ` : ""}
-            Tap a card to see it, tap again to play. Same value, new suit: ×2.
-          </span>
-        )}
-        {err && <span className="blood-text">{err}</span>}
-        {pv &&
-          pv.powers.map((p) => (
-            <span key={p.suit} className={`power ${p.immune ? "immune" : ""}`}>
-              <Icon name={p.suit} /> {p.immune ? `${POWER[p.suit]}: immune` : <PowerLine suit={p.suit} n={p.amount} />}
-            </span>
-          ))}
-        {pv && pv.mult > 1 && <span className="tag ink inline">{pv.mult === 2 ? "Pair ×2" : `Match ×${pv.mult}`}</span>}
-        {pv && pv.cost === 0 && <span className="soft">Free</span>}
-        {pv && (pv.exact ? <span className="tag gilt inline">Exact: catch</span> : pv.kills ? <b>Kills</b> : null)}
-      </div>
-      <div className="row gap">
-        <button className="btn" disabled={!pv} onClick={onPlay}>
-          Play
-        </button>
-        <button className={`btn ${f.actions === 0 ? "" : "ghost"}`} onClick={onEnd}>
-          End turn
-        </button>
-      </div>
-    </div>
   );
 }
 

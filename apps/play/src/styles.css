@@ -537,206 +537,465 @@ footer {
   font-size: 8.5px;
 }
 
-/* ─── The fight: night table ────────────────────────────────────────────── */
+/* ─── The fight: a card-battler table ───────────────────────────────── */
 
-.fight {
-  display: grid;
-  gap: 12px;
+.app.night {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  padding-bottom: 0;
+  gap: 0;
 }
-.intent-wrap {
+.app.night main {
+  display: flex;
+  min-height: 0;
+}
+.table {
+  flex: 1;
   display: grid;
+  grid-template-rows: 1fr auto auto;
+  min-height: 0;
+  position: relative;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.table.shake {
+  animation: shake 0.35s steps(6);
+}
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-6px, 2px); }
+  40% { transform: translate(5px, -2px); }
+  60% { transform: translate(-4px, 1px); }
+  80% { transform: translate(3px, 0); }
+}
+
+/* Enemy */
+.foe-zone {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
   justify-items: center;
-  gap: 4px;
-  padding-top: 8px;
+  align-items: end;
+  min-height: 0;
+  padding: 8px 0 10px;
+  border: 1px dashed transparent;
+}
+.foe-zone.armed {
+  border-color: var(--on-night-soft);
+}
+.intents {
+  display: flex;
+  gap: 8px;
+  align-self: start;
 }
 .intent {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 12px 4px 10px;
-  font-weight: 800;
-  font-size: 18px;
+  gap: 4px;
+  padding: 4px 10px;
   border: 2px solid var(--on-night);
+  color: var(--on-night);
   font-variant-numeric: tabular-nums;
+}
+.intent .ico {
+  width: 22px;
+  height: 22px;
+}
+.intent b {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+}
+.intent small {
+  font-size: 18px;
+  font-weight: 800;
 }
 .intent.atk {
   --ghost: var(--blood);
   background: var(--blood);
   border-color: var(--blood);
-  color: var(--on-night);
-  font-size: 24px;
 }
-.intent-note {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--on-night-soft);
-}
-.intent-note .blood-text {
-  color: var(--blood);
-  filter: brightness(1.25);
-}
-.foe {
-  display: grid;
-  gap: 6px;
-  padding: 12px 0;
-  border-top: 1px solid var(--rule-night);
-  border-bottom: 1px solid var(--rule-night);
-}
-.foe .name {
-  font-size: 26px;
-  text-align: center;
-}
-.meter,
-.thin {
+.sprite-wrap {
   position: relative;
+  height: 100%;
+  min-height: 120px;
+  max-height: 300px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.sprite {
+  height: 100%;
+  max-height: 300px;
+  width: auto;
+  object-fit: contain;
+  pointer-events: none;
+}
+.tier-elite .sprite,
+.tier-boss .sprite {
+  max-height: 340px;
+}
+.silhouette {
+  width: 130px;
+  fill: var(--night-raised);
+  stroke: var(--on-night-soft);
+  stroke-width: 1.5;
+}
+.sprite-wrap.hit .sprite {
+  animation: recoil 0.3s steps(4);
+}
+@keyframes recoil {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(10px) rotate(2deg); }
+  60% { transform: translateX(-6px); }
+}
+.floater {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  font-size: 40px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  transform: translateX(-50%);
+  animation: rise 0.9s ease-out forwards;
+  pointer-events: none;
+  text-shadow: 2px 2px 0 var(--night);
+}
+.floater.dmg {
+  color: var(--blood);
+  filter: brightness(1.3);
+}
+.floater.block,
+.floater.heal {
+  color: var(--on-night);
+}
+@keyframes rise {
+  from { opacity: 1; transform: translate(-50%, 0); }
+  to { opacity: 0; transform: translate(-50%, -50px); }
+}
+.foe-plate {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  width: 72%;
+  max-width: 300px;
+}
+.foe-name {
+  font-family: var(--display);
+  font-size: 22px;
+  line-height: 1;
+}
+.foe-hp,
+.you-hp {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+.bar {
+  position: relative;
+  flex: 1;
   height: 10px;
   border: 1px solid var(--on-night);
 }
-.meter i,
-.thin i {
+.bar i {
   position: absolute;
   inset: 0 auto 0 0;
   background: var(--on-night);
 }
-/* Preview of the damage your selected card would do. */
-.meter u {
+.bar u {
   position: absolute;
   top: 0;
   bottom: 0;
   background: var(--blood);
 }
-.thin {
-  height: 5px;
-  border-color: var(--rule-night);
-}
-.blk {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  margin-left: 10px;
-  font-weight: 700;
-}
-.suit {
-  display: inline-flex;
-  width: 16px;
-  height: 16px;
-  align-items: center;
-  justify-content: center;
-}
-.suit .ico {
-  width: 14px;
-  height: 14px;
-}
-.badge {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  border: 1px solid currentColor;
-  padding: 1px 5px;
-  margin-right: 4px;
-}
-.trick {
-  font-size: 14px;
+.foe-hp .num,
+.you-hp .num {
+  font-size: 13px;
   color: var(--on-night-soft);
-  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
-.you .me {
+.foe-hp .num b,
+.you-hp .num b {
+  font-size: 18px;
+  color: var(--on-night);
+}
+.shield-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 800;
+  font-size: 16px;
+}
+.shield-badge .ico {
+  width: 18px;
+  height: 18px;
+}
+.immune {
   display: flex;
-  align-items: baseline;
   gap: 6px;
 }
-.you .me > b {
+.immune .no {
+  position: relative;
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  color: var(--on-night-soft);
+}
+.immune .no::after {
+  content: "";
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: 50%;
+  border-top: 2px solid var(--on-night);
+  transform: rotate(-35deg);
+}
+
+/* You: action orb, HP, end turn */
+.you-zone {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid var(--rule-night);
+}
+.orb {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 3px solid var(--on-night);
+  outline: 1px solid var(--on-night);
+  outline-offset: 3px;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  padding-top: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.orb b {
   font-size: 30px;
   font-weight: 800;
   line-height: 1;
 }
-.you .blk {
-  font-size: 18px;
+.orb small {
+  font-size: 13px;
+  color: var(--on-night-soft);
+  font-weight: 700;
 }
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 7px;
+.you-hp .bar {
+  height: 12px;
 }
-.actions small {
-  font-size: 11px;
-  font-weight: 600;
+.you-hp .floater {
+  top: -44px;
+  left: 30%;
+  font-size: 30px;
+}
+.end {
+  min-height: 48px;
+  padding: 0 14px;
+  border: 2px solid var(--on-night);
+  background: transparent;
+  color: var(--on-night);
+  font-size: 12px;
+  font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--on-night-soft);
-  margin-right: 4px;
+  cursor: pointer;
 }
-.actions i {
-  width: 14px;
-  height: 14px;
-  transform: rotate(45deg);
-  border: 2px solid var(--on-night);
-}
-.actions i.on {
-  background: var(--on-night);
-}
-.hand {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  padding: 16px 0 6px;
-  min-height: 150px;
-}
-.playbar {
-  display: grid;
-  gap: 10px;
-}
-.preview {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 14px;
-  min-height: 28px;
-  font-size: 14px;
-}
-.power {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.power b {
-  font-size: 20px;
-}
-.power.immune {
-  color: var(--on-night-soft);
-  text-decoration: line-through;
-}
-.night .power .blood-text {
-  color: var(--blood);
-  filter: brightness(1.25);
-}
-.night .tag.ink {
+.end.ready {
   background: var(--on-night);
   color: var(--night);
 }
-.playbar .btn {
-  flex: 1;
+
+/* Hand */
+.hand-zone {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 26px 0 24px;
+  min-height: 180px;
 }
-.log {
-  font-size: 13px;
-  border-top: 1px solid var(--rule-night);
-  padding-top: 8px;
+.fan {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.slot {
+  transition: transform 0.15s ease-out;
+  touch-action: none;
+  cursor: grab;
+}
+.slot:active {
+  cursor: grabbing;
+  transition: none;
+}
+.pile {
+  position: absolute;
+  bottom: 14px;
   display: grid;
+  justify-items: center;
+  gap: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--on-night-soft);
+  font-variant-numeric: tabular-nums;
+  z-index: 60;
+  pointer-events: none;
+}
+.pile.left {
+  left: -6px;
+}
+.pile.right {
+  right: -6px;
+}
+.pile .back {
+  width: 22px;
+  height: 32px;
+  border: 1px solid var(--on-night-soft);
+  background: repeating-linear-gradient(45deg, transparent 0 3px, var(--rule-night) 3px 4px);
+}
+
+/* Game cards: paper, big rank, one icon + number */
+.gcard {
+  position: relative;
+  width: var(--card-w, 84px);
+  aspect-ratio: 5 / 8;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  box-shadow: inset 0 0 0 2px var(--paper), inset 0 0 0 3px var(--ink), 0 0 0 1px var(--night);
+}
+.gcard .rk {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
   gap: 2px;
 }
-.reward .cards .card {
-  width: 100px;
+.gcard .rk .ico {
+  width: 14px;
+  height: 14px;
 }
-.reward .card .card-name {
-  font-size: 15px;
+.gcard .face {
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  overflow: hidden;
 }
-.reward .card .card-text {
+.gcard .pip {
+  width: 34px;
+  height: 34px;
+}
+.gcard .face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 1px solid var(--ink);
+}
+.gcard .card-name {
+  font-family: var(--display);
+  font-size: 13px;
+  line-height: 1.05;
+  text-align: center;
+}
+.gcard .pw {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border-top: 1px solid var(--ink);
+  padding-top: 3px;
   font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.gcard .pw .ico {
+  width: 15px;
+  height: 15px;
+}
+.gcard .pw b {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+}
+.gcard .pw-spades b {
+  color: var(--blood);
+}
+.gcard.off::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: repeating-linear-gradient(135deg, transparent 0 3px, color-mix(in srgb, var(--ink) 50%, transparent) 3px 4px);
+  pointer-events: none;
+  z-index: 2;
+}
+.gcard.armed {
+  outline: 3px solid var(--on-night);
+  outline-offset: 3px;
+}
+.gcard.face::after,
+.gcard.rare::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border: 2px solid var(--gilt);
+  pointer-events: none;
+}
+.mult-tag {
+  position: absolute;
+  top: -12px;
+  right: -8px;
+  z-index: 3;
+  background: var(--ink);
+  color: var(--paper);
+  border: 2px solid var(--paper);
+  font-size: 13px;
+  font-weight: 800;
+  padding: 1px 6px;
+}
+.play-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 200px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  pointer-events: none;
+}
+.play-hint .mult {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--on-night);
+}
+.play-hint .catch {
+  --ghost: var(--gilt);
+  background: var(--gilt);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  box-shadow: 2px -1px 0 color-mix(in srgb, var(--gilt) 50%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .table.shake,
+  .sprite-wrap.hit .sprite,
+  .floater {
+    animation-duration: 0.01s;
+  }
 }
