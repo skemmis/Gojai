@@ -40,3 +40,25 @@ Spots flagged `verify` in `spots.ts` and events flagged in `events.ts`, mainly:
 ## Not here yet
 
 Faction control of neighborhoods and event spots, server check-ins, anti-spoofing, and the Expo app's map screen. The page's "Locate me" works when the page is served from the repo or a host; embedded previews usually block location.
+
+## Using the map in the game
+
+`apps/map` exports `MapScreen` (`import { MapScreen } from "@gojai/map-app/MapScreen"`), the whole map screen as one React component that fills its positioned parent. It brings its own CSS; the page should load the two fonts (see `apps/map/index.html`).
+
+```tsx
+const [visits, setVisits] = useState<Visits>({});
+<MapScreen
+  playerId={player.id}
+  visits={visits}
+  anywhere={testMode}           // open any spot from anywhere (cooldowns still apply)
+  autoLocate
+  onOpen={(o) => {              // o: SpotOpened
+    setVisits((v) => visit(v, o.spot, o.at));
+    enterEncounter(run, o.find, { spotId: o.spot.id, name: o.spot.name, place: o.place });
+  }}
+/>
+```
+
+- A spot opens only when you stand within its range (35–60 m). Once opened it cools down until the next 20-minute reroll, so a roll can't be farmed. Rules and helpers live in `packages/map/src/visits.ts` (`spotState`, `visit`, `nextReroll`, `spotOpened`).
+- `SpotOpened` carries the spot, the find (`fight | elite | rest | shop | mystery`, a subset of the game's encounter kinds), the time, the territory id, `place` (the fight-backdrop key: `arcade`, `libbey_park`, `ojai_trail`, …) and the ids of events live there (e.g. `pink-moment`).
+- What a spot rolls comes from `findAt`/`spotOdds` in `packages/map`, which should be the only copy of the odds.

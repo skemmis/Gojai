@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import {
   BBOX, SPOTS, EVENTS, NEIGHBORHOODS, FORMER_SCHOOL_SITES, inRing, neighborhoodOf, type Neighborhood, sunset, fullMoons,
   windowsBetween, activeEvents, zoned, localParts, spotsInRange, spotById, spotOdds, findAt,
-  REFRESH_MIN, type LngLat, type Find,
+  REFRESH_MIN, type LngLat, type Find, spotState, visit, nextReroll, spotOpened,
 } from "./index.ts";
 
 const inHood = (p: LngLat, n: Neighborhood) =>
@@ -118,4 +118,33 @@ test("markets and Pink Moment open at the right times", () => {
 test("range check finds the spot you stand on", () => {
   assert.equal(spotsInRange(spotById("soule-park")!.at)[0].id, "soule-park");
   assert.equal(spotsInRange([-119.2, 34.49]).length, 0);
+});
+
+test("spots open only in range, then cool down until the next reroll", () => {
+  const s = spotById("arcade")!;
+  const t = zoned(2026, 10, 1, 15, 5);
+  const far: LngLat = [s.at[0] + 0.003, s.at[1]];
+  assert.equal(spotState(s, "p", far, t, {}).kind, "far");
+  assert.equal(spotState(s, "p", null, t, {}).kind, "far");
+  assert.equal(spotState(s, "p", far, t, {}, { anywhere: true }).kind, "open");
+  const here = spotState(s, "p", s.at, t, {});
+  assert.equal(here.kind, "open");
+  assert.equal(here.kind === "open" && here.find, findAt(s, "p", t));
+  const v = visit({}, s, t);
+  const cooling = spotState(s, "p", s.at, new Date(t.getTime() + 6e4), v);
+  assert.equal(cooling.kind, "cooling");
+  assert.equal(cooling.kind === "cooling" && cooling.until.getTime(), nextReroll(t).getTime());
+  assert.equal(spotState(s, "p", s.at, nextReroll(t), v).kind, "open");
+  assert.equal(spotState(s, "p", s.at, nextReroll(t), v, { anywhere: true }).kind, "open");
+  assert.equal(spotState(spotById("krotona")!, "p", s.at, t, v, { anywhere: true }).kind, "open"); // other spots unaffected
+});
+
+test("an opened spot carries its territory, backdrop key and live events", () => {
+  const market = spotOpened(spotById("ousd-grounds")!, "fight", zoned(2026, 10, 1, 16));
+  assert.ok(market.liveEvents.includes("thursday-market"));
+  assert.equal(spotOpened(spotById("arcade")!, "fight", zoned(2026, 10, 1, 12)).place, "arcade");
+  const trail = SPOTS.find((s) => neighborhoodOf(s.at)?.id === "trail")!;
+  assert.equal(spotOpened(trail, "rest", zoned(2026, 10, 1, 12)).place, "ojai_trail");
+  const lib = SPOTS.find((s) => neighborhoodOf(s.at)?.id === "libbey-park")!;
+  assert.equal(spotOpened(lib, "rest", zoned(2026, 10, 1, 12)).place, "libbey_park");
 });

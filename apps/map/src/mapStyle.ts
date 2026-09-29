@@ -294,7 +294,7 @@ export function buildStyle(t: Theme, active: { spots: string[] }): StyleSpecific
         type: "symbol",
         source: "near",
         layout: {
-          "icon-image": "card-near",
+          "icon-image": ["case", ["get", "spent"], "card", "card-near"],
           "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.42, 14, 0.58, 17, 1.05],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
