@@ -8,13 +8,30 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { cardDef, CONFIG, endTurn, hitSize, incoming, intent, isJunk, multiplier, play, playError, previewPlay } from "@gojai/core";
 import type { Card, EnemyAction, Run, Suit } from "@gojai/core";
 import { Icon, rankLabel, powerAmount, sortCards, type IconName } from "./components";
-import latte from "./assets/enemy-nine-latte.webp";
 import aceSpades from "./assets/ace-spades.webp";
 
 type Act = (fn: (r: Run) => void) => boolean;
 
-/** Enemy art we have so far. Everyone else stands in as a shrouded silhouette. */
-const SPRITES: Record<string, string> = { nine_latte: latte };
+/** Enemy sprites from the art thread, keyed by enemy id (assets/enemy-<id>.webp). Missing ones stand in as a silhouette. */
+const SPRITES: Record<string, string> = Object.fromEntries(
+  Object.entries(import.meta.glob<string>("./assets/enemy-*.webp", { eager: true, import: "default" })).map(([path, url]) => [
+    path.replace(/^.*enemy-(.*)\.webp$/, "$1"),
+    url,
+  ]),
+);
+/** Drawn intent glyphs, used as masks so they take the ink colour (red for attacks). */
+const GLYPHS: Record<string, string> = Object.fromEntries(
+  Object.entries(import.meta.glob<string>("./assets/intent-*.webp", { eager: true, import: "default" })).map(([path, url]) => [
+    path.replace(/^.*intent-(.*)\.webp$/, "$1"),
+    url,
+  ]),
+);
+
+function Glyph({ name, fallback }: { name: string; fallback: IconName }) {
+  const url = GLYPHS[name];
+  if (!url) return <Icon name={fallback} />;
+  return <span className="glyph" style={{ maskImage: `url(${url})`, WebkitMaskImage: `url(${url})` }} aria-hidden="true" />;
+}
 /** Illustrated cards: aces, caught enemies and rares. Only the Ace of Spades is drawn so far. */
 const CARD_ART: Record<string, string> = { "1:spades": aceSpades };
 
@@ -230,23 +247,23 @@ function IntentBadge({ run, a }: { run: Run; a: EnemyAction }) {
     const n = hitSize(run, a.n);
     return (
       <span className="intent atk">
-        <Icon name="blade" />
+        <Glyph name="attack" fallback="blade" />
         <b>{n}</b>
         {a.times && a.times > 1 && <small>×{a.times}</small>}
       </span>
     );
   }
-  const map: Record<string, [IconName, string]> = {
-    block: ["shield", "n" in a ? String(a.n) : ""],
-    buff: ["up", "n" in a ? `+${a.n}` : ""],
-    heal: ["cross", "n" in a ? String(a.n) : ""],
-    hex: ["letter", a.k === "hex" ? `${a.count}` : ""],
+  const map: Record<string, [string, IconName, string]> = {
+    block: ["block", "shield", "n" in a ? String(a.n) : ""],
+    buff: ["charging", "up", "n" in a ? `+${a.n}` : ""],
+    heal: ["heal", "cross", "n" in a ? String(a.n) : ""],
+    hex: ["debuff", "letter", a.k === "hex" ? `${a.count}` : ""],
   };
-  const [icon, text] = map[a.k];
+  const [glyph, icon, text] = map[a.k];
   const title = a.k === "hex" ? `Adds ${a.count} × ${cardDef(a.card).name} to your deck` : a.k;
   return (
     <span className="intent" title={title}>
-      <Icon name={icon} />
+      <Glyph name={glyph} fallback={icon} />
       <b>{text}</b>
     </span>
   );
