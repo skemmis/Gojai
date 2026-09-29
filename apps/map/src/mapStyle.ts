@@ -72,14 +72,15 @@ export function drawImage(t: Theme, name: string): { width: number; height: numb
   if (name === "card" || name === "card-live") {
     // A little tarot card: outer rule, inner rule, a diamond pip. Drawn at 2x.
     return make(28, 40, (c) => {
-      c.fillStyle = name === "card-live" ? t.live : t.paper;
+      c.fillStyle = name === "card-live" ? t.live : t.spot;
       c.fillRect(1, 1, 26, 38);
       c.strokeStyle = t.ink;
       c.lineWidth = 3;
       c.strokeRect(1.5, 1.5, 25, 37);
+      c.strokeStyle = t.paper;
       c.lineWidth = 1;
       c.strokeRect(5.5, 5.5, 17, 29);
-      c.fillStyle = t.ink;
+      c.fillStyle = t.paper;
       c.beginPath();
       c.moveTo(14, 13);
       c.lineTo(19, 20);
@@ -151,7 +152,7 @@ export function buildStyle(t: Theme, active: { spots: string[] }): StyleSpecific
         source: "contours",
         paint: {
           "line-color": t.inkSoft,
-          "line-opacity": ["case", ["==", ["get", "index"], 1], 0.6, 0.3],
+          "line-opacity": ["case", ["==", ["get", "index"], 1], 0.35, 0.15],
           "line-width": ["case", ["==", ["get", "index"], 1], 1, 0.5],
         },
       },
@@ -176,16 +177,17 @@ export function buildStyle(t: Theme, active: { spots: string[] }): StyleSpecific
         id: "buildings",
         type: "fill",
         source: "buildings",
-        minzoom: 14,
-        paint: { "fill-color": t.inkSoft, "fill-opacity": ["interpolate", ["linear"], ["zoom"], 14, 0, 15, 0.28] },
+        minzoom: 15,
+        paint: { "fill-color": t.inkSoft, "fill-opacity": ["interpolate", ["linear"], ["zoom"], 15, 0, 16, 0.12] },
       },
       {
         id: "trails",
         type: "line",
         source: "trails",
         paint: {
-          "line-color": t.ink,
-          "line-width": ["case", ["==", ["get", "c"], "cycleway"], 1.4, 0.8],
+          "line-color": ["case", ["==", ["get", "c"], "cycleway"], t.ink, t.inkSoft],
+          "line-opacity": ["case", ["==", ["get", "c"], "cycleway"], 1, 0.45],
+          "line-width": ["case", ["==", ["get", "c"], "cycleway"], 1.4, 0.7],
           "line-dasharray": [1, 2],
         },
       },
@@ -228,7 +230,7 @@ export function buildStyle(t: Theme, active: { spots: string[] }): StyleSpecific
         paint: {
           "line-color": t.ink,
           "line-width": ["case", ["boolean", ["feature-state", "selected"], false], 3, 1.6],
-          "line-opacity": ["case", ["boolean", ["feature-state", "selected"], false], 0.9, 0.55],
+          "line-opacity": ["case", ["boolean", ["feature-state", "selected"], false], 0.9, 0.45],
           "line-dasharray": [4, 2],
         },
       },
@@ -238,9 +240,9 @@ export function buildStyle(t: Theme, active: { spots: string[] }): StyleSpecific
         source: "ranges",
         minzoom: 15,
         paint: {
-          "fill-color": ["case", isLive, t.live, t.ink],
-          "fill-opacity": ["case", isLive, 0.18, 0.04],
-          "fill-outline-color": t.inkSoft,
+          "fill-color": t.live,
+          "fill-opacity": ["case", isLive, 0.18, 0],
+          "fill-outline-color": ["case", isLive, t.live, "rgba(0,0,0,0)"],
         },
       },
       {
@@ -260,7 +262,7 @@ export function buildStyle(t: Theme, active: { spots: string[] }): StyleSpecific
         source: "spots",
         layout: {
           "icon-image": ["case", isLive, "card-live", "card"],
-          "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.3, 14, 0.5, 17, 0.9],
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.42, 14, 0.62, 17, 1],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
         },

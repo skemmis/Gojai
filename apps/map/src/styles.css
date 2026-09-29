@@ -1,7 +1,7 @@
 /* Tokens from packages/art/src/theme.ts (see docs/ART_DIRECTION.md): ink on paper, pink only for live events. */
 :root {
   --paper: #ECE3CF; --paper-deep: #E0D3B7; --ink: #1B1814; --ink-soft: #5B5347; --rule: #B8AA8E;
-  --blood: #C8261E; --gilt-text: #8A6410; --pink: #E8488C;
+  --blood: #C8261E; --spot: #1F4E79; --gilt-text: #8A6410; --pink: #E8488C;
   --display: "IM Fell English SC", "IM Fell English", Georgia, serif;
   --ui: "Libre Franklin", "Franklin Gothic Medium", system-ui, sans-serif;
   font-family: var(--ui); font-size: 15px;
@@ -83,11 +83,11 @@ p { margin: 6px 0; line-height: 1.45; }
 /* Event-spot pins: tarot cards with a double rule. Pink only while live. */
 .spot { display: flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; color: var(--ink); }
 .spot .glyph, .pin {
-  width: 20px; height: 28px; display: grid; place-items: center; flex: none;
-  background: var(--paper); color: var(--ink); font-family: var(--display); font-size: 15px; line-height: 1;
-  border: 2px solid var(--ink); box-shadow: inset 0 0 0 2px var(--paper), inset 0 0 0 3px var(--ink);
+  width: 22px; height: 30px; display: grid; place-items: center; flex: none;
+  background: var(--ink); color: var(--paper); font-family: var(--display); font-size: 16px; line-height: 1;
+  border: 2px solid var(--ink); box-shadow: inset 0 0 0 2px var(--ink), inset 0 0 0 3px var(--paper);
 }
-.spot.live .glyph, .pin.live { background: var(--pink); box-shadow: inset 0 0 0 2px var(--pink), inset 0 0 0 3px var(--ink), 2px -1px 0 rgba(232, 72, 140, .55); }
+.spot.live .glyph, .pin.live { background: var(--pink); color: var(--ink); box-shadow: inset 0 0 0 2px var(--pink), inset 0 0 0 3px var(--ink), 2px -1px 0 rgba(232, 72, 140, .55); }
 .spot.live .glyph { position: relative; }
 .spot.live .glyph::after {
   content: ""; position: absolute; inset: -3px; border: 2px solid var(--pink);
@@ -95,7 +95,8 @@ p { margin: 6px 0; line-height: 1.45; }
 }
 @keyframes pulse { from { opacity: .9; transform: scale(1); } to { opacity: 0; transform: scale(2.2); } }
 @media (prefers-reduced-motion: reduce) { .spot.live .glyph::after { animation: none; opacity: 0; } }
-.pin { width: 12px; height: 17px; box-shadow: inset 0 0 0 1px var(--paper), inset 0 0 0 2px var(--ink); border-width: 1.5px; }
+.pin { width: 12px; height: 17px; background: var(--spot); box-shadow: inset 0 0 0 1px var(--spot), inset 0 0 0 2px var(--paper); border-width: 1.5px; }
+.pin.big { background: var(--ink); box-shadow: inset 0 0 0 2px var(--ink), inset 0 0 0 3px var(--paper); }
 .pin.big { width: 18px; height: 25px; font-size: 13px; }
 .map:not(.labels) .spot .label { display: none; }
 .spot .label { font-size: 12px; font-weight: 700; white-space: nowrap; padding: 1px 5px; background: var(--paper); border: 1px solid var(--ink); }
@@ -118,3 +119,4 @@ p { margin: 6px 0; line-height: 1.45; }
 .swatch.hatch { background: repeating-linear-gradient(135deg, transparent 0 3px, rgba(27, 24, 20, .55) 3px 4px); }
 .swatch.stipple { background: radial-gradient(var(--ink-soft) 0.8px, transparent 1px) 0 0 / 5px 5px; }
 .key li { cursor: default; }
+.pin.big.live { background: var(--pink); color: var(--ink); box-shadow: inset 0 0 0 2px var(--pink), inset 0 0 0 3px var(--ink); }

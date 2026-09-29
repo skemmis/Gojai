@@ -4,7 +4,7 @@ import { color, font } from "../../../packages/art/src/theme.ts";
 
 /**
  * How the map uses the app's tokens: an ink survey map on paper. Pink is the
- * only colour on the map, and it means "live event now". Blood (danger) and
+ * live-event colour, and plain spots get a map-local blue so they read at a glance. Blood (danger) and
  * gilt (reward) appear only in the spot panel's odds.
  */
 export interface Theme {
@@ -13,7 +13,8 @@ export interface Theme {
   ink: string; // roads, outlines, text
   inkSoft: string; // streets, buildings, contours
   rule: string; // hairlines
-  live: string; // a live event: its spot, its neighborhood, the band
+  spot: string; // map-local: the fill of plain spot pins, so they read against the map
+  live: string; // a live event: its spot, its range, the band
   find: Record<Find, string>;
   font: typeof font;
 }
@@ -24,6 +25,9 @@ export const THEME: Theme = {
   ink: color.ink,
   inkSoft: color.inkSoft,
   rule: color.rule,
+  // Prussian blue, a period printer's ink. Map-local for now: not one of the
+  // shared spot inks, and it means only "a spot is here".
+  spot: "#1F4E79",
   live: color.pink,
   find: { fight: color.ink, elite: color.blood, rest: color.ink, shop: color.gilt, mystery: color.ink },
   font,

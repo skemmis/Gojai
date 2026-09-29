@@ -16,7 +16,7 @@ keep clear of them.
 """
 import json, math, os, sys
 from shapely.geometry import LineString, MultiLineString, Point, Polygon, shape, mapping
-from shapely.ops import polygonize, unary_union, nearest_points, substring
+from shapely.ops import linemerge, polygonize, unary_union, nearest_points, substring
 import shapely
 
 HERE = os.path.dirname(__file__)
@@ -31,6 +31,10 @@ deg = lambda m: m / M_LAT  # rough metres → degrees for buffers (lat scale)
 
 def load(name):
     return json.load(open(os.path.join(GEO, name)))["features"]
+
+
+TRAIL_BRIDGE_M = 80  # join trail pieces whose ends are closer than this
+TRAIL_OUTSIDE_M = 400  # keep trail stretches outside the play area shorter than this
 
 
 def meters(a, b):
@@ -75,10 +79,24 @@ def extend(line, m=40):
 border_lines = [extend(l) for l in border_lines]
 
 trails = load("trails.geojson")
-trail_line = unary_union([shape(f["geometry"]) for f in trails if f["properties"]["name"] == CFG["trail"]["path"]])
-# Stretch the corridor across the whole trail inside the play area.
-trail_in = trail_line.intersection(area)
-corridor = trail_in.buffer(deg(CFG["trail"]["halfWidthM"]), cap_style="flat").intersection(area)
+trail_line = linemerge(unary_union([shape(f["geometry"]) for f in trails if f["properties"]["name"] == CFG["trail"]["path"]]))
+# The open data has small breaks in the trail: bridge ends that are close together.
+comps = list(getattr(trail_line, "geoms", [trail_line]))
+ends = [(i, c.coords[k]) for i, c in enumerate(comps) for k in (0, -1)]
+bridges = [
+    LineString([a, b])
+    for n, (i, a) in enumerate(ends)
+    for j, b in ends[n + 1:]
+    if i != j and 1 < meters(a, b) < TRAIL_BRIDGE_M
+]
+trail_line = linemerge(unary_union(comps + bridges))
+# Keep the trail unbroken where it briefly leaves the play area (county land
+# between Ojai and Meiners Oaks), and let the play area follow it there.
+outside = trail_line.difference(area)
+short_out = [g for g in getattr(outside, "geoms", [outside]) if not g.is_empty and g.length * M_LAT < TRAIL_OUTSIDE_M]
+trail_in = unary_union([trail_line.intersection(area)] + short_out)
+corridor = trail_in.buffer(deg(CFG["trail"]["halfWidthM"]), cap_style="flat", join_style="round")
+area = unary_union([area, corridor]).buffer(0)
 
 edges = unary_union(
     [area.boundary, mo.boundary, city.boundary]
