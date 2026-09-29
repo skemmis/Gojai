@@ -118,19 +118,19 @@ Every board is a count the server already trusts (verified check-ins, finished r
 
 Your profile is a tarot card: portrait, frame, name, title, faction, and your record (season or all time), with a shelf of the enemies you've caught. Nothing on it shows where or when you walk.
 
-- **Portrait**: pending Sam's pick. Default: drawn archetype portraits in the house ink style (a few free, more unlocked by play) plus **every enemy you've caught**, so catching the $9 Latte means you can wear it. No photos or user-made images at launch, so there are no user images to moderate. Alternatives on the table: Gemini draws you from a short description, or a selfie redrawn in ink.
+- **Portrait** (Sam, 2026-09-29): a random character generated for you in the house style, the way Fantasy-Reality makes its avatars. An archetype (one of ~30 valley locals: pilgrim, beekeeper, potter, orchard hand, rancher, stargazer, bookseller, fire lookout…) gives the look, and separate rolls add age, who, build, hair, pose and a small mark of your side (a star pin for the Order, an acorn for the Pathless). Everything comes from one seed, so a portrait is stored as `gen:<seed>`. You're dealt three at signup to pick from and draw one more each season you play. You can also wear any enemy you've caught. No photos or user-written prompts, so there's nothing to moderate.
+- **Generating them**: `npm run portraits -- --out <dir> --n 12 --seed 1 --ref <reference card>` sends each rolled prompt to Gemini (`gemini-2.5-flash-image`, 3:4) with the illustration thread's reference card for style, trims the edge and locks the result to the sepia ramp (ink #2A1E14 to paper #ECE3CF). Samples: `/mnt/project-files/gojai-art/portraits/v3/`. The server would do the same once per draw.
 - **Frames** (earned): plain; double rule (50 spots); gilt (30 floors in one run); the Keeper's frame; your faction's mark (your faction won a season you played in). No pink frames: pink means live.
 - **Titles** (earned): "Initiate of the Star" or "Of No Path" to start, then "Who Went Deep", "Unbowed", "Collector of Types", "Keeper of …".
 - **Names**: 3 to 20 letters, numbers, spaces and . - ' _; word filters run on the server.
-- Model: `packages/clans/src/profile.ts` (`portraitsFor`, `framesFor`, `titles`, `sanitize`, `validName`).
+- Model: `packages/clans/src/profile.ts` (`portraitsFor`, `framesFor`, `titles`, `sanitize`, `validName`, `drawsEarned`) and `packages/clans/src/portrait.ts` (`rollCharacter`, `portraitPrompt`).
 - Mockup of the profile, leaderboards and live event board: https://claude.ai/artifact/496eFSomNooT3DbApyDWqG
 
 ## Open questions for Sam
 
-1. Profile images: drawn portraits and caught enemies (default), Gemini-drawn from a description, or selfie to ink?
-2. Duel stake: gold (default) or a card?
-3. Season length: a lunar month ending on the full moon?
-4. Friends: is "invite honoured only if factions stay balanced" acceptable, or should friends always be together (and balance comes only from catch-up)?
+1. Duel stake: gold (default) or a card?
+2. Season length: a lunar month ending on the full moon?
+3. Friends: is "invite honoured only if factions stay balanced" acceptable, or should friends always be together (and balance comes only from catch-up)?
 
 ## Pieces
 
@@ -138,6 +138,7 @@ Your profile is a tarot card: portrait, frame, name, title, faction, and your re
   - `factions.ts`: the two factions and their lore.
   - `leaderboards.ts`: boards, scopes, Keepers.
   - `profile.ts`: portraits, frames, titles, names.
+  - `portrait.ts`: random characters for generated portraits.
   - `config.ts`: every number.
   - `territory.ts`: influence, `award`, `settle`, `claimByEvent`, the nightly `endDay`, `startSeason`.
   - `assign.ts`: faction strength and auto-assignment with invites.
@@ -145,4 +146,5 @@ Your profile is a tarot card: portrait, frame, name, title, faction, and your re
   - `boss.ts`: group boss HP, damage race, influence and gold.
   - `duel.ts`: who can duel, stakes, results.
   - `sim/`: the clan lab (bot population over a season on `@gojai/map`).
+- `tools/portraits/generate.ts` (`npm run portraits`): renders rolled characters with Gemini and locks them to the sepia ramp.
 - Not here: the server (check-ins, location checks, the nightly tick, WebSockets for live bosses and duels), the boss and duel fight rules (combat thread), faction colours on the map (map and art threads; faction marks can't use blood, gilt or pink, which already mean damage, reward and live events).

@@ -8,6 +8,7 @@
     "test": "node --import tsx --test \"packages/**/*.test.ts\"",
     "lab": "tsx packages/sim/src/lab.ts",
     "clans:lab": "tsx packages/clans/src/sim/lab.ts",
+    "portraits": "tsx tools/portraits/generate.ts",
     "play": "npm run dev -w apps/play",
     "build:play": "npm run build -w apps/play",
     "map": "npm run dev -w apps/map",

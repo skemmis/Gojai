@@ -2,7 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   BOARDS, newBook, addPlayer, record, rollWeek, rollSeason, standing, keepers, emptyStats,
-  portraitsFor, framesFor, titles, validName, sanitize, type Profile,
+  portraitsFor, framesFor, titles, validName, sanitize, drawsEarned, SIGNUP_DRAWS,
+  rollCharacter, portraitPrompt, FACTION_TOUCH, type Profile,
 } from "./index.ts";
 
 const board = (id: string) => BOARDS.find((b) => b.id === id)!;
@@ -75,18 +76,33 @@ test("keepers come from the faction holding the ground", () => {
   assert.deepEqual(keepers(b, { arcade: "pathless" }), { arcade: "bo" });
 });
 
-test("profiles offer only what's earned: portraits, caught enemies, frames, titles", () => {
-  const p: Profile = { id: "ann", name: "Ann", faction: "order", portrait: "slayer", frame: "gilt", title: "Keeper of The Arcade", caught: ["nine_latte"], kept: ["arcade"], seasonsWon: 0 };
+test("profiles offer only what's earned: dealt characters, caught enemies, frames, titles", () => {
+  const p: Profile = { id: "ann", name: "Ann", faction: "order", portrait: "gen:99", dealt: [4, 17, 23], frame: "gilt", title: "Keeper of The Arcade", caught: ["nine_latte"], kept: ["arcade"], seasonsWon: 0 };
   const s = { ...emptyStats(), spots: 60, depth: 12 };
-  const ps = portraitsFor(p, s);
-  assert.ok(ps.includes("initiate") && !ps.includes("listener") && ps.includes("enemy:nine_latte") && !ps.includes("slayer"));
+  assert.deepEqual(portraitsFor(p), ["gen:4", "gen:17", "gen:23", "enemy:nine_latte"]);
   assert.deepEqual(framesFor(p, s), ["plain", "rule", "keeper"]);
   const name = (g: string) => (g === "arcade" ? "The Arcade" : g);
   assert.ok(titles(p, s, name).includes("Keeper of The Arcade"));
   const clean = sanitize(p, s, name);
-  assert.equal(clean.portrait, "walker");
+  assert.equal(clean.portrait, "gen:4", "a seed you weren't dealt falls back to your first");
   assert.equal(clean.frame, "plain");
   assert.equal(clean.title, "Keeper of The Arcade");
+  assert.equal(sanitize({ ...p, portrait: "enemy:nine_latte" }, s).portrait, "enemy:nine_latte");
+  assert.equal(drawsEarned(2), SIGNUP_DRAWS + 2);
+});
+
+test("characters are rolled from a seed, in the house style, with the faction's touch", () => {
+  const a = rollCharacter(7, "order");
+  assert.deepEqual(rollCharacter(7, "order"), a);
+  assert.ok(FACTION_TOUCH.order.includes(a.touch));
+  const prompt = portraitPrompt(a);
+  assert.ok(prompt.includes("#2A1E14") && prompt.includes(a.archetype.look) && prompt.includes(a.touch));
+  const looks = new Set(Array.from({ length: 200 }, (_, i) => rollCharacter(i, "pathless")).map((c) => `${c.archetype.id}|${c.age}|${c.who}|${c.hair}`));
+  assert.ok(looks.size > 180, `${looks.size} distinct of 200`);
+  for (let i = 0; i < 300; i++) {
+    const c = rollCharacter(i, "pathless");
+    if (c.who !== "man") assert.ok(!/beard|moustache/.test(c.hair), `seed ${i}: ${c.who} with ${c.hair}`);
+  }
 });
 
 test("display names", () => {

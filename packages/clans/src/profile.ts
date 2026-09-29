@@ -3,34 +3,21 @@ import type { Stats } from "./leaderboards.ts";
 
 /**
  * Profiles. Your profile is a tarot card: a portrait in the house ink style,
- * a frame earned in play, a title, your name, and your record. No photos and
- * no user-drawn images at launch (nothing to moderate); see docs/CLANS.md.
+ * a frame earned in play, a title, your name, and your record. Nothing on a
+ * profile says where or when you play.
  *
- * Portraits come from two places: drawn archetypes (a few free, more unlocked
- * by play) and every enemy you have caught, so catching the $9 Latte means
- * you can wear it. Frames are earned. Nothing on a profile says where or when
- * you play.
+ * Portraits (Sam, 2026-09-29): a random character generated for you in the
+ * house style (portrait.ts). At signup you're dealt a few to pick from, and
+ * each season you play earns one more draw. You can also wear any enemy
+ * you've caught, so catching the $9 Latte means you can be it. No photos or
+ * user-written prompts, so nothing a player uploads needs moderating.
  */
-export interface Portrait {
-  id: string;
-  name: string;
-  /** "start": free at signup. Otherwise what unlocks it. */
-  unlock: "start" | { metric: "spots" | "depth" | "bossDamage" | "duelWins" | "catches"; atLeast: number } | { faction: FactionId };
-}
 
-/** Drawn archetype portraits (art to come from the illustration thread). */
-export const PORTRAITS: Portrait[] = [
-  { id: "walker", name: "The Walker", unlock: "start" },
-  { id: "seeker", name: "The Seeker", unlock: "start" },
-  { id: "skeptic", name: "The Skeptic", unlock: "start" },
-  { id: "initiate", name: "The Initiate", unlock: { faction: "order" } },
-  { id: "listener", name: "The Listener", unlock: { faction: "pathless" } },
-  { id: "pilgrim", name: "The Pilgrim", unlock: { metric: "spots", atLeast: 200 } },
-  { id: "descender", name: "The Descender", unlock: { metric: "depth", atLeast: 25 } },
-  { id: "duelist", name: "The Duelist", unlock: { metric: "duelWins", atLeast: 10 } },
-  { id: "slayer", name: "The Slayer", unlock: { metric: "bossDamage", atLeast: 5000 } },
-  { id: "collector", name: "The Collector", unlock: { metric: "catches", atLeast: 20 } },
-];
+/** Characters dealt at signup, to pick one from. */
+export const SIGNUP_DRAWS = 3;
+
+/** How many portrait draws a player has earned: the signup hand plus one per season played. */
+export const drawsEarned = (seasonsPlayed: number) => SIGNUP_DRAWS + seasonsPlayed;
 
 /** Frames, plainest first. No pink: pink means a live event and nothing else. */
 export type Frame = "plain" | "rule" | "gilt" | "keeper" | "champion";
@@ -47,7 +34,10 @@ export interface Profile {
   id: string;
   name: string;
   faction: FactionId;
+  /** "gen:<seed>" (a generated character) or "enemy:<id>" (a caught enemy). */
   portrait: string;
+  /** Seeds of the characters this player has been dealt. */
+  dealt: number[];
   frame: Frame;
   /** Chosen from `titles()`. */
   title: string | null;
@@ -58,15 +48,9 @@ export interface Profile {
   seasonsWon: number;
 }
 
-/** Portraits this player can wear: unlocked archetypes, then caught enemies. */
-export function portraitsFor(p: Profile, all: Stats): string[] {
-  const ok = PORTRAITS.filter((x) => {
-    const u = x.unlock;
-    if (u === "start") return true;
-    if ("faction" in u) return u.faction === p.faction;
-    return all[u.metric] >= u.atLeast;
-  }).map((x) => x.id);
-  return [...ok, ...p.caught.map((e) => `enemy:${e}`)];
+/** Portraits this player can wear: their generated characters, then caught enemies. */
+export function portraitsFor(p: Profile): string[] {
+  return [...p.dealt.map((seed) => `gen:${seed}`), ...p.caught.map((e) => `enemy:${e}`)];
 }
 
 export function framesFor(p: Profile, all: Stats): Frame[] {
@@ -98,7 +82,7 @@ export function validName(name: string): boolean {
 export function sanitize(p: Profile, all: Stats, groundName?: (id: string) => string): Profile {
   return {
     ...p,
-    portrait: portraitsFor(p, all).includes(p.portrait) ? p.portrait : "walker",
+    portrait: portraitsFor(p).includes(p.portrait) ? p.portrait : p.dealt.length ? `gen:${p.dealt[0]}` : "gen:0",
     frame: framesFor(p, all).includes(p.frame) ? p.frame : "plain",
     title: p.title && titles(p, all, groundName).includes(p.title) ? p.title : null,
   };

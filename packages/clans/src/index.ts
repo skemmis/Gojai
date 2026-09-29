@@ -7,3 +7,4 @@ export * from "./boss.ts";
 export * from "./duel.ts";
 export * from "./leaderboards.ts";
 export * from "./profile.ts";
+export * from "./portrait.ts";
