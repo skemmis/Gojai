@@ -221,7 +221,7 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
   const overlap = n > 1 ? Math.max(0, (n * cardW - (width - 24)) / (n - 1)) : 0;
 
   const hit = incoming(run);
-  const through = Math.max(0, hit - f.block);
+  const through = Math.max(0, hit - f.block - (pv ? pv.block : 0));
   const youPct = Math.max(0, (run.hp / run.maxHp) * 100);
   const lossPct = Math.min(youPct, (through / run.maxHp) * 100);
   const maxActions = Math.max(CONFIG.actionsPerTurn, f.actions);
@@ -264,6 +264,9 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
         </div>
       </div>
 
+      {/* ─── The clash: their attack against your block ─── */}
+      <Clash hit={hit} block={f.block} adding={pv ? pv.block : 0} />
+
       {/* ─── You ─── */}
       <div className="you-zone">
         <div className="orb" title={`${f.actions} actions left`}>
@@ -279,12 +282,6 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
             <span className="num">
               <b>{run.hp}</b>/{run.maxHp}
             </span>
-            {f.block > 0 && (
-              <span className="shield-badge">
-                <Icon name="shield" />
-                <b>{f.block}</b>
-              </span>
-            )}
             {floaters
               .filter((x) => x.where === "you")
               .map((x) => (
@@ -360,6 +357,42 @@ function IntentBadge({ run, a }: { run: Run; a: EnemyAction }) {
   );
 }
 
+/**
+ * The face-off between the two numbers that matter most on your side: the
+ * enemy's attack this turn (red, from the left) and your block (hearts blue,
+ * from the right). Where they meet is what gets through to your HP. A heart card
+ * you're holding shows the block it would add, hatched.
+ */
+function Clash({ hit, block, adding }: { hit: number; block: number; adding: number }) {
+  if (hit <= 0 && block <= 0 && adding <= 0) return <div className="clash empty" />;
+  const withAdd = block + adding;
+  const through = Math.max(0, hit - block);
+  const throughAfter = Math.max(0, hit - withAdd);
+  const span = Math.max(hit, withAdd, 1);
+  const pct = (n: number) => `${(n / span) * 100}%`;
+  const safe = hit > 0 && throughAfter === 0;
+  return (
+    <div className={`clash ${hit > 0 ? "" : "calm"} ${safe ? "safe" : ""}`}>
+      <span className="side atk" title="Enemy attack this turn">
+        <Glyph name="attack" fallback="blade" />
+        <b>{hit}</b>
+      </span>
+      <span className="track">
+        {hit > 0 && <i className="hit" style={{ width: pct(hit) }} />}
+        <i className="blk" style={{ width: pct(Math.min(block, span)) }} />
+        {adding > 0 && <i className="add" style={{ right: pct(Math.min(block, span)), width: pct(Math.min(adding, span - Math.min(block, span))) }} />}
+      </span>
+      <span className="side def" title="Your block this turn">
+        <Glyph name="block" fallback="shield" />
+        <b>{adding > 0 ? withAdd : block}</b>
+      </span>
+      <span className="verdict">
+        {hit <= 0 ? "no attack" : safe ? "all blocked" : <><b>−{adding > 0 ? throughAfter : through}</b> gets through</>}
+      </span>
+    </div>
+  );
+}
+
 function HpBar({ hp, max, block, preview }: { hp: number; max: number; block: number; preview: number }) {
   const pct = Math.max(0, (hp / max) * 100);
   const cut = Math.min(pct, (preview / max) * 100);
@@ -396,7 +429,7 @@ export function GameCard({ card, mult = 1, off, armed }: { card: Card; mult?: nu
   const junk = isJunk(card);
   const art = card.suit ? CARD_ART[`${card.value}:${card.suit}`] : undefined;
   const value = card.value * mult;
-  const cls = ["gcard", off || junk ? "off" : "", armed ? "armed" : "", art ? "art" : "", d.face ? "face" : "", d.rarity === "rare" ? "rare" : ""].filter(Boolean).join(" ");
+  const cls = ["gcard", card.suit ? `s-${card.suit}` : "", off || junk ? "off" : "", armed ? "armed" : "", art ? "art" : "", d.face ? "face" : "", d.rarity === "rare" ? "rare" : ""].filter(Boolean).join(" ");
   return (
     <div className={cls} title={d.name ? `${d.name}: ${d.text}` : undefined}>
       {mult > 1 && <span className="mult-tag">×{mult}</span>}

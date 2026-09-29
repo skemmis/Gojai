@@ -553,7 +553,7 @@ footer {
 .table {
   flex: 1;
   display: grid;
-  grid-template-rows: 1fr auto auto;
+  grid-template-rows: 1fr auto auto auto;
   min-height: 0;
   position: relative;
   touch-action: none;
@@ -1012,8 +1012,45 @@ footer {
   font-weight: 800;
   line-height: 1;
 }
-.gcard .pw-spades b {
-  color: var(--blood);
+/* Suit inks from the theme (--suit-*, and --suit-*-night for glyphs set straight on the table). Always paired with the suit glyph. */
+.gcard.s-spades { --suit: var(--suit-spades); }
+.gcard.s-hearts { --suit: var(--suit-hearts); }
+.gcard.s-diamonds { --suit: var(--suit-diamonds); }
+.gcard.s-clubs { --suit: var(--suit-clubs); }
+.gcard .rk,
+.gcard .pip,
+.gcard .pw .ico,
+.gcard .pw b {
+  color: var(--suit, var(--ink));
+}
+/* Illustrated cards: the art is the card, edge to edge; rank and power sit on paper tabs over it */
+.gcard.art {
+  padding: 0;
+}
+.gcard.art .face {
+  position: absolute;
+  inset: 0;
+}
+.gcard.art .face img {
+  border: 0;
+}
+.gcard.art .rk,
+.gcard.art .pw {
+  position: relative;
+  z-index: 1;
+  background: var(--paper);
+}
+.gcard.art .rk {
+  justify-self: start;
+  align-self: start;
+  padding: 4px 5px;
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+.gcard.art .pw {
+  grid-row: 3;
+  padding: 3px 4px;
+  border-top: 1px solid var(--ink);
 }
 .gcard.off::before {
   content: "";
@@ -1120,4 +1157,87 @@ footer {
   height: 9px;
   border-radius: 50%;
   background: var(--gilt);
+}
+
+/* ─── The clash: enemy attack (red, from the left) against your block (hearts blue, from the right) ─── */
+.you-bar {
+  display: grid;
+  gap: 6px;
+}
+.clash {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 2px;
+  padding: 8px 4px 6px;
+  font-variant-numeric: tabular-nums;
+}
+.clash.empty {
+  padding: 0;
+}
+.clash .side {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  line-height: 1;
+}
+.clash .side {
+  gap: 4px;
+}
+.clash .side b {
+  font-size: 34px;
+  font-weight: 800;
+}
+.clash .side .glyph {
+  width: 28px;
+  height: 28px;
+}
+.clash .atk {
+  color: var(--suit-spades-night);
+}
+.clash .def {
+  color: var(--suit-hearts-night);
+}
+.clash .track {
+  position: relative;
+  height: 18px;
+  border: 1px solid var(--on-night-soft);
+  overflow: hidden;
+}
+.clash .track i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.clash .hit {
+  left: 0;
+  background: var(--blood);
+}
+.clash .blk {
+  right: 0;
+  background: var(--suit-hearts);
+}
+.clash .add {
+  background: repeating-linear-gradient(135deg, var(--suit-hearts) 0 2px, transparent 2px 5px);
+}
+.clash .verdict {
+  grid-column: 1 / -1;
+  justify-self: center;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--on-night-soft);
+}
+.clash .verdict b {
+  font-size: 16px;
+  color: var(--blood);
+}
+.clash.safe .verdict {
+  color: var(--on-night);
+}
+.clash.calm .atk {
+  opacity: 0.35;
 }

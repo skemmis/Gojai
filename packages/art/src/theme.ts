@@ -25,6 +25,26 @@ export const color = {
   pink: "#E8488C", // Pink Moment: live, time-bound events. Nothing else is pink.
 } as const;
 
+// Suit inks (Sam, 2026-09-29: "the suits need to have a color"). A suit colour
+// is always paired with its glyph, so it never carries the meaning alone. Blood
+// on spades is not a second meaning, because spades is the damage suit. None of
+// the four is gilt or pink. `suit` is for paper (cards, menus), where every
+// value is 3.7:1 or better. `suitOnNight` is the lighter pull for glyphs set
+// straight on the fight table (6:1 or better).
+export const suit = {
+  spades: "#C8261E", // strike: the same ink as blood
+  hearts: "#3F6F95", // guard: slate blue, the counter to red attacks
+  diamonds: "#3F7F6A", // draw: verdigris
+  clubs: "#6E4F8E", // recall: violet
+} as const;
+
+export const suitOnNight = {
+  spades: "#E0503F",
+  hearts: "#7FA8CC",
+  diamonds: "#6FB59C",
+  clubs: "#A98BC9",
+} as const;
+
 export const font = {
   // IM Fell English SC: period display type for names and titles only (min 18px).
   display: '"IM Fell English SC", "IM Fell English", Georgia, serif',

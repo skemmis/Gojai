@@ -18,7 +18,7 @@ Colour is printed like a crude second ink: flat, saturated, slightly off-registe
    - Pink Moment pink: live, time-bound events and nothing else.
 4. **Art may be lettered; game state never is.** Titles, numerals and price tags can be drawn into the art (Sam, 2026-09-29). Anything that changes in play (HP, damage, block, costs, timers) is always live UI type on a plate or band.
 5. **Numbers are always Libre Franklin**, lining and tabular. The display face is for names only.
-6. **Suits are read by shape and by their power line** (Strike / Guard / Draw / Recall), not by colour. Pips are ink; only a strike's damage number is red.
+6. **Each suit has its own ink, always paired with its glyph** (Sam, 2026-09-29): spades #C8261E (blood, because spades is the damage suit), hearts slate #3F6F95, diamonds verdigris #3F7F6A and clubs violet #6E4F8E. On the night table use the lighter `suitOnNight` pulls. Colour backs up the shape and the power line (Strike / Guard / Draw / Recall) but never replaces them, because hearts and clubs look alike to colour-blind players. No suit is gilt or pink.
 7. **Square corners, hairline and double rules, no gradients, glows or soft shadows.** Unavailable things are hatched, like an engraver would shade them.
 8. **Sprites are separate game elements**, generated on green and keyed out, never cut from scene art.
 
