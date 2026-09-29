@@ -1,0 +1,22 @@
+{
+  "name": "@gojai/art",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "mock": "tsx src/mock/render.ts",
+    "generate": "tsx src/generate.ts"
+  },
+  "dependencies": {
+    "@google/genai": "^2.24.0",
+    "jpeg-js": "^0.4.4",
+    "pngjs": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "@types/pngjs": "^6.0.5",
+    "playwright-core": "^1.63.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

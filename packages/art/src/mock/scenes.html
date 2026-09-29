@@ -1,0 +1,122 @@
+<!doctype html><html><body style="margin:0">
+<script>
+// Procedural stand-ins for the three sample subjects. Drawn at 4x logical
+// size in "natural" colours: neutrals for anything that should become ink,
+// mild colour for washes, and strong saturation only on the intent element.
+let seed = 7;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const R = (a, b) => a + (b - a) * rnd();
+function canvas(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; document.body.appendChild(c); return c; }
+
+function oak(g, cx, cy, s, dark, light) {
+  // trunk
+  g.strokeStyle = '#2a2420'; g.lineCap = 'round';
+  for (let i = 0; i < 5; i++) { g.lineWidth = s * R(0.05, 0.12); g.beginPath(); g.moveTo(cx + R(-s*.05, s*.05), cy + s * .9);
+    g.bezierCurveTo(cx + R(-s*.3, s*.3), cy + s*.4, cx + R(-s*.6, s*.6), cy + s*.1, cx + R(-s*.8, s*.8), cy - s*.1); g.stroke(); }
+  for (let i = 0; i < 260; i++) { const a = R(0, Math.PI * 2), d = Math.sqrt(rnd()) * s * .85;
+    const x = cx + Math.cos(a) * d * 1.3, y = cy - s * .15 + Math.sin(a) * d * .55; const r = R(s * .04, s * .12);
+    g.fillStyle = (y < cy - s*.2 && rnd() < .6) ? light : dark; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); }
+}
+
+function place() {
+  const W = 1280, H = 720, c = canvas(W, H), g = c.getContext('2d');
+  let sky = g.createLinearGradient(0, 0, 0, H * .55);
+  sky.addColorStop(0, '#46566e'); sky.addColorStop(.6, '#8a8fa0'); sky.addColorStop(1, '#d9b9a6');
+  g.fillStyle = sky; g.fillRect(0, 0, W, H);
+  // crescent moon + a few stars
+  g.fillStyle = '#eee8dc'; g.beginPath(); g.arc(1080, 90, 18, 0, 7); g.fill(); g.fillStyle = '#4c5b72'; g.beginPath(); g.arc(1090, 84, 16, 0, 7); g.fill();
+  g.fillStyle = '#e8e4da'; for (let i = 0; i < 40; i++) g.fillRect(R(0, W), R(0, 180), 3, 3);
+  // Topatopa bluffs: the lit face is the event, everything else is neutral.
+  const ridge = []; for (let x = 0; x <= W; x += 8) ridge.push([x, 250 + Math.sin(x / 140) * 18 + Math.sin(x / 37) * 7 + (x > 380 && x < 1000 ? -60 : 0) + R(-4, 4)]);
+  g.fillStyle = '#e03e8c'; g.beginPath(); g.moveTo(0, 420); ridge.forEach(([x, y]) => g.lineTo(x, y)); g.lineTo(W, 420); g.fill();
+  // striations and gullies on the face
+  for (let i = 0; i < 180; i++) { const x = R(0, W), y0 = 240 + R(0, 40); g.strokeStyle = rnd() < .5 ? '#a0205e' : '#ff78b4'; g.lineWidth = R(2, 5);
+    g.beginPath(); g.moveTo(x, y0); g.lineTo(x + R(-20, 20), y0 + R(60, 160)); g.stroke(); }
+  for (let i = 0; i < 14; i++) { const x = R(0, W); g.fillStyle = '#7a1848'; g.beginPath(); g.moveTo(x, 250); g.lineTo(x + R(10, 40), 420); g.lineTo(x - R(10, 40), 420); g.fill(); }
+  // foothills (chaparral)
+  g.fillStyle = '#4e5a44'; g.beginPath(); g.moveTo(0, H); for (let x = 0; x <= W; x += 10) g.lineTo(x, 400 + Math.sin(x / 90) * 25 + Math.sin(x / 23) * 6); g.lineTo(W, H); g.fill();
+  for (let i = 0; i < 900; i++) { const x = R(0, W), y = R(390, 470); g.fillStyle = rnd() < .5 ? '#3a4432' : '#66725a'; g.beginPath(); g.arc(x, y, R(3, 7), 0, 7); g.fill(); }
+  // orchard rows
+  g.fillStyle = '#6a6c4a'; g.fillRect(0, 470, W, 130);
+  for (let row = 0; row < 6; row++) { const y = 480 + row * row * 3.4 + row * 8; const s = 6 + row * 3;
+    for (let x = -20; x < W; x += s * 2.6) { g.fillStyle = '#2f3a28'; g.beginPath(); g.ellipse(x + row * 11, y + s * .6, s * 1.2, s * .45, 0, 0, 7); g.fill();
+      g.fillStyle = '#44543a'; g.beginPath(); g.arc(x + row * 11, y, s, 0, 7); g.fill(); g.fillStyle = '#5f6f4c'; g.beginPath(); g.arc(x + row * 11 - s * .3, y - s * .3, s * .55, 0, 7); g.fill();
+      g.fillStyle = '#a89468'; for (let k = 0; k < 3; k++) g.fillRect(x + row * 11 + R(-s * .6, s * .6), y + R(-s * .5, s * .4), 3, 3); } }
+  // Shelf Road: dirt shelf curving across the foreground
+  g.fillStyle = '#b5a48a'; g.beginPath(); g.moveTo(0, 640); g.bezierCurveTo(300, 600, 700, 590, W, 612); g.lineTo(W, 660); g.bezierCurveTo(700, 640, 300, 660, 0, 700); g.fill();
+  for (let i = 0; i < 500; i++) { g.fillStyle = rnd() < .5 ? '#8f806a' : '#d0c2a8'; g.fillRect(R(0, W), R(600, 690), R(2, 6), 2); }
+  g.fillStyle = '#5a5244'; g.fillRect(0, 690, W, 30);
+  for (let i = 0; i < 700; i++) { g.strokeStyle = rnd() < .5 ? '#3e3a2e' : '#7a7462'; g.lineWidth = 2; const x = R(0, W), y = R(655, H); g.beginPath(); g.moveTo(x, y); g.lineTo(x + R(-6, 6), y - R(8, 22)); g.stroke(); }
+  // fence
+  g.strokeStyle = '#2c2620'; g.lineWidth = 6; for (let x = 60; x < W; x += 110) { const y = 612 - (x / W) * 20; g.beginPath(); g.moveTo(x, y); g.lineTo(x + 2, y + 56); g.stroke(); }
+  g.lineWidth = 2; for (const dy of [10, 28]) { g.beginPath(); for (let x = 60; x < W; x += 110) g.lineTo(x, 612 - (x / W) * 20 + dy + 6); g.stroke(); }
+  // walkers on the road, the social point of the event
+  function walker(x, y, s) { g.fillStyle = '#1e1a18'; g.beginPath(); g.arc(x, y - s * 2.6, s * .38, 0, 7); g.fill(); g.fillRect(x - s * .4, y - s * 2.2, s * .8, s * 1.3);
+    g.fillRect(x - s * .35, y - s * .9, s * .25, s * .9); g.fillRect(x + s * .1, y - s * .9, s * .25, s * .9); }
+  walker(640, 628, 16); walker(676, 626, 15); walker(705, 630, 12);
+  oak(g, 170, 470, 230, '#34402c', '#56644a'); oak(g, 1190, 520, 150, '#3a4632', '#5a684e');
+  return c.toDataURL();
+}
+
+function card() {
+  const W = 600, H = 840, c = canvas(W, H), g = c.getContext('2d');
+  g.fillStyle = '#ece8dc'; g.fillRect(0, 0, W, H);
+  for (let i = 0; i < 3000; i++) { g.fillStyle = rnd() < .5 ? '#e0dcd0' : '#f6f3ea'; g.fillRect(R(0, W), R(0, H), 2, 2); }
+  g.strokeStyle = '#1c1612'; g.lineWidth = 8; g.strokeRect(20, 20, W - 40, H - 40); g.lineWidth = 3; g.strokeRect(36, 36, W - 72, H - 72);
+  // gilt corner fleurons: the catch/reward accent
+  for (const [x, y] of [[36, 36], [W - 36, 36], [36, H - 36], [W - 36, H - 36]]) { g.fillStyle = '#e8a820'; g.beginPath(); g.arc(x, y, 18, 0, 7); g.fill(); g.fillStyle = '#8a5a08'; g.beginPath(); g.arc(x, y, 8, 0, 7); g.fill(); }
+  // index
+  g.fillStyle = '#1c1612'; g.font = 'bold 64px DejaVu Serif'; g.fillText('A', 58, 120);
+  function spade(x, y, s) { g.beginPath(); g.moveTo(x, y - s); g.bezierCurveTo(x + s * 1.1, y - s * .2, x + s * .9, y + s * .6, x, y + s * .25);
+    g.bezierCurveTo(x - s * .9, y + s * .6, x - s * 1.1, y - s * .2, x, y - s); g.fill(); g.beginPath(); g.moveTo(x, y + s * .1); g.lineTo(x + s * .35, y + s * .8); g.lineTo(x - s * .35, y + s * .8); g.fill(); }
+  spade(84, 160, 26); g.save(); g.translate(W, H); g.rotate(Math.PI); g.fillText('A', 58, 120); spade(84, 160, 26); g.restore();
+  // vignette: the oak whose canopy is the spade, a figure leaving the path
+  g.save(); g.beginPath(); g.ellipse(W / 2, 400, 200, 250, 0, 0, 7); g.clip();
+  let sky = g.createLinearGradient(0, 150, 0, 650); sky.addColorStop(0, '#8a96a4'); sky.addColorStop(1, '#e6d8c0'); g.fillStyle = sky; g.fillRect(0, 0, W, H);
+  g.fillStyle = '#6e7466'; g.beginPath(); g.moveTo(80, 520); for (let x = 80; x < 540; x += 10) g.lineTo(x, 470 + Math.sin(x / 50) * 20); g.lineTo(540, 700); g.lineTo(80, 700); g.fill();
+  g.fillStyle = '#c8b894'; g.beginPath(); g.moveTo(300, 700); g.bezierCurveTo(320, 600, 260, 560, 300, 520); g.lineTo(306, 520); g.bezierCurveTo(290, 580, 360, 620, 380, 700); g.fill();
+  g.strokeStyle = '#2a2420'; g.lineWidth = 14; g.beginPath(); g.moveTo(300, 530); g.bezierCurveTo(296, 470, 310, 430, 300, 380); g.stroke();
+  g.fillStyle = '#26221e'; spade(300, 330, 150);
+  for (let i = 0; i < 400; i++) { g.fillStyle = rnd() < .5 ? '#443c34' : '#141210'; g.beginPath(); g.arc(R(160, 440), R(190, 440), R(3, 8), 0, 7); g.fill(); }
+  g.fillStyle = '#1c1612'; g.beginPath(); g.arc(420, 540, 7, 0, 7); g.fill(); g.fillRect(414, 546, 12, 26);
+  g.restore(); g.strokeStyle = '#1c1612'; g.lineWidth = 5; g.beginPath(); g.ellipse(W / 2, 400, 200, 250, 0, 0, 7); g.stroke();
+  // title banner
+  g.fillStyle = '#1c1612'; g.fillRect(110, 670, W - 220, 64); g.fillStyle = '#efe6cc'; g.font = 'bold 28px DejaVu Serif'; g.textAlign = 'center'; g.fillText('THE PATHLESS LAND', W / 2, 714);
+  // damage seal: the one red on the card
+  g.fillStyle = '#d42a1e'; g.beginPath(); g.arc(W / 2, 770, 26, 0, 7); g.fill(); g.fillStyle = '#efe6cc'; g.font = 'bold 30px DejaVu Serif'; g.fillText('1', W / 2, 781);
+  return c.toDataURL();
+}
+
+function enemy() {
+  const W = 640, H = 640, c = canvas(W, H), g = c.getContext('2d');
+  g.fillStyle = '#e6e2da'; g.fillRect(0, 0, W, H);
+  // ground shadow
+  g.fillStyle = '#b9ad94'; g.beginPath(); g.ellipse(320, 590, 150, 24, 0, 0, 7); g.fill();
+  // steam curls
+  g.strokeStyle = '#8c8578'; g.lineWidth = 10; g.lineCap = 'round';
+  for (const dx of [-40, 10, 55]) { g.beginPath(); g.moveTo(320 + dx, 150); g.bezierCurveTo(300 + dx, 110, 350 + dx, 80, 320 + dx, 30); g.stroke(); }
+  // cup body (tapered), light paper with shading
+  const cup = (inset) => { g.beginPath(); g.moveTo(205 + inset, 175); g.lineTo(435 - inset, 175); g.lineTo(400 - inset, 575); g.lineTo(240 + inset, 575); g.closePath(); };
+  let body = g.createLinearGradient(205, 0, 435, 0); body.addColorStop(0, '#9a948a'); body.addColorStop(.35, '#f2eee6'); body.addColorStop(1, '#6e6a62');
+  g.fillStyle = body; cup(0); g.fill(); g.strokeStyle = '#1e1a16'; g.lineWidth = 6; cup(0); g.stroke();
+  // kraft sleeve
+  let sl = g.createLinearGradient(215, 0, 425, 0); sl.addColorStop(0, '#6e5438'); sl.addColorStop(.35, '#b89a74'); sl.addColorStop(1, '#584230');
+  g.fillStyle = sl; g.beginPath(); g.moveTo(216, 300); g.lineTo(424, 300); g.lineTo(412, 440); g.lineTo(228, 440); g.fill(); g.stroke();
+  for (let y = 312; y < 440; y += 10) { g.strokeStyle = '#6a5036'; g.lineWidth = 2; g.beginPath(); g.moveTo(222, y); g.lineTo(418, y); g.stroke(); }
+  // the face: sneer on the sleeve, eyes are the danger accent
+  g.fillStyle = '#1e1a16'; g.beginPath(); g.moveTo(255, 340); g.lineTo(305, 360); g.lineTo(255, 372); g.fill(); g.beginPath(); g.moveTo(385, 340); g.lineTo(335, 360); g.lineTo(385, 372); g.fill();
+  g.fillStyle = '#e8261c'; g.beginPath(); g.arc(276, 360, 7, 0, 7); g.fill(); g.beginPath(); g.arc(364, 360, 7, 0, 7); g.fill();
+  g.strokeStyle = '#1e1a16'; g.lineWidth = 6; g.beginPath(); g.moveTo(272, 404); g.quadraticCurveTo(330, 420, 372, 392); g.stroke();
+  // lid
+  g.fillStyle = '#262220'; g.beginPath(); g.ellipse(320, 175, 128, 22, 0, 0, 7); g.fill(); g.fillRect(196, 150, 248, 26);
+  g.fillStyle = '#3e3834'; g.beginPath(); g.ellipse(320, 150, 124, 18, 0, 0, 7); g.fill(); g.fillStyle = '#0e0c0a'; g.fillRect(350, 144, 34, 8);
+  // price tag on a string: the gold you win
+  g.strokeStyle = '#3a3228'; g.lineWidth = 3; g.beginPath(); g.moveTo(430, 200); g.quadraticCurveTo(480, 230, 490, 290); g.stroke();
+  g.fillStyle = '#eaa820'; g.save(); g.translate(492, 330); g.rotate(.18); g.beginPath(); g.moveTo(-40, -40); g.lineTo(40, -40); g.lineTo(40, 40); g.lineTo(-40, 40); g.closePath(); g.fill();
+  g.strokeStyle = '#5a3a06'; g.lineWidth = 4; g.stroke(); g.fillStyle = '#4a2e04'; g.font = 'bold 44px DejaVu Serif'; g.textAlign = 'center'; g.fillText('$9', 0, 16); g.restore();
+  // ink hatching on the shadow side
+  g.strokeStyle = 'rgba(30,26,22,.55)'; g.lineWidth = 2; for (let y = 185; y < 570; y += 7) { g.beginPath(); g.moveTo(398 - (y - 175) * .08, y); g.lineTo(430 - (y - 175) * .09, y - 10); g.stroke(); }
+  return c.toDataURL();
+}
+window.render = () => ({ place: place(), card: card(), enemy: enemy() });
+</script></body></html>
