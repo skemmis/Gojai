@@ -23,3 +23,17 @@ Colour is printed like a crude second ink: flat, saturated, slightly off-registe
 8. **Sprites are separate game elements**, generated on green and keyed out, never cut from scene art.
 
 Tokens live in `packages/art/src/theme.ts`.
+
+## Fight backgrounds
+
+Asked for by Sam on 2026-09-29, via the combat thread. The backdrop is the real neighbourhood you're fighting in.
+
+1. **Format:** portrait plate, 1080×1440 (generate at 3:4). The ground line sits at **78% of the height**, a flat, readable floor where the sprite's feet land.
+2. **Quiet column:** the middle of the plate (30–70% of the width, 35–78% of the height) is where the enemy stands. Keep it the calmest area: sparse detail, no bright shapes, no strong verticals directly behind the figure. The landmark lives at the sides and in the sky.
+3. **Dark by construction:** draw it as pale ink on black, like scratchboard or a woodcut (see the black ground of `latte2-card-1.png`). The sprites are paper-coloured with black ink, so they pop against a dark plate. No large bright areas near the sprite.
+4. **No colour in the art.** Plates are generated in pure ink. Time of day is a value shift in code (day lighter, night darker). **Pink Moment is the only coloured variant**: a rough, off-register pink wash on the sky or ridge band, and only while that live event is on. There's no lamplight gold, because gilt means reward.
+5. **No vignette in the art.** Code adds one, so every plate matches.
+6. **Two layers for motion:** a back plate (sky, landmark, ground) and an optional front layer on green key (branches, grass, a fence post) confined to the bottom and side edges and never over the quiet column. Code does parallax, sway and drifting fog. Enemy sprites stay still (animation is tabled).
+7. **No figures and no text.** Plates never carry lettering, because it would compete with the UI. Real businesses get parody names if they show at all.
+8. **Recognisable by silhouette:** use a slightly low, eye-level view with one landmark that says where you are (the Arcade's arches, Libbey Park's oaks, the trail's fence and eucalyptus, the Topatopa bluffs from Shelf Road).
+9. **Manifest** (in `/mnt/project-files/gojai-art/backgrounds/manifest.json`, keyed by territory id): `file`, `front` (optional), `territory`, `name`, `width`, `height`, `ground_y` (px), `quiet_rect` `[x, y, w, h]` in px.
