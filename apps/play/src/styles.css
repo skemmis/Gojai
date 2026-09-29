@@ -574,11 +574,11 @@ footer {
 /* Enemy */
 .foe-zone {
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 1fr auto;
   justify-items: center;
   align-items: end;
   min-height: 0;
-  padding: 8px 0 10px;
+  padding: 40px 0 10px;
   border: 1px dashed transparent;
 }
 .foe-zone.armed {
@@ -595,6 +595,30 @@ footer {
 .foe-zone > :not(.scene) {
   position: relative;
   z-index: 1;
+}
+.foe-zone > .intents,
+.foe-zone > .foe-plate {
+  z-index: 3;
+}
+.scene.front {
+  z-index: 2;
+}
+.scene.front .plate {
+  animation: drift 9s ease-in-out infinite alternate;
+}
+@keyframes drift {
+  from { transform: translateX(-4px); }
+  to { transform: translateX(4px); }
+}
+/* Pink Moment: the sky band takes the pink, printed a little off-register; blacks stay black */
+.scene .pink-wash {
+  position: absolute;
+  background: var(--pink);
+  mix-blend-mode: multiply;
+  opacity: 0.9;
+  transform: translate(2px, -1px);
+  -webkit-mask-image: linear-gradient(#000 70%, transparent);
+  mask-image: linear-gradient(#000 70%, transparent);
 }
 .scene {
   position: absolute;
@@ -622,28 +646,36 @@ footer {
   padding: 6px 10px;
   background: color-mix(in srgb, var(--night) 82%, transparent);
 }
+/* Intent: a small drawn glyph and a number over the enemy's head, no box.
+   Attacks print in blood; everything else in pale ink. A hard off-register
+   ghost in night keeps it legible over the scene. */
 .intents {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  gap: 8px;
-  align-self: start;
+  gap: 14px;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  pointer-events: none;
 }
 .intent {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border: 2px solid var(--on-night);
+  gap: 3px;
   color: var(--on-night);
   font-variant-numeric: tabular-nums;
+  filter: drop-shadow(2px 1px 0 var(--night));
 }
 .intent .ico {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
 }
 .glyph {
   display: inline-block;
-  width: 30px;
-  height: 30px;
+  width: 22px;
+  height: 22px;
   background: currentColor;
   mask-size: contain;
   -webkit-mask-size: contain;
@@ -653,18 +685,16 @@ footer {
   -webkit-mask-position: center;
 }
 .intent b {
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 800;
   line-height: 1;
 }
 .intent small {
-  font-size: 18px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 700;
 }
 .intent.atk {
-  --ghost: var(--blood);
-  background: var(--blood);
-  border-color: var(--blood);
+  color: var(--blood);
 }
 .sprite-wrap {
   position: relative;
@@ -1043,7 +1073,8 @@ footer {
   box-shadow: 2px -1px 0 color-mix(in srgb, var(--gilt) 50%, transparent);
 }
 @media (prefers-reduced-motion: reduce) {
-  .scene .fog { animation: none; }
+  .scene .fog,
+  .scene.front .plate { animation: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .table.shake,
