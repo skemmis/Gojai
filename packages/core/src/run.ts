@@ -1,9 +1,11 @@
 /**
- * The run: an endless climb of floors. Each floor you pick one of three
- * nodes; every Nth floor is a boss. The run ends when your HP hits 0.
+ * The run: an endless climb of floors. Like Pokémon Go, each floor you
+ * walk to a spot and find out what's there: usually a fight, sometimes an
+ * elite, a place to heal, a shop or an event. Every Nth floor is an event
+ * spot (like a gym) with a boss. The run ends when your HP hits 0.
  * Score = floors cleared.
  *
- * In the real game each node is a place in Ojai; here they're abstract.
+ * In the real game each spot is a place in Ojai; here they're abstract.
  */
 import { CONFIG } from "./config";
 import { ENEMIES, EVENTS, GUIDE_BY_ID, cardDef } from "./content";
@@ -27,7 +29,6 @@ export function newRun(seed: number): Run {
     nextUid: 1,
     removals: 0,
     phase: "map",
-    nodes: [],
     node: null,
     fight: null,
     reward: null,
@@ -54,7 +55,6 @@ export function newRun(seed: number): Run {
   // Start with Ace to 10 in hearts and spades: enough to attack and defend.
   // Diamonds and clubs come as rewards; face cards are earned by catching.
   for (const suit of CONFIG.startSuits) for (let v = 1; v <= 10; v++) run.draw.push(plainCard(run, v, suit));
-  run.nodes = makeNodes(run);
   return run;
 }
 
@@ -67,26 +67,18 @@ export function isBossFloor(floor: number): boolean {
   return floor % CONFIG.bossEvery === 0;
 }
 
-function makeNodes(run: Run): NodeKind[] {
-  if (isBossFloor(run.floor)) return ["boss"];
-  const weights: Record<string, number> = { ...CONFIG.nodeWeights };
+/** What you find at a regular spot, rolled when you arrive. */
+function rollEncounter(run: Run): NodeKind {
+  const weights: Record<string, number> = { ...CONFIG.spotWeights };
   if (run.floor < CONFIG.eliteFromFloor) delete weights.elite;
-  if (run.floor === 1) weights.fight *= 3;
-  const out: NodeKind[] = [];
-  while (out.length < CONFIG.nodeChoices) {
-    const pool = Object.entries(weights).filter(([k]) => !out.includes(k as NodeKind));
-    if (pool.length === 0) break;
-    const total = pool.reduce((s, [, w]) => s + w, 0);
-    let x = next(run.rng) * total;
-    for (const [k, w] of pool) {
-      x -= w;
-      if (x < 0) {
-        out.push(k as NodeKind);
-        break;
-      }
-    }
+  if (run.floor === 1) return "fight";
+  const total = Object.values(weights).reduce((s, w) => s + w, 0);
+  let x = next(run.rng) * total;
+  for (const [k, w] of Object.entries(weights)) {
+    x -= w;
+    if (x < 0) return k as NodeKind;
   }
-  return out;
+  return "fight";
 }
 
 function enemyFor(run: Run, tier: Tier): string {
@@ -128,15 +120,14 @@ function advance(run: Run) {
   run.shop = null;
   run.event = null;
   run.phase = "map";
-  run.nodes = makeNodes(run);
 }
 
 // ─── Map ─────────────────────────────────────────────────────────────────────
 
-export function chooseNode(run: Run, i: number): void {
+/** Walk to the next spot and find out what's there. Every Nth floor is an event spot with a boss. */
+export function visitSpot(run: Run): void {
   if (run.phase !== "map") throw new Error("Not on the map.");
-  const kind = run.nodes[i];
-  if (!kind) throw new Error("No such node.");
+  const kind: NodeKind = isBossFloor(run.floor) ? "boss" : rollEncounter(run);
   run.node = kind;
   if (kind === "fight") startFight(run, enemyFor(run, "normal"));
   else if (kind === "elite") startFight(run, enemyFor(run, "elite"));

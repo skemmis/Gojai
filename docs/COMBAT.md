@@ -50,7 +50,7 @@ You can hold up to 5 Guides. Each one bends a rule. Some examples:
 
 ## The run
 
-A run is endless and escalating, and your score is the floors cleared. Each floor you pick one of three nodes: **Fight, Elite, Rest, Shop, Event**. Every 8th floor is a **Boss**. Enemies get 4% more HP and 3% more attack per floor.
+A run is endless and escalating, and your score is the floors cleared. Like Pokémon Go, each floor you walk to a **spot** and find out what's there: usually a **Fight**, sometimes an **Elite** (from floor 3), a place to **Rest**, a **Shop** or an **Event**. Every 8th floor is an **event spot** (like a gym) with a **Boss**. Enemies get 4% more HP and 3% more attack per floor.
 
 - **Fight:** gold, plus pick 1 of 3 cards.
 - **Elite:** more gold, a card, and a Guide.

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { newRun, startFight, play, endTurn, playError, previewPlay, plainCard, allCards, chooseNode, takeRewardCard, leaveReward, intent, incoming, CONFIG } from "./index";
+import { newRun, startFight, play, endTurn, playError, previewPlay, plainCard, allCards, visitSpot, takeRewardCard, leaveReward, intent, incoming, CONFIG } from "./index";
 import type { Run, Suit } from "./index";
 
 function withHand(run: Run, cards: [number, Suit][]) {
@@ -15,7 +15,6 @@ test("a run starts with Ace to 10 in hearts and spades and full HP", () => {
   assert.deepEqual([...new Set(allCards(run).map((c) => c.suit))].sort(), ["hearts", "spades"]);
   assert.equal(run.hp, CONFIG.playerHp);
   assert.equal(run.phase, "map");
-  assert.equal(run.nodes.length, 3);
 });
 
 test("a turn is a hand of 5 and 3 actions", () => {
@@ -160,7 +159,7 @@ test("hex junk joins your deck and leaves after the fight", () => {
 
 test("a whole floor: fight, reward, next floor", () => {
   const run = newRun(9);
-  chooseNode(run, run.nodes.indexOf("fight") >= 0 ? run.nodes.indexOf("fight") : 0);
+  visitSpot(run); // the first spot is always a fight
   let guard = 0;
   while (run.phase === "fight" && guard++ < 500) {
     const spade = run.hand.filter((c) => c.suit === "spades").sort((x, y) => y.value - x.value)[0];
@@ -182,5 +181,4 @@ test("the same seed plays out the same way", () => {
   startFight(a, "influencer");
   startFight(b, "influencer");
   assert.deepEqual(a.hand, b.hand);
-  assert.deepEqual(a.nodes, b.nodes);
 });

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import {
   newRun,
-  chooseNode,
+  visitSpot,
+  isBossFloor,
   play,
   playError,
   previewPlay,
@@ -30,7 +31,7 @@ import {
   GUIDE_BY_ID,
   CONFIG,
 } from "@gojai/core";
-import type { Run, NodeKind, Suit, EnemyAction } from "@gojai/core";
+import type { Run, Suit, EnemyAction } from "@gojai/core";
 import { CardView, CardPicker, GuideChip, SuitMark, SUIT_COLOR, POWER, SYM, sortCards } from "./components";
 
 type Act = (fn: (r: Run) => void) => boolean;
@@ -164,27 +165,22 @@ function Header({ run }: { run: Run }) {
 
 // ─── Map ─────────────────────────────────────────────────────────────────────
 
-const NODE_INFO: Record<NodeKind, { label: string; icon: string; sub: string }> = {
-  fight: { label: "Fight", icon: "⚔", sub: "A local nuisance" },
-  elite: { label: "Elite", icon: "☠", sub: "Tougher. Offers a Guide" },
-  boss: { label: "Boss", icon: "♛", sub: "Big fight. Heal after" },
-  rest: { label: "Rest", icon: "☾", sub: "Heal or improve" },
-  shop: { label: "Shop", icon: "$", sub: "Spend gold" },
-  event: { label: "Event", icon: "?", sub: "Something happens" },
-};
-
 function MapScreen({ run, act }: { run: Run; act: Act }) {
+  const boss = isBossFloor(run.floor);
   return (
     <section className="panel">
-      <h2>Floor {run.floor}: choose a path</h2>
+      <h2>Floor {run.floor}</h2>
+      <p className="dim">
+        {boss
+          ? "An event spot. Something big is waiting."
+          : "Walk to the next spot. It might be a fight, an elite, somewhere to heal, a shop or an event."}
+      </p>
       <div className="nodes">
-        {run.nodes.map((n, i) => (
-          <button key={i} className={`node node-${n}`} onClick={() => act((r) => chooseNode(r, i))}>
-            <span className="node-icon">{NODE_INFO[n].icon}</span>
-            <span className="node-label">{NODE_INFO[n].label}</span>
-            <span className="node-sub">{NODE_INFO[n].sub}</span>
-          </button>
-        ))}
+        <button className={`node ${boss ? "node-boss" : "node-fight"}`} onClick={() => act(visitSpot)}>
+          <span className="node-icon">{boss ? "♛" : "◎"}</span>
+          <span className="node-label">{boss ? "Event spot" : "Next spot"}</span>
+          <span className="node-sub">{boss ? "Boss fight. Heal after" : "See what's there"}</span>
+        </button>
       </div>
     </section>
   );

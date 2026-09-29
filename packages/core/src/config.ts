@@ -24,9 +24,9 @@ export const DEFAULT_CONFIG = {
 
   // Run structure
   bossEvery: 8,
-  nodeChoices: 3,
   eliteFromFloor: 3,
-  nodeWeights: { fight: 50, elite: 12, rest: 14, shop: 12, event: 12 },
+  /** What a regular spot holds (rest = a place to heal). The first spot is always a fight. */
+  spotWeights: { fight: 55, elite: 12, rest: 13, shop: 10, event: 10 },
 
   // Enemy scaling per floor (floor 1 = ×1)
   hpGrowth: 0.04,

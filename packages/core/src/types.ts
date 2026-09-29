@@ -188,7 +188,7 @@ export interface Run {
   nextUid: number;
   removals: number;
   phase: Phase;
-  nodes: NodeKind[];
+  /** What you found at the current spot. */
   node: NodeKind | null;
   fight: Fight | null;
   reward: RewardState | null;

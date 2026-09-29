@@ -14,7 +14,7 @@ import {
   buyGuide,
   cardDef,
   chooseEvent,
-  chooseNode,
+  visitSpot,
   endTurn,
   EVENT_BY_ID,
   guidesFull,
@@ -30,7 +30,6 @@ import {
   makeRng,
   next,
   type Card,
-  type NodeKind,
   type Run,
 } from "@gojai/core";
 import { chooseMove } from "./bot";
@@ -73,21 +72,6 @@ function worstCard(run: Run): Card | undefined {
     .sort((a, b) => a.value - b.value)[0];
 }
 
-function pickNode(run: Run, policy: Policy, r: () => number): number {
-  const nodes = run.nodes;
-  const idx = (k: NodeKind) => nodes.indexOf(k);
-  if (nodes.length === 1) return 0;
-  if (policy === "explore" && r() < 0.25) return Math.floor(r() * nodes.length);
-  const h = health(run);
-  if (h < 0.5 && idx("rest") >= 0) return idx("rest");
-  if (run.gold >= 110 && idx("shop") >= 0) return idx("shop");
-  if (h >= 0.75 && idx("elite") >= 0) return idx("elite");
-  if (idx("event") >= 0 && h >= 0.6) return idx("event");
-  if (idx("fight") >= 0) return idx("fight");
-  if (idx("rest") >= 0) return idx("rest");
-  return 0;
-}
-
 function fightLoop(run: Run, margins: number[]) {
   let guard = 0;
   while (run.phase === "fight" && run.fight && run.fight.phase === "play") {
@@ -109,7 +93,7 @@ export function playRun(seed: number, policy: Policy): RunRecord {
 
   while (run.phase !== "over" && run.floor < MAX_FLOOR) {
     if (run.phase === "map") {
-      chooseNode(run, pickNode(run, policy, r));
+      visitSpot(run);
       if ((run.phase as string) === "fight") {
         const start = run.fight!;
         const enemy = start.enemy.id, tier = start.enemy.tier, floor = run.floor;
