@@ -5,7 +5,8 @@
   "scripts": {
     "check": "tsc --noEmit",
     "mock": "tsx src/mock/render.ts",
-    "generate": "tsx src/generate.ts"
+    "generate": "tsx src/generate.ts",
+    "mock:3d": "tsx src/mock/render3d.ts"
   },
   "dependencies": {
     "@google/genai": "^2.24.0",
@@ -15,7 +16,9 @@
   "devDependencies": {
     "@types/node": "^26.6.3",
     "@types/pngjs": "^6.0.5",
+    "@types/three": "^0.186.0",
     "playwright-core": "^1.63.0",
+    "three": "^0.186.1",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   }

@@ -114,8 +114,8 @@ function card() {
   g = S.layer('fleurons', 'feature');
   for (const [x, y] of [[36, 36], [W - 36, 36], [36, H - 36], [W - 36, H - 36]]) { g.fillStyle = '#e8a820'; g.beginPath(); g.arc(x, y, 18, 0, 7); g.fill(); g.fillStyle = '#8a5a08'; g.beginPath(); g.arc(x, y, 8, 0, 7); g.fill(); }
   g = S.layer('index', 'text');
-  g.fillStyle = '#1c1612'; pixText(g, 'A', 56, 132, 24, 'Jacquard', '#1c1612'); spadePath(g, 84, 168, 24);
-  g.save(); g.translate(W, H); g.rotate(Math.PI); pixText(g, 'A', 56, 132, 24, 'Jacquard', '#1c1612'); spadePath(g, 84, 168, 24); g.restore();
+  g.fillStyle = '#1c1612'; pixText(g, 'A', 52, 128, 16, 'Silkscreen', '#1c1612'); spadePath(g, 84, 168, 24);
+  g.save(); g.translate(W, H); g.rotate(Math.PI); pixText(g, 'A', 52, 128, 16, 'Silkscreen', '#1c1612'); spadePath(g, 84, 168, 24); g.restore();
   const clip = (g) => { g.beginPath(); g.ellipse(W / 2, 400, 200, 250, 0, 0, 7); g.clip(); };
   g = S.layer('vignette-sky', 'sky'); clip(g);
   let sky = g.createLinearGradient(0, 150, 0, 650); sky.addColorStop(0, '#8a96a4'); sky.addColorStop(1, '#e6d8c0'); g.fillStyle = sky; g.fillRect(0, 0, W, H);

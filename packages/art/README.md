@@ -28,6 +28,10 @@ Round 1 pixelated one finished painting and let brightness pick the hatching, so
 
 Lettering is never shrunk from a painting: it's set at native size in a pixel font (`fonts/`, OFL), and card names in the app will be live text.
 
+## Ink rendering after Obra Dinn (round 3)
+
+`src/ink.ts` follows Lucas Pope's devlog: lines come from object ids and surface creases rather than brightness, lines flip to paper inside dark fills, and light is crushed to three values (ink, 50% pattern, paper). It runs on the 2D layers (`ink2d-*`) or on id/normal/light passes from a rough three.js diorama (`src/mock/diorama.html`, `npm run mock:3d`).
+
 ## Commands
 
 ```bash
