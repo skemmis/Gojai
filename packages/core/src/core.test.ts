@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { newRun, startFight, play, endTurn, playError, previewPlay, plainCard, allCards, visitSpot, takeRewardCard, leaveReward, intent, incoming, CONFIG } from "./index";
+import { newRun, startFight, play, endTurn, playError, previewPlay, plainCard, allCards, visitSpot, enterEncounter, takeRewardCard, leaveReward, intent, incoming, CONFIG } from "./index";
 import type { Run, Suit } from "./index";
 
 function withHand(run: Run, cards: [number, Suit][]) {
@@ -181,4 +181,15 @@ test("the same seed plays out the same way", () => {
   startFight(a, "influencer");
   startFight(b, "influencer");
   assert.deepEqual(a.hand, b.hand);
+});
+
+test("the map can hand the run an encounter it rolled, with its place", () => {
+  const run = newRun(5);
+  enterEncounter(run, "rest", { spotId: "s1", place: "libbey_park" });
+  assert.equal(run.phase, "rest");
+  assert.equal(run.spot?.place, "libbey_park");
+  const other = newRun(6);
+  enterEncounter(other, "mystery");
+  assert.equal(other.phase, "event");
+  assert.equal(other.node, "event");
 });

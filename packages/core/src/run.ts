@@ -12,7 +12,7 @@ import { ENEMIES, EVENTS, GUIDE_BY_ID, cardDef } from "./content";
 import { heal, startFight } from "./fight";
 import { cardKey, plainCard, randomGuides, randomNamed, randomRewardCard } from "./rewards";
 import { makeRng, next, pick, sample } from "./rng";
-import type { Card, NodeKind, Run, Tier } from "./types";
+import type { Card, EncounterKind, NodeKind, Run, SpotContext, Tier } from "./types";
 
 export function newRun(seed: number): Run {
   const run: Run = {
@@ -30,6 +30,7 @@ export function newRun(seed: number): Run {
     removals: 0,
     phase: "map",
     node: null,
+    spot: null,
     fight: null,
     reward: null,
     shop: null,
@@ -115,6 +116,7 @@ function addToDeck(run: Run, c: Card) {
 function advance(run: Run) {
   run.floor++;
   run.node = null;
+  run.spot = null;
   run.fight = null;
   run.reward = null;
   run.shop = null;
@@ -127,8 +129,19 @@ function advance(run: Run) {
 /** Walk to the next spot and find out what's there. Every Nth floor is an event spot with a boss. */
 export function visitSpot(run: Run): void {
   if (run.phase !== "map") throw new Error("Not on the map.");
-  const kind: NodeKind = isBossFloor(run.floor) ? "boss" : rollEncounter(run);
+  enterEncounter(run, isBossFloor(run.floor) ? "boss" : rollEncounter(run));
+}
+
+/**
+ * Start an encounter the map already rolled. This is the entry point for the
+ * map screen: it decides what a spot holds and where it is, and the run
+ * plays it out and returns to the "map" phase when it's done.
+ */
+export function enterEncounter(run: Run, encounter: EncounterKind, spot: SpotContext | null = null): void {
+  if (run.phase !== "map") throw new Error("Not on the map.");
+  const kind: NodeKind = encounter === "mystery" ? "event" : encounter;
   run.node = kind;
+  run.spot = spot;
   if (kind === "fight") startFight(run, enemyFor(run, "normal"));
   else if (kind === "elite") startFight(run, enemyFor(run, "elite"));
   else if (kind === "boss") startFight(run, enemyFor(run, "boss"));

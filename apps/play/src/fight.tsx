@@ -40,12 +40,14 @@ const SCENES: Record<string, string> = Object.fromEntries(
     .filter(([id]) => id !== "vignette"),
 );
 const PLATE = { w: 1344, h: 768, floor: 630, foeX: 0.69 };
-/** Night plates a fight can land on. Spots don't carry a territory yet, so the run seed and floor pick one. */
+/** Night plates a fight can land on when the spot's place has no plate of its own: the run seed and floor pick one. */
 const NIGHT_SCENES = ["arcade", "libbey_park", "ojai_trail"];
 
 /** Pink Moment is a live event. Until the event clock exists, `?pink` previews it on the trail. */
 function sceneFor(run: Run): string {
   if (typeof location !== "undefined" && new URLSearchParams(location.search).has("pink")) return "ojai_trail_pink";
+  const place = run.spot?.place;
+  if (place && SCENES[place]) return place;
   return NIGHT_SCENES[Math.abs((run.seed ?? 0) * 31 + run.floor) % NIGHT_SCENES.length];
 }
 

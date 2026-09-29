@@ -127,6 +127,15 @@ export interface Fight {
 }
 
 export type NodeKind = "fight" | "elite" | "rest" | "shop" | "event" | "boss";
+/** What a map spot can hand the run: the map's own names ("mystery" is an event). */
+export type EncounterKind = NodeKind | "mystery";
+
+/** Where an encounter happens, as the map reports it. `place` is a territory id such as "arcade" or "ojai_trail". */
+export interface SpotContext {
+  spotId?: string;
+  name?: string;
+  place?: string;
+}
 
 export interface ShopState {
   cards: { card: Card; price: number; sold: boolean }[];
@@ -190,6 +199,8 @@ export interface Run {
   phase: Phase;
   /** What you found at the current spot. */
   node: NodeKind | null;
+  /** The spot this encounter came from, when the map supplied one. */
+  spot: SpotContext | null;
   fight: Fight | null;
   reward: RewardState | null;
   shop: ShopState | null;
