@@ -60,5 +60,5 @@ const [visits, setVisits] = useState<Visits>({});
 ```
 
 - A spot opens only when you stand within its range (35–60 m). Once opened it cools down until the next 20-minute reroll, so a roll can't be farmed. Rules and helpers live in `packages/map/src/visits.ts` (`spotState`, `visit`, `nextReroll`, `spotOpened`).
-- `SpotOpened` carries the spot, the find (`fight | elite | rest | shop | mystery`, a subset of the game's encounter kinds), the time, the territory id, `place` (the fight-backdrop key: `arcade`, `libbey_park`, `ojai_trail`, …) and the ids of events live there (e.g. `pink-moment`).
+- `SpotOpened` carries the spot, the find (`fight | elite | rest | shop | mystery`, a subset of the game's encounter kinds), the time, the territory id, `place` (the fight-backdrop key: `arcade`, `libbey-park`, `ojai-valley-trail`, `shelf-road`, …) and the ids of events live there (e.g. `pink-moment`).
 - What a spot rolls comes from `findAt`/`spotOdds` in `packages/map`, which should be the only copy of the odds.

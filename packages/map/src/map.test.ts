@@ -144,7 +144,8 @@ test("an opened spot carries its territory, backdrop key and live events", () =>
   assert.ok(market.liveEvents.includes("thursday-market"));
   assert.equal(spotOpened(spotById("arcade")!, "fight", zoned(2026, 10, 1, 12)).place, "arcade");
   const trail = SPOTS.find((s) => neighborhoodOf(s.at)?.id === "trail")!;
-  assert.equal(spotOpened(trail, "rest", zoned(2026, 10, 1, 12)).place, "ojai_trail");
+  assert.equal(spotOpened(trail, "rest", zoned(2026, 10, 1, 12)).place, "ojai-valley-trail");
   const lib = SPOTS.find((s) => neighborhoodOf(s.at)?.id === "libbey-park")!;
-  assert.equal(spotOpened(lib, "rest", zoned(2026, 10, 1, 12)).place, "libbey_park");
+  assert.equal(spotOpened(lib, "rest", zoned(2026, 10, 1, 12)).place, "libbey-park");
+  assert.equal(spotOpened(spotById("shelf-road")!, "elite", zoned(2026, 10, 1, 12)).place, "shelf-road");
 });
