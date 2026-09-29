@@ -86,6 +86,7 @@ export interface MapScreenProps {
 export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, onOpen, autoLocate = false, tools }: MapScreenProps) {
   const mapEl = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
+  const removed = useRef(false);
   const [sel, setSel] = useState<Selection>({ kind: "events" });
   const [pretend, setPretend] = useState<Date | null>(null);
   const [tick, setTick] = useState(() => new Date());
@@ -150,7 +151,13 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
       m.on("mouseleave", id, () => (m.getCanvas().style.cursor = ""));
     }
     map.current = m;
-    return () => m.remove();
+    removed.current = false;
+    return () => {
+      // Runs before the other effects' cleanups: mark the map gone so they skip it.
+      removed.current = true;
+      map.current = null;
+      m.remove();
+    };
   }, []);
 
   // Restyle on live-event changes (MapLibre diffs the style).
@@ -171,7 +178,7 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
     m.on("styledata", apply);
     return () => {
       m.off("styledata", apply);
-      if (m.getSource("hoods")) m.setFeatureState({ source: "hoods", id: selHood }, { selected: false });
+      if (!removed.current && m.getSource("hoods")) m.setFeatureState({ source: "hoods", id: selHood }, { selected: false });
     };
   }, [selHood]);
 
@@ -185,7 +192,7 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
     m.on("styledata", apply);
     return () => {
       m.off("styledata", apply);
-      if (m.getSource("spots")) m.setFeatureState({ source: "spots", id: selSpot }, { selected: false });
+      if (!removed.current && m.getSource("spots")) m.setFeatureState({ source: "spots", id: selSpot }, { selected: false });
     };
   }, [selSpot]);
 

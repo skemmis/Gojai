@@ -1,8 +1,8 @@
 /* The standalone map page. MapScreen's own styles are in map-screen.css. */
-html, body, #root { margin: 0; height: 100%; background: #ECE3CF; color: #1B1814; }
+html, body, #root { margin: 0; height: 100%; background: #ECE3CF; color: #2A1E14; }
 .app {
   position: fixed; inset: 0;
-  --paper: #ECE3CF; --ink: #1B1814; --ink-soft: #5B5347;
+  --paper: #ECE3CF; --ink: #2A1E14; --ink-soft: #5B5347;
   --display: "IM Fell English SC", "IM Fell English", Georgia, serif;
   font-family: "Libre Franklin", "Franklin Gothic Medium", system-ui, sans-serif;
 }
