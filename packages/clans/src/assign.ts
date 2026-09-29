@@ -1,5 +1,5 @@
 import { CLAN, type ClanConfig } from "./config.ts";
-import { FACTION_IDS, perFaction, type FactionId, type PerFaction } from "./factions.ts";
+import { perFaction, type FactionId, type PerFaction } from "./factions.ts";
 
 /**
  * Auto-assignment at signup. Head counts lie (most signups stop playing), so
@@ -33,8 +33,8 @@ export function assignFaction(
   invitedTo?: FactionId,
   cfg: ClanConfig = CLAN,
 ): FactionId {
-  const min = Math.min(...FACTION_IDS.map((f) => s[f]));
+  const min = Math.min(...cfg.factions.map((f) => s[f]));
   if (invitedTo && s[invitedTo] <= min * (1 + cfg.assign.inviteTolerance) + cfg.assign.newcomer) return invitedTo;
-  const weakest = FACTION_IDS.filter((f) => s[f] === min);
+  const weakest = cfg.factions.filter((f) => s[f] === min);
   return weakest[Math.floor(roll * weakest.length)];
 }

@@ -3,11 +3,14 @@
  * Units: "influence" is an abstract count per neighborhood per faction; one
  * spot walked is worth 1.
  */
+import type { FactionId } from "./factions.ts";
+
 export const CLAN = {
+  /** Factions in play: two by default; the lab also runs every scenario with a third. */
+  factions: ["order", "pathless"] as FactionId[],
+
   /** Share of influence that fades each night (the map keeps moving). */
   decay: 0.15,
-  /** Order perk: overnight fade on ground the Order holds. */
-  lodgeDecay: 0.1,
 
   /** Influence a faction needs to hold a neighborhood at all. */
   minHold: 12,
@@ -18,10 +21,6 @@ export const CLAN = {
 
   /** First visit to a spot today. */
   walk: 1,
-  /** Pathless perk: first spot in each neighborhood each day. At 2 the Pathless won 87% of seasons (clan lab). */
-  walkOnBonus: 0.75,
-  /** Readymades perk: multiplier on influence earned in ground another faction holds. */
-  readymade: 1.28,
 
   /** Death as offering: what a finished run pays its faction. */
   offering: { perFloor: 1, perElite: 3, perBoss: 8 },
@@ -34,8 +33,9 @@ export const CLAN = {
   knee: 8,
 
   /**
-   * Catch-up: a faction holding less than a third of the map earns more
-   * everywhere, one holding more earns less. mult = 1 + k * (1/3 - heldShare).
+   * Catch-up: a faction holding less than its fair share of the map (1/2 or
+   * 1/3) earns more everywhere, one holding more earns less.
+   * mult = 1 + k * (1/n - heldShare).
    */
   underdog: { k: 3, min: 0.5, max: 2 },
 

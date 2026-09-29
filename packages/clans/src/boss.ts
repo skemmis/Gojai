@@ -1,5 +1,5 @@
 import { CLAN, type ClanConfig } from "./config.ts";
-import { FACTION_IDS, perFaction, type FactionId, type PerFaction } from "./factions.ts";
+import { perFaction, type FactionId, type PerFaction } from "./factions.ts";
 
 /**
  * Group boss fights at event spots (Pokémon Go gyms, Slay the Spire fights).
@@ -53,9 +53,9 @@ export interface BossResult {
 export function resolveBoss(b: BossFight, cfg: ClanConfig = CLAN): BossResult {
   const damage = perFaction(() => 0);
   for (const h of Object.values(b.hits)) damage[h.faction] += h.damage;
-  const total = FACTION_IDS.reduce((s, f) => s + damage[f], 0);
+  const total = cfg.factions.reduce((s, f) => s + damage[f], 0);
   const killed = b.hp <= 0;
-  const top = total > 0 ? FACTION_IDS.reduce((a, f) => (damage[f] > damage[a] ? f : a)) : null;
+  const top = total > 0 ? cfg.factions.reduce((a, f) => (damage[f] > damage[a] ? f : a)) : null;
   const influence = perFaction((f) => {
     if (!total || !damage[f]) return 0;
     return cfg.boss.pool * (damage[f] / total) + (f === top ? cfg.boss.topBonus : 0) + (killed ? cfg.boss.killBonus : 0);

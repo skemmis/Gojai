@@ -1,22 +1,24 @@
 /**
- * The three factions. Each is one camp from Ojai's spiritual history, with a
- * modern satirical face, and one small clan-layer perk. Perks only touch
- * territory (never a run), and the clan lab checks that none of them wins
- * more than its share. Lore notes are for writers; players see `motto`.
+ * The factions. Each is a camp from Ojai's spiritual history with a modern
+ * satirical face. Factions have no special abilities (Sam, 2026-09-29): they
+ * differ in lore, look and who you walk with, never in rules. Lore notes are
+ * for writers; players see `motto`.
  *
  * Satire rules (plan.md): historical figures are fair game, living people only
  * as archetypes, Krishnamurti paraphrased rather than quoted.
+ *
+ * Sam picked the Order and the Pathless. Whether there is a third camp, and
+ * who it is, is open (see docs/CLANS.md); `third` holds its slot so the lab
+ * can compare two factions with three. `CLAN.factions` says which are in play.
  */
-export type FactionId = "order" | "pathless" | "readymades";
+export type FactionId = "order" | "pathless" | "third";
 
-export const FACTION_IDS: readonly FactionId[] = ["order", "pathless", "readymades"];
+export const FACTION_IDS: readonly FactionId[] = ["order", "pathless", "third"];
 
 export type PerFaction<T> = Record<FactionId, T>;
 
 export const perFaction = <T>(f: (id: FactionId) => T): PerFaction<T> =>
-  ({ order: f("order"), pathless: f("pathless"), readymades: f("readymades") });
-
-export type Perk = "lodge" | "walkOn" | "readymade";
+  ({ order: f("order"), pathless: f("pathless"), third: f("third") });
 
 export interface Faction {
   id: FactionId;
@@ -29,8 +31,6 @@ export interface Faction {
   today: string;
   /** Where they feel at home (neighborhood ids from @gojai/map). Flavour only. */
   haunts: string[];
-  perk: Perk;
-  perkText: string;
 }
 
 export const FACTIONS: PerFaction<Faction> = {
@@ -41,10 +41,8 @@ export const FACTIONS: PerFaction<Faction> = {
     history:
       "The Theosophists: Annie Besant and C. W. Leadbeater, the hidden Masters, degrees of initiation. They raised a boy from Madras to be the World Teacher, built Krotona on the hill in 1924, and bought up the valley to wait for him.",
     today:
-      "Tiered memberships, the retreat with a waitlist, the sound bath priced by chakra, the board that runs the board. They hold ground the way the old families hold land.",
+      "Tiered memberships, the retreat with a waitlist, the sound bath priced by chakra, the board that runs the board.",
     haunts: ["country-club", "arbolada", "the-mount"],
-    perk: "lodge",
-    perkText: "Lodges: ground the Order holds loses influence more slowly overnight.",
   },
   pathless: {
     id: "pathless",
@@ -53,21 +51,15 @@ export const FACTIONS: PerFaction<Faction> = {
     history:
       "Krishnamurti, who in 1929 dissolved the Order built around him, told its members that truth has no road to it, and spent the rest of his life speaking under the Oak Grove in Meiners Oaks.",
     today:
-      "The silent-walk crowd, the people who quote him on Instagram, the ones who left the retreat early. No ranks, no leaders, no badges on their profiles, and a very organised group chat about not being organised.",
+      "The silent-walk crowd, the people who quote him on Instagram, the ones who left the retreat early. No ranks, no leaders, and a very organised group chat about not being organised.",
     haunts: ["meiners-oaks", "trail", "foothills"],
-    perk: "walkOn",
-    perkText: "Walk On: the first spot you play in each neighborhood each day gives extra influence.",
   },
-  readymades: {
-    id: "readymades",
-    name: "The Readymades",
-    motto: "Chocolate, young men, and a urinal in a gallery.",
-    history:
-      "Beatrice Wood, the Mama of Dada: Duchamp's friend, co-editor of The Blind Man in 1917, a Theosophist who followed Krishnamurti to Ojai, threw lustre pots until she was 105, and said she owed it all to chocolate and young men.",
-    today:
-      "Gallery row, the art walk, the ceramicist with a trust fund, the installation nobody asked for on somebody else's lawn. They don't hold ground; they vandalise yours.",
-    haunts: ["west-matilija", "arcade", "east-end"],
-    perk: "readymade",
-    perkText: "Readymade: influence you earn in ground another faction holds counts extra.",
+  third: {
+    id: "third",
+    name: "The Third Camp",
+    motto: "To be decided.",
+    history: "Placeholder while Sam picks a third camp, or drops it (docs/CLANS.md lists candidates).",
+    today: "",
+    haunts: [],
   },
 };

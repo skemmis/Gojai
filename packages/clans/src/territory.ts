@@ -1,5 +1,5 @@
 import { CLAN, type ClanConfig } from "./config.ts";
-import { FACTION_IDS, perFaction, type FactionId, type PerFaction } from "./factions.ts";
+import { perFaction, type FactionId, type PerFaction } from "./factions.ts";
 
 /**
  * Territory: every neighborhood keeps an influence count per faction. Players
@@ -23,7 +23,7 @@ export interface Territory {
   held: PerFaction<number>;
   /** Neighborhood-days held this season: the season score. */
   score: PerFaction<number>;
-  /** Today's earnings per `player|ground`, for diminishing returns and Walk On. */
+  /** Today's earnings per `player|ground`, for diminishing returns. */
   earned: Record<string, number>;
   /** Everything credited this season, by faction and source (for the lab). */
   ledger: PerFaction<Record<Source, number>>;
@@ -57,19 +57,16 @@ export function catchUp(t: Territory, faction: FactionId, cfg: ClanConfig = CLAN
   const total = Object.keys(t.grounds).length;
   const share = total ? t.held[faction] / total : 0;
   const { k, min, max } = cfg.underdog;
-  return Math.min(max, Math.max(min, 1 + k * (1 / FACTION_IDS.length - share)));
+  return Math.min(max, Math.max(min, 1 + k * (1 / cfg.factions.length - share)));
 }
 
-/** Credit influence. Returns what actually landed after perks, catch-up and diminishing returns. */
+/** Credit influence. Returns what actually landed after catch-up and diminishing returns. */
 export function award(t: Territory, a: Award, cfg: ClanConfig = CLAN): number {
   const g = t.grounds[a.ground];
   if (!g || a.amount <= 0) return 0;
   const key = `${a.player}|${a.ground}`;
   const prior = t.earned[key];
-  let amt = a.amount;
-  if (a.source === "walk" && prior === undefined && a.faction === "pathless") amt += cfg.walkOnBonus;
-  if (a.faction === "readymades" && g.holder && g.holder !== a.faction) amt *= cfg.readymade;
-  amt *= catchUp(t, a.faction, cfg);
+  let amt = a.amount * catchUp(t, a.faction, cfg);
   if (a.source === "walk" || a.source === "offering") {
     const before = prior ?? 0;
     t.earned[key] = before + amt;
@@ -80,13 +77,13 @@ export function award(t: Territory, a: Award, cfg: ClanConfig = CLAN): number {
   return amt;
 }
 
-function ranked(g: Ground): [FactionId, number][] {
-  return FACTION_IDS.map((f) => [f, g.influence[f]] as [FactionId, number]).sort((a, b) => b[1] - a[1]);
+function ranked(g: Ground, cfg: ClanConfig): [FactionId, number][] {
+  return cfg.factions.map((f) => [f, g.influence[f]] as [FactionId, number]).sort((a, b) => b[1] - a[1]);
 }
 
 /** Who should hold this ground now, given the hysteresis rules. */
 export function settle(g: Ground, cfg: ClanConfig = CLAN): FactionId | null {
-  const [[lead, top], [, second]] = ranked(g);
+  const [[lead, top], [, second]] = ranked(g, cfg);
   let holder = g.holder;
   if (holder && g.influence[holder] < cfg.minHold) holder = null;
   if (holder) {
@@ -115,7 +112,7 @@ export function endDay(t: Territory, cfg: ClanConfig = CLAN): DayReport {
       held[next]++;
       t.score[next]++;
     }
-    for (const f of FACTION_IDS) g.influence[f] *= 1 - (f === "order" && g.holder === "order" ? cfg.lodgeDecay : cfg.decay);
+    for (const f of cfg.factions) g.influence[f] *= 1 - cfg.decay;
   }
   t.held = held;
   t.earned = {};
@@ -124,10 +121,23 @@ export function endDay(t: Territory, cfg: ClanConfig = CLAN): DayReport {
   return report;
 }
 
+/**
+ * A won live event takes its neighborhood outright (Sam, 2026-09-29): the
+ * winner becomes the holder now, with enough influence to be over the flip
+ * margin against everyone else, so it survives the night unless beaten again.
+ */
+export function claimByEvent(t: Territory, ground: string, faction: FactionId, cfg: ClanConfig = CLAN): void {
+  const g = t.grounds[ground];
+  if (!g) return;
+  const rival = Math.max(0, ...cfg.factions.filter((f) => f !== faction).map((f) => g.influence[f]));
+  g.influence[faction] = Math.max(g.influence[faction], cfg.minHold, rival * cfg.flipMargin);
+  g.holder = faction;
+}
+
 /** New season: scores reset, most influence fades, holders must re-earn it. */
 export function startSeason(t: Territory, cfg: ClanConfig = CLAN): void {
   for (const g of Object.values(t.grounds)) {
-    for (const f of FACTION_IDS) g.influence[f] *= cfg.season.carryOver;
+    for (const f of cfg.factions) g.influence[f] *= cfg.season.carryOver;
     g.holder = settle(g, cfg);
   }
   t.score = perFaction(() => 0);

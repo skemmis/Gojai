@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import { CLAN, type ClanConfig } from "../config.ts";
-import { FACTIONS, FACTION_IDS, perFaction } from "../factions.ts";
+import { FACTIONS, FACTION_IDS, perFaction, type FactionId } from "../factions.ts";
 import { runSeason, BASE, GROUND_IDS, ADJACENT, spotsByGround, type Scenario, type SeasonResult } from "./world.ts";
 
 /**
@@ -23,8 +23,8 @@ const cfg = (patch: (c: ClanConfig) => void): ClanConfig => {
   return c;
 };
 
-const SCENARIOS: Scenario[] = [
-  { name: "baseline", note: "120 at launch, 6 signups a day, friends invite friends, all rules on.", ...BASE },
+const SCENARIOS3: Scenario[] = [
+  { name: "baseline", note: "120 at launch, 6 signups a day, friends invite friends, won events flip ground.", ...BASE },
   { name: "head-count assigner", note: "Assign by member count instead of recent play.", ...BASE, assigner: "count" },
   { name: "no invites", note: "Everyone auto-assigned, friends split up.", ...BASE, invites: false },
   { name: "founding clique", note: "12 devoted friends sign up at launch and all ask for the Order; the invite rule decides.", ...BASE, clique: 12 },
@@ -37,15 +37,19 @@ const SCENARIOS: Scenario[] = [
     forceClique: true,
     cfg: cfg((c) => void (c.underdog = { k: 0, min: 1, max: 1 })),
   },
-  { name: "no decay", note: "Influence fades 2% a night instead of 15%.", ...BASE, cfg: cfg((c) => ((c.decay = 0.02), (c.lodgeDecay = 0.015))) },
-  {
-    name: "no perks",
-    note: "Faction perks off, to measure what they add.",
-    ...BASE,
-    cfg: cfg((c) => ((c.walkOnBonus = 0), (c.readymade = 1), (c.lodgeDecay = c.decay))),
-  },
+  { name: "events don't flip", note: "Won events only add influence (the earlier rule).", ...BASE, eventsFlip: false },
+  { name: "no decay", note: "Influence fades 2% a night instead of 15%.", ...BASE, cfg: cfg((c) => void (c.decay = 0.02)) },
   { name: "small town", note: "40 at launch, 1 signup a day: an early playtest.", ...BASE, launch: 40, perDay: 1 },
 ];
+
+/** Every scenario with three factions, then with two (the Order and the Pathless). */
+const SCENARIOS: Scenario[] = [3, 2].flatMap((n) =>
+  SCENARIOS3.map((sc) => {
+    const c = structuredClone(sc.cfg);
+    c.factions = n === 3 ? ["order", "pathless", "third"] : ["order", "pathless"];
+    return { ...sc, name: `${n}: ${sc.name}`, cfg: c };
+  }),
+);
 
 const mean = (xs: number[]) => xs.reduce((s, x) => s + x, 0) / (xs.length || 1);
 const pct = (x: number) => `${Math.round(x * 100)}%`;
@@ -65,19 +69,22 @@ const out: string[] = [];
 out.push(`# Clan lab report`, ``, `${SEASONS} seasons of ${CLAN.season.days} days per scenario, ${secs}s. Map: ${GROUND_IDS.length} neighborhoods, real spots and timed events from @gojai/map.`, ``);
 
 out.push(`## Who wins the season`, ``);
-out.push(`Win = most neighborhood-days held. A fair scenario sits near 33% each. Dominance = the winner's share of all neighborhood-days (p90 over seasons).`, ``);
+out.push(`"3:" rows have three factions, "2:" rows only the Order and the Pathless. Win = most neighborhood-days held; fair is 33% each with three, 50% with two. Dominance = the winner's share of all neighborhood-days (p90 over seasons).`, ``);
 out.push(`| scenario | ${FACTION_IDS.map((f) => FACTIONS[f].name).join(" | ")} | dominance mean / p90 | nobody holds | flips/day | lead changes | locked |`);
 out.push(`|---|${FACTION_IDS.map(() => "---").join("|")}|---|---|---|---|---|`);
 for (const { sc, results } of rows) {
+  const on = (f: FactionId) => sc.cfg.factions.includes(f);
+  const cell = (f: FactionId, x: number) => (on(f) ? pct(x) : "–");
+  const fair = 1 / sc.cfg.factions.length;
   const wins = perFaction((f) => results.filter((r) => r.winner === f).length / results.length);
   const dom = results.map((r) => r.dominance);
   out.push(
-    `| ${sc.name} | ${FACTION_IDS.map((f) => pct(wins[f])).join(" | ")} | ${pct(mean(dom))} / ${pct(q(dom, 0.9))} | ${pct(mean(results.map((r) => r.neutral)))} | ${(mean(results.map((r) => r.flips)) / CLAN.season.days).toFixed(2)} | ${mean(results.map((r) => r.leadChanges)).toFixed(1)} | ${mean(results.map((r) => r.locked)).toFixed(1)} |`,
+    `| ${sc.name} | ${FACTION_IDS.map((f) => cell(f, wins[f])).join(" | ")} | ${pct(mean(dom))} / ${pct(q(dom, 0.9))} | ${pct(mean(results.map((r) => r.neutral)))} | ${(mean(results.map((r) => r.flips)) / CLAN.season.days).toFixed(2)} | ${mean(results.map((r) => r.leadChanges)).toFixed(1)} | ${mean(results.map((r) => r.locked)).toFixed(1)} |`,
   );
-  const hi = Math.max(...FACTION_IDS.map((f) => wins[f]));
-  const lo = Math.min(...FACTION_IDS.map((f) => wins[f]));
-  if (hi > 0.45 || lo < 0.2) flags.push(`**${sc.name}**: season wins range ${pct(lo)} to ${pct(hi)}.`);
-  if (q(dom, 0.9) > 0.55) flags.push(`**${sc.name}**: in 1 season of 10 the winner holds ${pct(q(dom, 0.9))} of the map.`);
+  const hi = Math.max(...sc.cfg.factions.map((f) => wins[f]));
+  const lo = Math.min(...sc.cfg.factions.map((f) => wins[f]));
+  if (hi > fair + 0.12 || lo < fair - 0.13) flags.push(`**${sc.name}**: season wins range ${pct(lo)} to ${pct(hi)}.`);
+  if (q(dom, 0.9) > fair + 0.2) flags.push(`**${sc.name}**: in 1 season of 10 the winner holds ${pct(q(dom, 0.9))} of the map.`);
   if (mean(results.map((r) => r.locked)) > 4) flags.push(`**${sc.name}**: ${mean(results.map((r) => r.locked)).toFixed(1)} neighborhoods never really change hands.`);
 }
 out.push(``, `Flips/day: neighborhoods changing holder per day. Lead changes: times the faction holding the most neighborhoods changed. Locked: neighborhoods held by one faction for 90%+ of the season.`, ``);
@@ -87,22 +94,23 @@ out.push(`| scenario | walking | offerings | bosses | duels | play share ${FACTI
 out.push(`|---|---|---|---|---|---|---|---|---|`);
 for (const { sc, results } of rows) {
   const src = { walk: 0, offering: 0, boss: 0, duel: 0 };
-  for (const r of results) for (const f of FACTION_IDS) for (const k of Object.keys(src) as (keyof typeof src)[]) src[k] += r.ledger[f][k];
+  for (const r of results) for (const f of sc.cfg.factions) for (const k of Object.keys(src) as (keyof typeof src)[]) src[k] += r.ledger[f][k];
   const tot = src.walk + src.offering + src.boss + src.duel;
   const play = perFaction((f) => mean(results.map((r) => r.playShare[f])));
   out.push(
-    `| ${sc.name} | ${pct(src.walk / tot)} | ${pct(src.offering / tot)} | ${pct(src.boss / tot)} | ${pct(src.duel / tot)} | ${FACTION_IDS.map((f) => pct(play[f])).join(" / ")} | ${Math.round(mean(results.map((r) => r.players)))} | ${pct(mean(results.map((r) => r.bossKills / (r.bosses || 1))))} | ${Math.round(mean(results.map((r) => r.duels)))} |`,
+    `| ${sc.name} | ${pct(src.walk / tot)} | ${pct(src.offering / tot)} | ${pct(src.boss / tot)} | ${pct(src.duel / tot)} | ${FACTION_IDS.map((f) => (sc.cfg.factions.includes(f) ? pct(play[f]) : "–")).join(" / ")} | ${Math.round(mean(results.map((r) => r.players)))} | ${pct(mean(results.map((r) => r.bossKills / (r.bosses || 1))))} | ${Math.round(mean(results.map((r) => r.duels)))} |`,
   );
 }
 
 out.push(``, `## Flags`, ``, ...(flags.length ? flags.map((f) => `- ${f}`) : ["- None."]), ``);
 
 out.push(`## Map as the bots walk it`, ``);
-out.push(`Locked = share of baseline seasons where one faction held it 90%+ of the days.`, ``);
+out.push(`Locked = share of baseline seasons where one faction held it 90%+ of the days, with three factions / with two.`, ``);
 out.push(`| neighborhood | spots | locked | next to |`, `|---|---|---|---|`);
 const base = rows[0].results;
+const base2 = rows[SCENARIOS3.length].results;
 for (const g of GROUND_IDS)
-  out.push(`| ${g} | ${spotsByGround[g].length} | ${pct(base.filter((r) => r.lockedIds.includes(g)).length / base.length)} | ${ADJACENT[g].join(", ")} |`);
+  out.push(`| ${g} | ${spotsByGround[g].length} | ${pct(base.filter((r) => r.lockedIds.includes(g)).length / base.length)} / ${pct(base2.filter((r) => r.lockedIds.includes(g)).length / base2.length)} | ${ADJACENT[g].join(", ")} |`);
 
 out.push(``, `## Scenarios`, ``, ...SCENARIOS.map((s) => `- **${s.name}**: ${s.note}`), ``);
 

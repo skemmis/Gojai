@@ -1,8 +1,8 @@
 import { makeRng, next, pick, type Rng } from "@gojai/core";
 import { NEIGHBORHOODS, SPOTS, EVENTS, neighborhoodOf, windowsBetween, zoned, type LngLat } from "@gojai/map";
 import { CLAN, type ClanConfig } from "../config.ts";
-import { FACTION_IDS, perFaction, type FactionId, type PerFaction } from "../factions.ts";
-import { newTerritory, award, endDay, type Territory } from "../territory.ts";
+import { perFaction, type FactionId, type PerFaction } from "../factions.ts";
+import { newTerritory, award, endDay, claimByEvent, type Territory } from "../territory.ts";
 import { strength, assignFaction } from "../assign.ts";
 import { offering, type Floor } from "../offering.ts";
 import { openBoss, joinBoss, hitBoss, resolveBoss } from "../boss.ts";
@@ -91,6 +91,8 @@ export interface Scenario {
   clique: number;
   /** Give the clique its faction regardless of the invite rule (a stress test). */
   forceClique?: boolean;
+  /** A won event takes its neighborhood outright (default true). */
+  eventsFlip?: boolean;
   cfg: ClanConfig;
 }
 
@@ -286,7 +288,8 @@ export function runSeason(sc: Scenario, seed: number): SeasonResult {
         for (const p of [...crowd].sort(() => next(r) - 0.5)) hitBoss(b, p.id, 70 * deckPower(p) * (0.7 + 0.6 * next(r)));
         const res = resolveBoss(b, cfg);
         if (res.killed) bossKills++;
-        for (const f of FACTION_IDS) if (res.influence[f]) award(t, { player: `boss:${w.event.id}:${day}:${f}`, faction: f, ground, source: "boss", amount: res.influence[f] }, cfg);
+        for (const f of cfg.factions) if (res.influence[f]) award(t, { player: `boss:${w.event.id}:${day}:${f}`, faction: f, ground, source: "boss", amount: res.influence[f] }, cfg);
+        if (res.top && sc.eventsFlip !== false) claimByEvent(t, ground, res.top, cfg);
         for (const p of crowd) p.gold += res.gold[p.id] ?? 0;
       }
       // Some of the crowd duels someone from another faction.
@@ -314,8 +317,8 @@ export function runSeason(sc: Scenario, seed: number): SeasonResult {
       const h = t.grounds[g].holder;
       if (h) holderDays[g][h]++;
     }
-    const top = Math.max(...FACTION_IDS.map((f) => rep.held[f]));
-    const leaders = FACTION_IDS.filter((f) => rep.held[f] === top);
+    const top = Math.max(...cfg.factions.map((f) => rep.held[f]));
+    const leaders = cfg.factions.filter((f) => rep.held[f] === top);
     if (top > 0 && leaders.length === 1 && leaders[0] !== leader) {
       if (leader) leadChanges++;
       leader = leaders[0];
@@ -324,12 +327,12 @@ export function runSeason(sc: Scenario, seed: number): SeasonResult {
     for (const p of live) if (next(r) < ARCH[p.arch].quitP) p.quit = true;
   }
 
-  const lockedIds = GROUND_IDS.filter((g) => Math.max(...FACTION_IDS.map((f) => holderDays[g][f])) >= 0.9 * days);
-  const totalHeld = FACTION_IDS.reduce((s, f) => s + t.score[f], 0);
+  const lockedIds = GROUND_IDS.filter((g) => Math.max(...cfg.factions.map((f) => holderDays[g][f])) >= 0.9 * days);
+  const totalHeld = cfg.factions.reduce((s, f) => s + t.score[f], 0);
   const plays = perFaction(() => 0);
   for (const p of players) for (const n of p.active.slice(days - 14)) plays[p.faction] += n ?? 0;
-  const totalPlays = FACTION_IDS.reduce((s, f) => s + plays[f], 0) || 1;
-  const winner = FACTION_IDS.reduce((a, f) => (t.score[f] > t.score[a] ? f : a));
+  const totalPlays = cfg.factions.reduce((s, f) => s + plays[f], 0) || 1;
+  const winner = cfg.factions.reduce((a, f) => (t.score[f] > t.score[a] ? f : a));
   return {
     score: { ...t.score },
     winner,
