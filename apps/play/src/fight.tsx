@@ -8,7 +8,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { cardDef, CONFIG, endTurn, hitSize, incoming, intent, isJunk, multiplier, play, playError, previewPlay } from "@gojai/core";
 import type { Card, EnemyAction, Run, Suit } from "@gojai/core";
 import { Icon, rankLabel, powerAmount, sortCards, type IconName } from "./components";
-import aceSpades from "./assets/ace-spades.webp";
+import cardBack from "./assets/card-back.webp";
 import vignette from "./assets/scene-vignette.webp";
 
 type Act = (fn: (r: Run) => void) => boolean;
@@ -102,7 +102,13 @@ function SceneFront({ id, zone, feet }: { id: string; zone: { w: number; h: numb
 }
 
 /** Illustrated cards: aces, caught enemies and rares. Only the Ace of Spades is drawn so far. */
-const CARD_ART: Record<string, string> = { "1:spades": aceSpades };
+const CARD_ART: Record<string, string> = globById(import.meta.glob<string>("./assets/card-*.webp", { eager: true, import: "default" }), "card");
+
+/** Plain number cards are full-bleed tarot plates from the art thread: each ace its own, 2–10 one plate per suit. */
+function artFor(card: Card, named: boolean): string | undefined {
+  if (!card.suit || named) return undefined;
+  return CARD_ART[card.value === 1 ? `ace-${card.suit}` : `suit-${card.suit}`];
+}
 
 const SUIT_ICON: Record<Suit, IconName> = { spades: "blade", hearts: "shield", diamonds: "draw", clubs: "recall" };
 
@@ -418,7 +424,7 @@ function HpBar({ hp, max, block, preview }: { hp: number; max: number; block: nu
 function Pile({ n, side }: { n: number; side: "left" | "right" }) {
   return (
     <div className={`pile ${side}`} title={side === "left" ? "Draw pile" : "Discard pile"}>
-      <span className="back" />
+      <span className="back" style={{ backgroundImage: `url(${cardBack})` }} />
       <b>{n}</b>
     </div>
   );
@@ -427,7 +433,7 @@ function Pile({ n, side }: { n: number; side: "left" | "right" }) {
 export function GameCard({ card, mult = 1, off, armed }: { card: Card; mult?: number; off?: boolean; armed?: boolean }) {
   const d = cardDef(card.def);
   const junk = isJunk(card);
-  const art = card.suit ? CARD_ART[`${card.value}:${card.suit}`] : undefined;
+  const art = junk ? undefined : artFor(card, !!d.name);
   const value = card.value * mult;
   const cls = ["gcard", card.suit ? `s-${card.suit}` : "", off || junk ? "off" : "", armed ? "armed" : "", art ? "art" : "", d.face ? "face" : "", d.rarity === "rare" ? "rare" : ""].filter(Boolean).join(" ");
   return (

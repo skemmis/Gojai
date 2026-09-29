@@ -936,10 +936,10 @@ footer {
   right: -6px;
 }
 .pile .back {
-  width: 22px;
-  height: 32px;
+  width: 24px;
+  height: 38px;
   border: 1px solid var(--on-night-soft);
-  background: repeating-linear-gradient(45deg, transparent 0 3px, var(--rule-night) 3px 4px);
+  background-size: cover;
 }
 
 /* Game cards: paper, big rank, one icon + number */
