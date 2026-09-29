@@ -12,6 +12,6 @@
     "isolatedModules": true,
     "types": ["vite/client"]
   },
-  "include": ["src", "../../packages/core/src"],
-  "exclude": ["../../packages/core/src/**/*.test.ts"]
+  "include": ["src", "../../packages/core/src", "../../packages/map/src", "../map/src"],
+  "exclude": ["../../packages/core/src/**/*.test.ts", "../../packages/map/src/**/*.test.ts"]
 }

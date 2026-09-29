@@ -11,7 +11,10 @@
   "dependencies": {
     "@gojai/core": "*",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "@gojai/map": "*",
+    "@gojai/map-app": "*",
+    "maplibre-gl": "^5.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

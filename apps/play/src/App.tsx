@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { MapScreen as WorldMap } from "@gojai/map-app/MapScreen";
+import { visit, type SpotOpened, type Visits } from "@gojai/map";
 import {
   newRun,
-  visitSpot,
+  enterEncounter,
   isBossFloor,
   play,
   playError,
@@ -40,10 +42,45 @@ type Act = (fn: (r: Run) => void) => boolean;
 
 const randomSeed = () => Math.floor(Math.random() * 1e9);
 
+/** Per-viewer conveniences kept in this browser only; the page works without them. */
+function stored<T>(key: string, fallback: T): T {
+  try {
+    const v = localStorage.getItem(`pathless.${key}`);
+    return v === null ? fallback : (JSON.parse(v) as T);
+  } catch {
+    return fallback;
+  }
+}
+function store(key: string, value: unknown) {
+  try {
+    localStorage.setItem(`pathless.${key}`, JSON.stringify(value));
+  } catch {
+    /* private window or blocked storage: keep going without it */
+  }
+}
+
 export function App() {
   const [run, setRun] = useState<Run>(() => newRun(randomSeed()));
   const [error, setError] = useState<string | null>(null);
   const [seedText, setSeedText] = useState("");
+  // Who you are to the map (finds differ per player), which spots you've opened, and test mode
+  const [playerId] = useState(() => {
+    const id = stored("player", "") || `p${randomSeed()}`;
+    store("player", id);
+    return id;
+  });
+  const [visits, setVisits] = useState<Visits>(() => stored("visits", {}));
+  const [anywhere, setAnywhere] = useState<boolean>(() => stored("anywhere", true));
+
+  const openSpot = (o: SpotOpened) => {
+    const ok = act((r) =>
+      enterEncounter(r, o.find, { spotId: o.spot.id, name: o.spot.gameName ?? o.spot.name, place: o.place, live: o.liveEvents }),
+    );
+    if (!ok) return;
+    const v = visit(visits, o.spot, o.at);
+    setVisits(v);
+    store("visits", v);
+  };
 
   const act: Act = (fn) => {
     const r = structuredClone(run);
@@ -65,18 +102,46 @@ export function App() {
     setError(null);
   };
 
-  // Fights happen on the night table; everything else is ink on paper.
+  // Fights happen on the night table; the map is the home screen; everything else is ink on paper.
   const night = run.phase === "fight";
+  const onMap = run.phase === "map";
   return (
-    <div className={`app ${night ? "night" : "paper"}`}>
-      <StatusBar run={run} />
+    <div className={`app ${night ? "night" : "paper"} ${onMap ? "on-map" : ""}`}>
+      {!onMap && <StatusBar run={run} />}
       {error && (
         <div className="error" role="alert">
           {error}
         </div>
       )}
       <main>
-        {run.phase === "map" && <MapScreen run={run} act={act} />}
+          {/* The map stays mounted under every other screen, so it keeps its place and loads once */}
+          <div className="world" hidden={!onMap}>
+            <WorldMap
+              playerId={playerId}
+              visits={visits}
+              anywhere={anywhere}
+              autoLocate={!anywhere}
+              onOpen={openSpot}
+              tools={
+                <>
+                <span className="run-chip" title={isBossFloor(run.floor) ? "A boss waits at the next spot" : `Floor ${run.floor}`}>
+                  <b>{isBossFloor(run.floor) ? "Boss" : `F${run.floor}`}</b> {run.hp}/{run.maxHp} <i className="chip-coin" />
+                  {run.gold}
+                </span>
+                <button
+                  className={`test ${anywhere ? "on" : ""}`}
+                  onClick={() => {
+                    setAnywhere(!anywhere);
+                    store("anywhere", !anywhere);
+                  }}
+                  title="Test mode: open any spot from anywhere"
+                >
+                  {anywhere ? "Test mode" : "On foot"}
+                </button>
+                </>
+              }
+            />
+          </div>
         {run.phase === "fight" && <FightScreen run={run} act={act} />}
         {run.phase === "reward" && <RewardScreen run={run} act={act} />}
         {run.phase === "rest" && <RestScreen run={run} act={act} />}
@@ -84,7 +149,7 @@ export function App() {
         {run.phase === "event" && <EventScreen run={run} act={act} />}
         {run.phase === "over" && <OverScreen run={run} onNew={() => startNew(randomSeed())} />}
       </main>
-      {!night && (
+      {!night && !onMap && (
       <footer className="row wrap">
         <span className="soft">Seed {run.seed}</span>
         <input className="seed" inputMode="numeric" placeholder="random" value={seedText} onChange={(e) => setSeedText(e.target.value)} />
@@ -103,7 +168,9 @@ function StatusBar({ run }: { run: Run }) {
   return (
     <header className="status">
       <div className="row between">
-        <span className="label">Floor {run.floor}</span>
+        <span className="label">
+          Floor {run.floor}
+        </span>
         <span className="row gap">
           {run.phase !== "fight" && (
             <span className="label">
@@ -124,28 +191,6 @@ function StatusBar({ run }: { run: Run }) {
         </div>
       )}
     </header>
-  );
-}
-
-// ─── Map ─────────────────────────────────────────────────────────────────────
-
-function MapScreen({ run, act }: { run: Run; act: Act }) {
-  const boss = isBossFloor(run.floor);
-  return (
-    <section className="sheet">
-      <h2>{boss ? "An event spot" : "The next spot"}</h2>
-      <p className="soft">
-        {boss
-          ? "Something big is waiting here. Beat it and you heal."
-          : "Walk on and see what's there: usually a fight, sometimes an elite, somewhere to heal, a shop or an event."}
-      </p>
-      <p className="soft small">
-        Deck {allCards(run).length} cards · cleared {score(run)} floors
-      </p>
-      <button className="btn big" onClick={() => act(visitSpot)}>
-        {boss ? "Face it" : "Walk to the spot"}
-      </button>
-    </section>
   );
 }
 

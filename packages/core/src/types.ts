@@ -135,6 +135,8 @@ export interface SpotContext {
   spotId?: string;
   name?: string;
   place?: string;
+  /** Live events running at the spot right now, such as "pink-moment". */
+  live?: string[];
 }
 
 export interface ShopState {

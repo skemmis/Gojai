@@ -7,6 +7,7 @@
  *
  * In the real game each spot is a place in Ojai; here they're abstract.
  */
+import { BASE_ODDS } from "@gojai/map";
 import { CONFIG } from "./config";
 import { ENEMIES, EVENTS, GUIDE_BY_ID, cardDef } from "./content";
 import { heal, startFight } from "./fight";
@@ -68,16 +69,13 @@ export function isBossFloor(floor: number): boolean {
   return floor % CONFIG.bossEvery === 0;
 }
 
-/** What you find at a regular spot, rolled when you arrive. */
-function rollEncounter(run: Run): NodeKind {
-  const weights: Record<string, number> = { ...CONFIG.spotWeights };
-  if (run.floor < CONFIG.eliteFromFloor) delete weights.elite;
-  if (run.floor === 1) return "fight";
-  const total = Object.values(weights).reduce((s, w) => s + w, 0);
+/** What you find at a spot, rolled with the map's odds. Used by the lab's walk; the map screen rolls its own. */
+function rollEncounter(run: Run): EncounterKind {
+  const total = Object.values(BASE_ODDS).reduce((s, w) => s + w, 0);
   let x = next(run.rng) * total;
-  for (const [k, w] of Object.entries(weights)) {
+  for (const [k, w] of Object.entries(BASE_ODDS)) {
     x -= w;
-    if (x < 0) return k as NodeKind;
+    if (x < 0) return k as EncounterKind;
   }
   return "fight";
 }
@@ -126,20 +124,26 @@ function advance(run: Run) {
 
 // ─── Map ─────────────────────────────────────────────────────────────────────
 
-/** Walk to the next spot and find out what's there. Every Nth floor is an event spot with a boss. */
+/** Walk to the next spot and find out what's there (the lab's stand-in for the map). */
 export function visitSpot(run: Run): void {
   if (run.phase !== "map") throw new Error("Not on the map.");
-  enterEncounter(run, isBossFloor(run.floor) ? "boss" : rollEncounter(run));
+  enterEncounter(run, rollEncounter(run));
 }
 
 /**
  * Start an encounter the map already rolled. This is the entry point for the
  * map screen: it decides what a spot holds and where it is, and the run
- * plays it out and returns to the "map" phase when it's done.
+ * plays it out and returns to the "map" phase when it's done. The run keeps
+ * its pacing: the first spot is a fight, elites wait a few floors, and every
+ * Nth floor is a boss whatever the spot rolled.
  */
 export function enterEncounter(run: Run, encounter: EncounterKind, spot: SpotContext | null = null): void {
   if (run.phase !== "map") throw new Error("Not on the map.");
-  const kind: NodeKind = encounter === "mystery" ? "event" : encounter;
+  let kind: NodeKind = encounter === "mystery" ? "event" : encounter;
+  // The run's own pacing sits on top of what the spot rolled
+  if (isBossFloor(run.floor)) kind = "boss";
+  else if (run.floor === 1) kind = "fight";
+  else if (kind === "elite" && run.floor < CONFIG.eliteFromFloor) kind = "fight";
   run.node = kind;
   run.spot = spot;
   if (kind === "fight") startFight(run, enemyFor(run, "normal"));

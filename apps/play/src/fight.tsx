@@ -49,8 +49,9 @@ function sceneFor(run: Run): string {
   return PLATES[Math.abs((run.seed ?? 0) * 31 + run.floor) % PLATES.length];
 }
 
-/** Pink Moment is a live event. Until the event clock exists, `?pink` previews its wash. */
-function pinkMoment(): boolean {
+/** Pink Moment is a live event: the map says when it's on at a spot. `?pink` previews it anywhere. */
+function pinkMoment(run: Run): boolean {
+  if (run.spot?.live?.includes("pink-moment")) return true;
   return typeof location !== "undefined" && new URLSearchParams(location.search).has("pink");
 }
 
@@ -75,14 +76,14 @@ function plateBox(zone: { w: number; h: number }, feet: number) {
   return { s, box: { left, top: feet - PLATE.floor * s, width: w, height: h } };
 }
 
-function Scene({ id, zone, feet }: { id: string; zone: { w: number; h: number }; feet: number }) {
+function Scene({ id, zone, feet, pink }: { id: string; zone: { w: number; h: number }; feet: number; pink: boolean }) {
   const url = SCENES[id];
   if (!url || !zone.w) return null;
   const { s, box } = plateBox(zone, feet);
   return (
     <div className="scene" aria-hidden="true">
       <img className="plate" src={url} style={{ ...box, filter: `brightness(${daylight()})` }} alt="" draggable={false} />
-      {pinkMoment() && <div className="pink-wash" style={{ ...box, height: box.height * 0.38 }} />}
+      {pink && <div className="pink-wash" style={{ ...box, height: box.height * 0.38 }} />}
       <div className="fog" style={{ top: feet - 60 * s, height: 140 * s }} />
       <img className="plate" src={vignette} style={box} alt="" draggable={false} />
     </div>
@@ -230,7 +231,7 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
     <div className={`table ${shake === "you" ? "shake" : ""}`} ref={tableRef} onPointerMove={onMove} onPointerUp={onUp}>
       {/* ─── Enemy ─── */}
       <div className={`foe-zone ${drag?.armed ? "armed" : ""}`} ref={zoneRef}>
-        <Scene id={scene} zone={stage} feet={stage.feet} />
+        <Scene id={scene} zone={stage} feet={stage.feet} pink={pinkMoment(run)} />
         <SceneFront id={scene} zone={stage} feet={stage.feet} />
         <div className={`sprite-wrap ${shake === "foe" ? "hit" : ""} tier-${tier}`} ref={spriteRef}>
           {/* What it will do next, hung just over its head */}

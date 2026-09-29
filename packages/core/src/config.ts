@@ -25,8 +25,8 @@ export const DEFAULT_CONFIG = {
   // Run structure
   bossEvery: 8,
   eliteFromFloor: 3,
-  /** What a regular spot holds (rest = a place to heal). The first spot is always a fight. */
-  spotWeights: { fight: 55, elite: 12, rest: 13, shop: 10, event: 10 },
+  // What a spot holds comes from the map (BASE_ODDS / findAt in @gojai/map).
+  // The first spot is always a fight, and elites wait for eliteFromFloor.
 
   // Enemy scaling per floor (floor 1 = ×1)
   hpGrowth: 0.04,

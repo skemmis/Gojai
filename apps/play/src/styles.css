@@ -1083,3 +1083,41 @@ footer {
     animation-duration: 0.01s;
   }
 }
+
+/* ─── The map: the home screen, full bleed ─────────────────────────────────── */
+.app.on-map {
+  height: 100dvh;
+  min-height: 0;
+  max-width: none;
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+}
+.app.on-map main {
+  position: relative;
+  min-height: 0;
+}
+.world {
+  position: absolute;
+  inset: 0;
+}
+.world[hidden] {
+  display: none;
+}
+.run-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  border: 2px solid var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.run-chip .chip-coin {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--gilt);
+}

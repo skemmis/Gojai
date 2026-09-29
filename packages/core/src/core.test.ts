@@ -184,11 +184,24 @@ test("the same seed plays out the same way", () => {
 });
 
 test("the map can hand the run an encounter it rolled, with its place", () => {
+  const first = newRun(4);
+  enterEncounter(first, "rest");
+  assert.equal(first.phase, "fight", "the first spot is always a fight");
   const run = newRun(5);
-  enterEncounter(run, "rest", { spotId: "s1", place: "libbey_park" });
+  run.floor = 2;
+  enterEncounter(run, "rest", { spotId: "s1", place: "libbey-park" });
   assert.equal(run.phase, "rest");
-  assert.equal(run.spot?.place, "libbey_park");
+  assert.equal(run.spot?.place, "libbey-park");
+  const early = newRun(7);
+  early.floor = 2;
+  enterEncounter(early, "elite");
+  assert.equal(early.fight?.enemy.tier, "normal", "elites wait a few floors");
+  const boss = newRun(8);
+  boss.floor = CONFIG.bossEvery;
+  enterEncounter(boss, "shop");
+  assert.equal(boss.fight?.enemy.tier, "boss");
   const other = newRun(6);
+  other.floor = 3;
   enterEncounter(other, "mystery");
   assert.equal(other.phase, "event");
   assert.equal(other.node, "event");
