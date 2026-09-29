@@ -22,6 +22,12 @@ The world is ink. Colour only lands where the game needs your eye:
 - **B · Tinted Postcard**: sepia key with faded washes, like 1920s hand-coloured Ojai postcards.
 - **C · Night Edition**: blue-black lithograph lit by lamplight.
 
+## Rendering by plates (round 2, Gravure)
+
+Round 1 pixelated one finished painting and let brightness pick the hatching, so a grey sky got the same texture as a grey oak and shapes merged. `src/plates.ts` instead takes the picture as role-tagged layers (sky, feature, mid, ground, mass, near, object, figure, badge, text). Each role has a fixed value band, allowed ink steps, texture and keyline. For generation, this means each element is generated on its own against a key colour and then assembled, which the game needs anyway for parallax and sprites.
+
+Lettering is never shrunk from a painting: it's set at native size in a pixel font (`fonts/`, OFL), and card names in the app will be live text.
+
 ## Commands
 
 ```bash
