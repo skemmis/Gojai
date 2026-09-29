@@ -127,7 +127,7 @@ function enemy(w, h) {
   const v = new THREE.Vector3(3.05, 3.7, .64).project(camera);
   const cx = Math.round((v.x + 1) / 2 * w), cy = Math.round((1 - v.y) / 2 * h);
   const c = document.createElement('canvas'); c.width = w; c.height = h; const t = c.getContext('2d');
-  t.font = '8px Silkscreen'; t.fillStyle = '#000'; const tw = t.measureText('$9').width; t.fillText('$9', Math.round(cx - tw / 2), cy + 3);
+  const fpx = 8 * Math.max(1, Math.round(w / 160)); t.font = fpx + 'px Silkscreen'; t.fillStyle = '#000'; const tw = t.measureText('$9').width; t.fillText('$9', Math.round(cx - tw / 2), cy + Math.round(fpx * 0.4));
   const d = t.getImageData(0, 0, w, h).data; out.text = []; for (let i = 0; i < w * h; i++) out.text.push(d[i * 4 + 3] >= 110 ? 1 : 0);
   return out;
 }

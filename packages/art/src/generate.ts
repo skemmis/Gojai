@@ -3,6 +3,7 @@
 //   npm run generate                       # all styles × subjects
 //   npm run generate -- --style night      # one style
 //   npm run generate -- --subject enemy    # one subject
+//   npm run generate -- --pure             # From Hell-style ink, no pixel pass (mono + one-accent)
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,6 +13,7 @@ import jpeg from "jpeg-js";
 import { STYLES, type Style } from "./styles.js";
 import { SUBJECTS, type Subject } from "./subjects.js";
 import { stylize } from "./process.js";
+import { buildPurePrompt } from "./pure.js";
 
 const MODEL = process.env.GEMINI_IMAGE_MODEL ?? "gemini-2.5-flash-image";
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -37,25 +39,47 @@ export function buildPrompt(style: Style, subject: Subject): string {
 const decode = (buf: Buffer) =>
   buf[0] === 0x89 ? PNG.sync.read(buf) : jpeg.decode(buf, { useTArray: true, formatAsRGBA: true });
 
+async function generateImage(ai: GoogleGenAI, prompt: string): Promise<Buffer | null> {
+  const res = await ai.models.generateContent({
+    model: MODEL,
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+    config: { responseModalities: [Modality.TEXT, Modality.IMAGE] },
+  });
+  const part = res.candidates?.[0]?.content?.parts?.find((p) => p.inlineData?.data);
+  return part?.inlineData?.data ? Buffer.from(part.inlineData.data, "base64") : null;
+}
+
 async function main() {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) { console.error("Set GEMINI_API_KEY to generate samples."); process.exit(1); }
   const ai = new GoogleGenAI({ apiKey });
   fs.mkdirSync(outDir, { recursive: true });
+  if (process.argv.includes("--pure")) {
+    const dir = path.join(outDir, "pure");
+    fs.mkdirSync(dir, { recursive: true });
+    const subjects = SUBJECTS.filter((s) => !arg("--subject") || s.id === arg("--subject"));
+    const n = Number(arg("--n") ?? 2);
+    for (const subject of subjects)
+      for (const accent of [false, true])
+        for (let k = 0; k < n; k++) {
+          const prompt = buildPurePrompt(subject, accent);
+          const img = await generateImage(ai, prompt);
+          if (!img) { console.warn(`no image for pure ${subject.id}`); continue; }
+          const base = path.join(dir, `${subject.id}-${accent ? "accent" : "mono"}-${k + 1}`);
+          fs.writeFileSync(`${base}.png`, img);
+          fs.writeFileSync(`${base}.prompt.txt`, prompt);
+          console.log("wrote", base + ".png");
+        }
+    return;
+  }
   const styles = STYLES.filter((s) => !arg("--style") || s.id === arg("--style"));
   const subjects = SUBJECTS.filter((s) => !arg("--subject") || s.id === arg("--subject"));
 
   for (const style of styles)
     for (const subject of subjects) {
       const prompt = buildPrompt(style, subject);
-      const res = await ai.models.generateContent({
-        model: MODEL,
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
-        config: { responseModalities: [Modality.TEXT, Modality.IMAGE] },
-      });
-      const part = res.candidates?.[0]?.content?.parts?.find((p) => p.inlineData?.data);
-      if (!part?.inlineData?.data) { console.warn(`no image for ${style.id}-${subject.id}`); continue; }
-      const raw = Buffer.from(part.inlineData.data, "base64");
+      const raw = await generateImage(ai, prompt);
+      if (!raw) { console.warn(`no image for ${style.id}-${subject.id}`); continue; }
       const base = path.join(outDir, `${style.id}-${subject.id}`);
       fs.writeFileSync(`${base}.raw.png`, raw);
       fs.writeFileSync(`${base}.prompt.txt`, prompt);

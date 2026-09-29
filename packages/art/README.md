@@ -40,6 +40,7 @@ npm run mock                        # procedural stand-ins → out/mock/ (needs 
 GEMINI_API_KEY=… npm run generate   # real samples → out/generated/
 npm run generate -- --style night --subject enemy
 npm run check
+GEMINI_API_KEY=… npm run generate -- --pure   # From Hell-style ink, no pixel pass → out/generated/pure/
 ```
 
 ## How this differs from Fantasy-Reality's pixelate.ts

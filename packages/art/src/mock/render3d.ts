@@ -13,7 +13,7 @@ fs.mkdirSync(outDir, { recursive: true });
 
 interface Passes { w: number; h: number; ids: number[]; normals: number[]; light: number[]; text?: number[] }
 
-const sizes = { place: [[320, 180], [480, 270]], enemy: [[160, 160]] };
+const sizes = { place: [[320, 180], [480, 270], [640, 360], [960, 540], [1280, 720]], enemy: [[160, 160], [240, 240], [320, 320], [480, 480]] };
 const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium",
   args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--allow-file-access-from-files"],
@@ -54,6 +54,10 @@ function toIdImage(p: Passes): IdImage {
 }
 
 const write = (name: string, buf: Buffer) => fs.writeFileSync(path.join(outDir, name), buf);
-res.place.forEach((p, k) => write(`ink3d-place${k ? "-hi" : ""}.png`, renderInk(toIdImage(p), gravure, { width: p.w, height: p.h, scale: k ? 2 : 3, lo: 0.15, hi: 0.7, pattern: "bayer", mid: 0.5 })));
-res.enemy.forEach((p) => write("ink3d-enemy.png", renderInk(toIdImage(p), gravure, { width: p.w, height: p.h, scale: 3, lo: 0.15, hi: 0.7, pattern: "bayer", mid: 0.5 })));
+// Each resolution is written at 1:1 plus an integer upscale to about 1000px wide for viewing.
+for (const [subject, list] of Object.entries(res))
+  for (const p of list) {
+    const scale = Math.max(1, Math.round(960 / p.w));
+    write(`ink3d-${subject}-${p.w}.png`, renderInk(toIdImage(p), gravure, { width: p.w, height: p.h, scale, lo: 0.15, hi: 0.7, pattern: "bayer", mid: 0.5 }));
+  }
 console.log("done");
