@@ -53,11 +53,14 @@ export interface SpotOpened {
   at: Date;
   /** Territory the spot is in ("arcade", "trail", …), for clan play. */
   neighborhoodId?: string;
-  /** The same territory as a backdrop key for fights ("arcade", "libbey_park", "ojai_trail", …). */
+  /** Fight-backdrop key: the territory id, or a spot with its own plate ("arcade", "libbey-park", "ojai-valley-trail", "shelf-road", …). */
   place?: string;
   /** Ids of events live at this spot right now (e.g. "pink-moment"). */
   liveEvents: string[];
 }
+
+/** Spots that have their own fight backdrop (gojai-art/backgrounds/manifest.json). */
+const PLACE_BY_SPOT: Record<string, string> = { "shelf-road": "shelf-road" };
 
 export function spotOpened(spot: Spot, find: Find, at: Date): SpotOpened {
   const hood = neighborhoodOf(spot.at)?.id;
@@ -66,7 +69,7 @@ export function spotOpened(spot: Spot, find: Find, at: Date): SpotOpened {
     find,
     at,
     neighborhoodId: hood,
-    place: hood && (hood === "trail" ? "ojai_trail" : hood.replace(/-/g, "_")),
+    place: PLACE_BY_SPOT[spot.id] ?? (hood === "trail" ? "ojai-valley-trail" : hood),
     liveEvents: activeEvents(at).filter((w) => w.event.spots.includes(spot.id)).map((w) => w.event.id),
   };
 }
