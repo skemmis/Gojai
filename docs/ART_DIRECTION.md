@@ -11,7 +11,7 @@ Colour is printed like a crude second ink: flat, saturated, slightly off-registe
 ## Rules for the app
 
 1. **Readability and playability win every argument.** If a flourish slows a decision, cut it.
-2. **Ink and paper do almost all the work.** The UI is black ink on warm paper, or paper-coloured type on the night table during fights.
+2. **Ink and paper do almost all the work.** The UI uses the illustrations' own dark sepia ink (#2A1E14) on paper (#ECE3CF), or paper-coloured type on the night table during fights.
 3. **Each spot ink means one thing, everywhere:**
    - Blood red: damage and danger (enemy attack intent, HP lost, strike values).
    - Gilt: reward (gold, catches, rares, perfect fights).
