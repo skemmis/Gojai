@@ -5,12 +5,10 @@ import {
   play,
   playError,
   previewPlay,
-  yieldTurn,
-  refresh,
-  pay,
-  payValue,
-  payCapacity,
-  incomingAttack,
+  endTurn,
+  intent,
+  incoming,
+  hitSize,
   takeRewardCard,
   takeRewardGuide,
   leaveReward,
@@ -19,20 +17,19 @@ import {
   buyCard,
   buyGuide,
   buyRemoval,
-  buyRefresh,
   leaveShop,
   chooseEvent,
   allCards,
   cardName,
   isJunk,
-  handSize,
+  restHeal,
   score,
   ENEMY_BY_ID,
   EVENT_BY_ID,
   GUIDE_BY_ID,
   CONFIG,
 } from "@gojai/core";
-import type { Run, NodeKind, Suit } from "@gojai/core";
+import type { Run, NodeKind, Suit, EnemyAction } from "@gojai/core";
 import { CardView, CardPicker, GuideChip, SuitMark, SUIT_COLOR, POWER, SYM, sortCards } from "./components";
 
 type Act = (fn: (r: Run) => void) => boolean;
@@ -77,7 +74,7 @@ export function App() {
     }
     setError(null);
     const f = r.fight;
-    if (f && !wasWon && f.phase === "won" && f.exact) doFlash(["#fff", ...(f.lastPlay?.powers ?? []).map((s) => SUIT_COLOR[s])], true);
+    if (f && !wasWon && f.phase === "won" && (f.exact || f.perfect)) doFlash(["#fff", ...(f.lastPlay?.powers ?? []).map((s) => SUIT_COLOR[s])], true);
     setRun(r);
     return true;
   };
@@ -120,7 +117,7 @@ export function App() {
 // ─── Header ──────────────────────────────────────────────────────────────────
 
 function Header({ run }: { run: Run }) {
-  const life = run.draw.length + run.hand.length + run.discard.length;
+  const hpPct = Math.max(0, (run.hp / run.maxHp) * 100);
   return (
     <header className="panel">
       <div className="row between wrap">
@@ -129,12 +126,14 @@ function Header({ run }: { run: Run }) {
           <span>FL {run.floor}</span>
           <span>SC {score(run)}</span>
           <span className="s-diamonds">$ {run.gold}</span>
-          <span>RF {run.refreshes}</span>
         </div>
       </div>
       <div className="life">
-        <div className="life-total">
-          <span className="dim">LIFE</span> <b>{life}</b>
+        <div className="hpbar you">
+          <div className="hpfill" style={{ width: `${hpPct}%` }} />
+          <span className="hptext">
+            HP {run.hp}/{run.maxHp}
+          </span>
         </div>
         <div className="piles">
           <div>
@@ -142,9 +141,7 @@ function Header({ run }: { run: Run }) {
             <span>draw</span>
           </div>
           <div>
-            <b>
-              {run.hand.length}/{handSize(run)}
-            </b>
+            <b>{run.hand.length}</b>
             <span>hand</span>
           </div>
           <div>
@@ -169,8 +166,8 @@ function Header({ run }: { run: Run }) {
 const NODE_INFO: Record<NodeKind, { label: string; icon: string; sub: string }> = {
   fight: { label: "Fight", icon: "⚔", sub: "A local nuisance" },
   elite: { label: "Elite", icon: "☠", sub: "Tougher. Offers a Guide" },
-  boss: { label: "Boss", icon: "♛", sub: "Big fight. Recover after" },
-  rest: { label: "Rest", icon: "☾", sub: "Recover or improve" },
+  boss: { label: "Boss", icon: "♛", sub: "Big fight. Heal after" },
+  rest: { label: "Rest", icon: "☾", sub: "Heal or improve" },
   shop: { label: "Shop", icon: "$", sub: "Spend gold" },
   event: { label: "Event", icon: "?", sub: "Something happens" },
 };
@@ -218,7 +215,6 @@ function FightScreen({ run, act, onPowers }: { run: Run; act: Act; onPowers: (s:
     if (act(fn)) setSel([]);
   };
 
-  const attack = incomingAttack(run);
   const hpPct = Math.max(0, (e.hp / e.maxHp) * 100);
 
   return (
@@ -232,16 +228,11 @@ function FightScreen({ run, act, onPowers }: { run: Run; act: Act; onPowers: (s:
           <div className="hpfill" style={{ width: `${hpPct}%` }} />
           <span className="hptext">
             HP {e.hp}/{e.maxHp}
+            {e.block > 0 && <> · BLOCK {e.block}</>}
           </span>
         </div>
+        <Intent run={run} />
         <div className="row wrap gap">
-          <span>
-            ATK <b>{attack}</b>
-            {attack !== e.attack && <span className="dim"> ({e.attack})</span>}
-          </span>
-          <span>
-            SHIELD <b className="s-hearts">{f.shield}</b>
-          </span>
           <span>
             IMMUNE{" "}
             {e.suits.map((s) => (
@@ -255,8 +246,7 @@ function FightScreen({ run, act, onPowers }: { run: Run; act: Act; onPowers: (s:
         <p className="trick">{def?.text}</p>
       </div>
 
-      {f.phase === "play" && <PlayBar run={run} sel={valid} onPlay={doPlay} onYield={() => doAct(yieldTurn)} onRefresh={() => doAct(refresh)} />}
-      {f.phase === "pay" && <PayBar run={run} sel={valid} onPay={() => doAct((r) => pay(r, valid))} onRefresh={() => doAct(refresh)} />}
+      {f.phase === "play" && <PlayBar run={run} sel={valid} onPlay={doPlay} onEnd={() => doAct(endTurn)} />}
 
       <div className="hand">
         {sortCards(run.hand).map((c) => (
@@ -282,26 +272,79 @@ function FightScreen({ run, act, onPowers }: { run: Run; act: Act; onPowers: (s:
   );
 }
 
-function PlayBar({ run, sel, onPlay, onYield, onRefresh }: { run: Run; sel: number[]; onPlay: () => void; onYield: () => void; onRefresh: () => void }) {
+function describe(run: Run, a: EnemyAction): { icon: string; text: string; cls: string } {
+  if (a.k === "attack") {
+    const n = hitSize(run, a.n);
+    return { icon: "⚔", text: a.times && a.times > 1 ? `Attack ${n}×${a.times}` : `Attack ${n}`, cls: "intent-attack" };
+  }
+  if (a.k === "block") return { icon: "⛨", text: `Block ${a.n}`, cls: "intent-other" };
+  if (a.k === "buff") return { icon: "▲", text: `Powers up: attacks +${a.n}`, cls: "intent-other" };
+  if (a.k === "heal") return { icon: "✚", text: `Heal ${a.n}`, cls: "intent-other" };
+  return { icon: "✉", text: `Adds ${a.count} × ${cardName({ uid: 0, def: a.card, value: 0, suit: null })} to your deck`, cls: "intent-other" };
+}
+
+/** What the enemy will do when you end your turn: block if it's attacking, go all in if not. */
+function Intent({ run }: { run: Run }) {
+  const f = run.fight!;
+  const acts = intent(run);
+  const hit = incoming(run);
+  const through = Math.max(0, hit - f.block);
+  return (
+    <div className="intent">
+      <span className="dim">NEXT</span>
+      {acts.map((a, i) => {
+        const d = describe(run, a);
+        return (
+          <span key={i} className={d.cls}>
+            {d.icon} {d.text}
+          </span>
+        );
+      })}
+      {hit > 0 ? (
+        <span className={through ? "warn" : "ok"}>{through ? `you'll take ${through}` : "fully blocked"}</span>
+      ) : (
+        <span className="ok">not attacking: go all in</span>
+      )}
+    </div>
+  );
+}
+
+function PlayBar({ run, sel, onPlay, onEnd }: { run: Run; sel: number[]; onPlay: () => void; onEnd: () => void }) {
+  const f = run.fight!;
   const err = sel.length ? playError(run, sel) : null;
   const pv = sel.length ? previewPlay(run, sel) : null;
+  const max = Math.max(CONFIG.actionsPerTurn, f.actions);
   return (
     <div className="panel bar">
+      <div className="row between wrap">
+        <span className="actions">
+          ACTIONS{" "}
+          {Array.from({ length: max }, (_, i) => (
+            <span key={i} className={`pip ${i < f.actions ? "on" : ""}`} />
+          ))}
+        </span>
+        <span>
+          YOUR BLOCK <b className="s-hearts">{f.block}</b>
+        </span>
+      </div>
       <div className="preview">
-        {!sel.length && <span className="dim">Select a card or combo to play. Same value ≤{CONFIG.comboCap}, or Ace + any.</span>}
+        {!sel.length && <span className="dim">Pick a card or combo (same value ≤{CONFIG.comboCap}, or Ace + any). Each play costs 1 action.</span>}
         {err && <span className="warn">{err}</span>}
         {pv && (
           <>
-            <span>
-              DMG <b className="big">{pv.damage}</b>
-            </span>
+            {pv.damage > 0 && (
+              <span>
+                DMG <b className="big">{pv.damage}</b>
+              </span>
+            )}
             {pv.powers.map((p) => (
               <span key={p.suit} className={`power ${p.immune ? "blocked" : ""}`}>
-                <SuitMark suit={p.suit} /> {POWER[p.suit]} {p.n}
+                <SuitMark suit={p.suit} /> {POWER[p.suit]} {p.amount}
                 {p.immune && " BLOCKED"}
               </span>
             ))}
-            {pv.exact ? <span className="exact">EXACT — catch!</span> : pv.kills ? <span className="kill">KILL</span> : null}
+            {pv.cost === 0 && <span className="ok">free</span>}
+            {pv.exact ? <span className="exact">EXACT: catch!</span> : pv.kills ? <span className="kill">KILL</span> : null}
           </>
         )}
       </div>
@@ -309,40 +352,8 @@ function PlayBar({ run, sel, onPlay, onYield, onRefresh }: { run: Run; sel: numb
         <button className="btn primary" disabled={!pv} onClick={onPlay}>
           Play
         </button>
-        <button className="btn" onClick={onYield}>
-          Yield
-        </button>
-        <button className="btn" disabled={run.refreshes <= 0} onClick={onRefresh}>
-          Refresh ({run.refreshes})
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function PayBar({ run, sel, onPay, onRefresh }: { run: Run; sel: number[]; onPay: () => void; onRefresh: () => void }) {
-  const f = run.fight!;
-  const worth = sel.reduce((s, u) => s + payValue(run.hand.find((c) => c.uid === u)!), 0);
-  const enough = worth >= f.owed;
-  const cap = payCapacity(run);
-  return (
-    <div className="panel bar pay">
-      <div className="preview">
-        <span className="owe">
-          OWE <b className="big">{f.owed}</b>
-        </span>
-        <span className={enough ? "ok" : "warn"}>
-          SELECTED <b className="big">{worth}</b>
-        </span>
-        <span className="dim">hand worth {cap}</span>
-        {cap < f.owed && <span className="warn">Can't cover it: Refresh!</span>}
-      </div>
-      <div className="row gap wrap">
-        <button className="btn primary" disabled={!enough} onClick={onPay}>
-          Pay
-        </button>
-        <button className="btn" disabled={run.refreshes <= 0} onClick={onRefresh}>
-          Refresh ({run.refreshes})
+        <button className={`btn ${f.actions === 0 ? "primary" : ""}`} onClick={onEnd}>
+          End turn
         </button>
       </div>
     </div>
@@ -379,6 +390,7 @@ function RewardScreen({ run, act }: { run: Run; act: Act }) {
   return (
     <section className="panel">
       <h2>{run.fight?.exact ? "Caught!" : "Victory"}</h2>
+      {r.perfect && <p className="exact">PERFECT: no damage taken. Bonus gold and a rare card on offer.</p>}
       <p>
         +<span className="s-diamonds">{r.gold}</span> gold
       </p>
@@ -386,7 +398,7 @@ function RewardScreen({ run, act }: { run: Run; act: Act }) {
         <div className="caught">
           <CardView card={r.caught} />
           <p>
-            <b>{cardName(r.caught)}</b> joins your deck on top.
+            <b>{cardName(r.caught)}</b> joins your deck.
           </p>
         </div>
       )}
@@ -437,11 +449,11 @@ function RestScreen({ run, act }: { run: Run; act: Act }) {
       <h2>Rest</h2>
       <p className="dim">A quiet bench under the oaks. Choose one.</p>
       <div className="nodes">
-        <button className="node" onClick={() => act((r) => rest(r, "recover"))}>
-          <span className="node-icon s-clubs">♣</span>
-          <span className="node-label">Recover</span>
+        <button className="node" onClick={() => act((r) => rest(r, "heal"))}>
+          <span className="node-icon s-hearts">♥</span>
+          <span className="node-label">Heal</span>
           <span className="node-sub">
-            {CONFIG.restRecover} discards back to deck, refill hand
+            +{Math.min(restHeal(run), run.maxHp - run.hp)} HP ({run.hp}/{run.maxHp})
           </span>
         </button>
         <button className="node" onClick={() => setMode("upgrade")}>
@@ -519,9 +531,6 @@ function ShopScreen({ run, act }: { run: Run; act: Act }) {
         <button className="btn" disabled={s.removed} onClick={() => setRemoving(true)}>
           {s.removed ? "Removed" : `Remove a card $${s.removePrice}`}
         </button>
-        <button className="btn" disabled={s.refreshBought} onClick={() => act(buyRefresh)}>
-          {s.refreshBought ? "Refresh bought" : `+1 Refresh $${s.refreshPrice}`}
-        </button>
         <button className="btn primary" onClick={() => act(leaveShop)}>
           Leave
         </button>
@@ -580,9 +589,10 @@ function OverScreen({ run, onNew }: { run: Run; onNew: () => void }) {
     ["Turns", st.turns],
     ["Plays / combos", `${st.plays} / ${st.combos}`],
     ["Catches", st.catches],
+    ["Perfect fights", st.perfects],
+    ["HP lost", st.hpLost],
     ["Biggest hit", st.maxHit ? `${st.maxHit} (floor ${st.maxHitFloor})` : "0"],
     ["Blocked powers", st.immuneHits],
-    ["Refreshes used", st.refreshes],
     ["Guides", run.guides.map((g) => GUIDE_BY_ID[g].name).join(", ") || "none"],
   ];
   return (

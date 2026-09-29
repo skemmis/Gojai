@@ -1,25 +1,27 @@
 import type { Rng } from "./rng";
 
 /**
- * A standard deck. Each suit has one job:
- *   spades   → Attack:  deal N damage (the only suit that hits)
- *   hearts   → Defend:  shield N against attacks for the rest of the fight
- *   diamonds → Draw:    draw N cards (up to hand size)
- *   clubs    → Recycle: move N cards from your discard pile to your draw pile
+ * A standard deck. Each suit has one job (N = the play's total value):
+ *   spades   → Attack: deal N damage (the only suit that hits)
+ *   hearts   → Defend: N block against this turn's attacks
+ *   diamonds → Draw:   draw 1 card, +1 per 4 value (A–3: 1, 4–7: 2, 8–10: 3)
+ *   clubs    → Recall: your best cards come back from the discard pile to your hand
  */
 export type Suit = "hearts" | "diamonds" | "spades" | "clubs";
 export const SUITS: Suit[] = ["hearts", "diamonds", "spades", "clubs"];
 
 export type Effect =
   | { k: "dmg"; n: number } // played: +n damage
+  | { k: "block"; n: number } // played: +n block
   | { k: "draw"; n: number } // played: draw n
+  | { k: "free" } // costs no action
   | { k: "wild" } // counts as every suit
   | { k: "pierce" } // played: powers ignore the enemy's immunity
-  | { k: "payBonus"; n: number } // discarded to pay an attack: worth +n
-  | { k: "onPayDamage"; n: number } // discarded to pay an attack: deal n damage
-  | { k: "onPayRecover"; n: number } // discarded to pay an attack: recover n cards
+  | { k: "retain" } // not discarded at the end of your turn
+  | { k: "onDiscardDamage"; n: number } // discarded unplayed at end of turn: deal n
+  | { k: "onDiscardBlock"; n: number } // discarded unplayed at end of turn: +n block next turn
   // junk
-  | { k: "junk" } // can't be played; worth 0 when paying; gone after the fight
+  | { k: "junk" } // can't be played; leaves your deck after the fight
   | { k: "heavy"; n: number }; // junk: while in hand, enemy attacks are +n
 
 export type Rarity = "plain" | "common" | "rare" | "catch" | "junk";
@@ -54,14 +56,20 @@ export interface GuideDef {
   flavor?: string;
 }
 
-export type Trick =
+/** Always-on enemy traits. */
+export type Passive =
   | { k: "none" }
-  | { k: "twice" } // attacks twice per turn
-  | { k: "rage"; n: number } // attack +n after every turn
-  | { k: "hex"; card: string } // each attack also shuffles a junk card into your deck
-  | { k: "armor"; n: number } // each play deals n less
+  | { k: "armor"; n: number } // each hit deals n less
   | { k: "regen"; n: number } // heals n after every turn
   | { k: "silence" }; // your first play each fight has no power
+
+/** One thing an enemy does on its turn. You see it coming (the intent). */
+export type EnemyAction =
+  | { k: "attack"; n: number; times?: number }
+  | { k: "block"; n: number }
+  | { k: "buff"; n: number } // its attacks are +n for the rest of the fight
+  | { k: "hex"; card: string; count: number } // junk shuffled into your draw pile
+  | { k: "heal"; n: number };
 
 export type Tier = "normal" | "elite" | "boss";
 
@@ -70,10 +78,11 @@ export interface EnemyDef {
   name: string;
   tier: Tier;
   hp: number;
-  attack: number;
   /** Immune to these suits' powers. */
   suits: Suit[];
-  trick: Trick;
+  passive: Passive;
+  /** Intents cycle in order; each intent is one or more actions. */
+  intents: EnemyAction[][];
   text: string;
   /** The card you get for an exact kill. */
   catch: { value: number; suit: Suit; effects: Effect[]; text: string };
@@ -85,9 +94,13 @@ export interface EnemyState {
   tier: Tier;
   hp: number;
   maxHp: number;
-  attack: number;
+  block: number;
+  /** Floor scaling for attack, block and heal numbers. */
+  scale: number;
+  buff: number;
   suits: Suit[];
-  trick: Trick;
+  passive: Passive;
+  intentIdx: number;
 }
 
 export interface PlayLog {
@@ -99,15 +112,14 @@ export interface PlayLog {
 
 export interface Fight {
   enemy: EnemyState;
-  shield: number;
+  block: number;
+  actions: number;
   turn: number;
   plays: number;
-  yieldedLast: boolean;
-  /** "play" = your move; "pay" = discard to cover `owed`; then back to play. */
-  phase: "play" | "pay" | "won" | "lost";
-  owed: number;
-  attacksLeft: number; // for "twice"
+  hpLost: number;
+  phase: "play" | "won" | "lost";
   exact: boolean;
+  perfect: boolean;
   lastPlay: PlayLog | null;
   log: string[];
 }
@@ -119,8 +131,6 @@ export interface ShopState {
   guides: { id: string; price: number; sold: boolean }[];
   removePrice: number;
   removed: boolean;
-  refreshPrice: number;
-  refreshBought: boolean;
 }
 
 export interface RewardState {
@@ -128,6 +138,7 @@ export interface RewardState {
   cards: Card[];
   guides: string[];
   caught: Card | null;
+  perfect: boolean;
   cardTaken: boolean;
   guideTaken: boolean;
 }
@@ -144,12 +155,13 @@ export interface RunStats {
   turns: number;
   plays: number;
   combos: number;
-  yields: number;
+  endTurns: number;
   powerUses: Record<Suit, number>;
   powerTotal: Record<Suit, number>;
   immuneHits: number;
   catches: number;
-  refreshes: number;
+  perfects: number;
+  hpLost: number;
   maxHit: number;
   maxHitFloor: number;
   diedTo: string | null;
@@ -163,15 +175,15 @@ export interface Run {
   rng: Rng;
   floor: number;
   gold: number;
-  /** Your deck is your life: draw pile + hand + discard pile. */
+  hp: number;
+  maxHp: number;
+  /** Your deck lives in these piles; each fight shuffles them back together. */
   draw: Card[];
   hand: Card[];
   discard: Card[];
-  refreshes: number;
   guides: string[];
   nextUid: number;
   removals: number;
-  carriedShield: number;
   phase: Phase;
   nodes: NodeKind[];
   node: NodeKind | null;

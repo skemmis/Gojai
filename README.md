@@ -1,6 +1,6 @@
 # Gojai: The Pathless Land
 
-A location-based card game set in Ojai, California. You walk to real places at real times (Pink Moment on Shelf Road, the Thursday market), fight card battles with a standard deck (spades attack, hearts defend, diamonds draw, clubs recycle), catch what you beat, and hold ground for your faction.
+A location-based card game set in Ojai, California. You walk to real places at real times (Pink Moment on Shelf Road, the Thursday market), fight card battles with a standard deck (a hand of 5 and 3 actions a turn; spades attack, hearts block, diamonds draw, clubs recall), catch what you beat, and hold ground for your faction.
 
 This repo is at **prototype v0**: the combat engine, a balance lab, and a web page to play runs. There's no map, art or multiplayer yet.
 

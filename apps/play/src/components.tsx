@@ -9,7 +9,7 @@ export const SUIT_COLOR: Record<Suit, string> = {
   spades: "#00e5ff",
   clubs: "#7dff3a",
 };
-export const POWER: Record<Suit, string> = { hearts: "Shield", diamonds: "Draw", spades: "Attack", clubs: "Recycle" };
+export const POWER: Record<Suit, string> = { hearts: "Block", diamonds: "Draw", spades: "Attack", clubs: "Recall" };
 
 export function valueLabel(c: Card): string {
   const d = cardDef(c.def);

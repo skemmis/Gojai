@@ -5,6 +5,7 @@
  *   Which enemies are walls, and which are free?     (death rate per encounter)
  *   Are all four suit powers pulling their weight?   (power usage, immunity)
  *   Is catching too easy or too hard?                (exact-kill rate)
+ *   Are early fights easy? How often perfect?        (HP lost, perfect rate)
  *   Which cards and Guides are must-picks or traps?  (picked vs passed)
  *   Which Guide pairs are suspiciously strong?       (pair lift)
  *   Are there real decisions each turn?              (close calls)
@@ -79,14 +80,16 @@ if (bossWall > 0.4) flags.push(`First boss is a wall: ${pc(bossWall)} of greedy 
 // ─── Enemies ─────────────────────────────────────────────────────────────────
 
 out.push(`## Enemies`);
-out.push(`Death rate = share of encounters that ended the run. Catch rate = share won with an exact kill.`);
-const byEnemy = new Map<string, { n: number; deaths: number; catches: number; turns: number[] }>();
+out.push(`Death rate = share of encounters that ended the run. Catch rate = share won with an exact kill. Perfect = share won without losing HP. HP lost is per won fight (you start with 40).`);
+const byEnemy = new Map<string, { n: number; deaths: number; catches: number; perfects: number; hpLost: number[]; turns: number[] }>();
 for (const r of all)
   for (const e of r.encounters) {
-    const s = byEnemy.get(e.enemy) ?? { n: 0, deaths: 0, catches: 0, turns: [] };
+    const s = byEnemy.get(e.enemy) ?? { n: 0, deaths: 0, catches: 0, perfects: 0, hpLost: [], turns: [] };
     s.n++;
     if (!e.won) s.deaths++;
+    else s.hpLost.push(e.hpLost);
     if (e.exact) s.catches++;
+    if (e.perfect) s.perfects++;
     s.turns.push(e.turns);
     byEnemy.set(e.enemy, s);
   }
@@ -96,10 +99,19 @@ const enemyRows = [...byEnemy.entries()]
     const d = ENEMY_BY_ID[id];
     const dr = s.deaths / s.n;
     if (d.tier === "normal" && dr > 0.25) flags.push(`${d.name} kills ${pc(dr)} of the runs that meet it (normal enemy).`);
-    if (d.tier === "normal" && s.n > 200 && dr < 0.005) flags.push(`${d.name} never kills anyone (${pc(dr)} of ${s.n}): free fight.`);
-    return [d.name, d.tier, s.n, pc(dr), pc(s.catches / Math.max(1, s.n - s.deaths)), f1(mean(s.turns))];
+    const won = Math.max(1, s.n - s.deaths);
+    return [d.name, d.tier, s.n, pc(dr), f1(mean(s.hpLost)), pc(s.perfects / won), pc(s.catches / won), f1(mean(s.turns))];
   });
-out.push(table(["enemy", "tier", "met", "death rate", "catch rate", "avg turns"], enemyRows));
+out.push(table(["enemy", "tier", "met", "death rate", "HP lost", "perfect", "catch rate", "avg turns"], enemyRows));
+
+// Early fights should be easy: the first few floors are a walk in the park
+const early = all.flatMap((r) => r.encounters.filter((e) => e.tier === "normal" && e.floor <= 4));
+const earlyWon = early.filter((e) => e.won);
+const earlyDeath = 1 - earlyWon.length / Math.max(1, early.length);
+const earlyPerfect = earlyWon.filter((e) => e.perfect).length / Math.max(1, earlyWon.length);
+out.push(`Early fights (normal, floors 1-4): ${early.length} fought, death rate ${pc(earlyDeath)}, HP lost ${f1(mean(earlyWon.map((e) => e.hpLost)))}, perfect ${pc(earlyPerfect)}, ${f1(mean(early.map((e) => e.turns)))} turns.`);
+if (earlyPerfect < 0.4) flags.push(`Early fights are fiddly: only ${pc(earlyPerfect)} of floor 1-4 normal fights are perfect.`);
+if (earlyDeath > 0.02) flags.push(`Early fights aren't easy: ${pc(earlyDeath)} of floor 1-4 normal fights end the run.`);
 
 // ─── Powers ──────────────────────────────────────────────────────────────────
 
@@ -113,8 +125,9 @@ for (const s of SUITS) if (uses[s] / useSum < 0.12) flags.push(`${s} power is ra
 const plays = all.reduce((a, r) => a + r.stats.plays, 0);
 const immune = all.reduce((a, r) => a + r.stats.immuneHits, 0);
 const combos = all.reduce((a, r) => a + r.stats.combos, 0);
-const yields = all.reduce((a, r) => a + r.stats.yields, 0);
-out.push(`Plays: ${plays}. Combos: ${pc(combos / plays)} of plays. Powers blocked by immunity: ${immune}. Yields: ${yields}. Refreshes used per run: ${f1(mean(all.map((r) => r.stats.refreshes)))}. Catches per run: ${f1(mean(all.map((r) => r.stats.catches)))}.`);
+const fights = all.reduce((a, r) => a + r.stats.fights, 0);
+const perfects = all.reduce((a, r) => a + r.stats.perfects, 0);
+out.push(`Plays: ${plays}. Combos: ${pc(combos / plays)} of plays. Powers blocked by immunity: ${immune}. Perfect fights: ${pc(perfects / fights)}. Catches per run: ${f1(mean(all.map((r) => r.stats.catches)))}.`);
 
 // ─── Cards: picked vs passed ─────────────────────────────────────────────────
 
