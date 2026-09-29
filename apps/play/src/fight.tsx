@@ -101,13 +101,13 @@ function SceneFront({ id, zone, feet }: { id: string; zone: { w: number; h: numb
   );
 }
 
-/** Illustrated cards: aces, caught enemies and rares. Only the Ace of Spades is drawn so far. */
+/** The Moon deck: A–10 in every suit, drawn with pips but no numbers. The game overlays the live value. */
 const CARD_ART: Record<string, string> = globById(import.meta.glob<string>("./assets/card-*.webp", { eager: true, import: "default" }), "card");
 
-/** Plain number cards are full-bleed tarot plates from the art thread: each ace its own, 2–10 one plate per suit. */
+/** Each plain card has its own plate, matched to its current value, so an upgrade redraws the pips too. */
 function artFor(card: Card, named: boolean): string | undefined {
   if (!card.suit || named) return undefined;
-  return CARD_ART[card.value === 1 ? `ace-${card.suit}` : `suit-${card.suit}`];
+  return CARD_ART[card.value === 1 ? `ace-${card.suit}` : `${card.value}-${card.suit}`];
 }
 
 const SUIT_ICON: Record<Suit, IconName> = { spades: "blade", hearts: "shield", diamonds: "draw", clubs: "recall" };
