@@ -1,15 +1,15 @@
 /**
  * The run: an endless climb of floors. Each floor you pick one of three
- * nodes; every Nth floor is a boss. The run ends the first time you can't
- * cover an attack. Score = floors cleared.
+ * nodes; every Nth floor is a boss. The run ends when your HP hits 0.
+ * Score = floors cleared.
  *
  * In the real game each node is a place in Ojai; here they're abstract.
  */
 import { CONFIG } from "./config";
 import { ENEMIES, EVENTS, GUIDE_BY_ID, cardDef } from "./content";
-import { drawCards, handSize, recover, startFight } from "./fight";
+import { heal, startFight } from "./fight";
 import { cardKey, plainCard, randomGuides, randomNamed, randomRewardCard } from "./rewards";
-import { makeRng, next, pick, sample, shuffle } from "./rng";
+import { makeRng, next, pick, sample } from "./rng";
 import type { Card, NodeKind, Run, Tier } from "./types";
 
 export function newRun(seed: number): Run {
@@ -18,14 +18,14 @@ export function newRun(seed: number): Run {
     rng: makeRng(seed),
     floor: 1,
     gold: CONFIG.startGold,
+    hp: CONFIG.playerHp,
+    maxHp: CONFIG.playerHp,
     draw: [],
     hand: [],
     discard: [],
-    refreshes: CONFIG.startRefreshes,
     guides: [],
     nextUid: 1,
     removals: 0,
-    carriedShield: 0,
     phase: "map",
     nodes: [],
     node: null,
@@ -37,13 +37,14 @@ export function newRun(seed: number): Run {
       fights: 0,
       turns: 0,
       plays: 0,
-      combos: 0,
-      yields: 0,
+      matches: 0,
+      endTurns: 0,
       powerUses: { hearts: 0, diamonds: 0, spades: 0, clubs: 0 },
       powerTotal: { hearts: 0, diamonds: 0, spades: 0, clubs: 0 },
       immuneHits: 0,
       catches: 0,
-      refreshes: 0,
+      perfects: 0,
+      hpLost: 0,
       maxHit: 0,
       maxHitFloor: 0,
       diedTo: null,
@@ -53,8 +54,6 @@ export function newRun(seed: number): Run {
   // Start with Ace to 10 in hearts and spades: enough to attack and defend.
   // Diamonds and clubs come as rewards; face cards are earned by catching.
   for (const suit of CONFIG.startSuits) for (let v = 1; v <= 10; v++) run.draw.push(plainCard(run, v, suit));
-  shuffle(run.rng, run.draw);
-  drawCards(run, handSize(run));
   run.nodes = makeNodes(run);
   return run;
 }
@@ -170,7 +169,6 @@ function addGuide(run: Run, id: string, replace?: number) {
     run.guides.splice(replace, 1);
   }
   run.guides.push(id);
-  if (id === "ojai_day") run.refreshes++;
 }
 
 export function takeRewardGuide(run: Run, i: number, replace?: number): void {
@@ -191,13 +189,16 @@ export function leaveReward(run: Run): void {
 
 // ─── Rest ────────────────────────────────────────────────────────────────────
 
-export type RestChoice = "recover" | "upgrade" | "letgo";
+export type RestChoice = "heal" | "upgrade" | "letgo";
+
+export function restHeal(run: Run): number {
+  return Math.round(run.maxHp * CONFIG.restHealPct);
+}
 
 export function rest(run: Run, choice: RestChoice, uid?: number): void {
   if (run.phase !== "rest") throw new Error("Not resting.");
-  if (choice === "recover") {
-    recover(run, CONFIG.restRecover);
-    drawCards(run, handSize(run));
+  if (choice === "heal") {
+    heal(run, restHeal(run));
   } else if (choice === "upgrade") {
     upgrade(findCard(run, uid!));
   } else {
@@ -228,8 +229,6 @@ function openShop(run: Run) {
     guides,
     removePrice: CONFIG.removeBase + CONFIG.removeStep * run.removals,
     removed: false,
-    refreshPrice: CONFIG.refreshPrice,
-    refreshBought: false,
   };
   run.phase = "shop";
 }
@@ -267,14 +266,6 @@ export function buyRemoval(run: Run, uid: number): void {
   run.removals++;
 }
 
-export function buyRefresh(run: Run): void {
-  const s = run.shop!;
-  if (s.refreshBought) throw new Error("One per visit.");
-  spend(run, s.refreshPrice);
-  s.refreshBought = true;
-  run.refreshes++;
-}
-
 export function leaveShop(run: Run): void {
   if (run.phase !== "shop") throw new Error("Not in a shop.");
   advance(run);
@@ -282,9 +273,9 @@ export function leaveShop(run: Run): void {
 
 // ─── Events ──────────────────────────────────────────────────────────────────
 
-function discardRandomFromHand(run: Run, n: number) {
-  shuffle(run.rng, run.hand);
-  run.discard.push(...run.hand.splice(0, n));
+/** Lose HP outside a fight. Events never kill you: they leave you at 1. */
+function hurt(run: Run, n: number) {
+  run.hp = Math.max(1, run.hp - n);
 }
 
 export function chooseEvent(run: Run, option: number, uid?: number): void {
@@ -294,7 +285,7 @@ export function chooseEvent(run: Run, option: number, uid?: number): void {
     if (option === 0) removeCard(run, uid!);
     else if (option === 1) {
       run.gold += 25;
-      discardRandomFromHand(run, 3);
+      hurt(run, 5);
     }
   } else if (id === "honor_shelf") {
     if (option === 0) {
@@ -302,7 +293,7 @@ export function chooseEvent(run: Run, option: number, uid?: number): void {
       addToDeck(run, randomNamed(run, "rare"));
     } else if (option === 1) {
       addToDeck(run, randomNamed(run, "rare"));
-      discardRandomFromHand(run, 4);
+      hurt(run, 6);
     }
   } else if (id === "krotona_library") {
     if (option === 0) for (const c of sample(run.rng, allCards(run).filter((c) => c.value < 10), 2)) upgrade(c);

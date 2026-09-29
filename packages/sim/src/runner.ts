@@ -12,31 +12,28 @@ import {
   allCards,
   buyCard,
   buyGuide,
-  buyRefresh,
   cardDef,
   chooseEvent,
   chooseNode,
+  endTurn,
   EVENT_BY_ID,
   guidesFull,
   isJunk,
   leaveReward,
   leaveShop,
   newRun,
-  pay,
   play,
-  refresh,
   rest,
   score,
   takeRewardCard,
   takeRewardGuide,
-  yieldTurn,
   makeRng,
   next,
   type Card,
   type NodeKind,
   type Run,
 } from "@gojai/core";
-import { chooseMove, choosePayment } from "./bot";
+import { chooseMove } from "./bot";
 
 export type Policy = "greedy" | "explore";
 
@@ -47,6 +44,8 @@ export interface Encounter {
   turns: number;
   won: boolean;
   exact: boolean;
+  perfect: boolean;
+  hpLost: number;
 }
 
 export interface RunRecord {
@@ -65,7 +64,7 @@ export interface RunRecord {
 const MAX_FLOOR = 400;
 
 function health(run: Run): number {
-  return run.hand.length + run.draw.length;
+  return run.hp / run.maxHp;
 }
 
 function worstCard(run: Run): Card | undefined {
@@ -80,10 +79,10 @@ function pickNode(run: Run, policy: Policy, r: () => number): number {
   if (nodes.length === 1) return 0;
   if (policy === "explore" && r() < 0.25) return Math.floor(r() * nodes.length);
   const h = health(run);
-  if (h < 18 && idx("rest") >= 0) return idx("rest");
+  if (h < 0.5 && idx("rest") >= 0) return idx("rest");
   if (run.gold >= 110 && idx("shop") >= 0) return idx("shop");
-  if (h >= 26 && idx("elite") >= 0) return idx("elite");
-  if (idx("event") >= 0 && h >= 22) return idx("event");
+  if (h >= 0.75 && idx("elite") >= 0) return idx("elite");
+  if (idx("event") >= 0 && h >= 0.6) return idx("event");
   if (idx("fight") >= 0) return idx("fight");
   if (idx("rest") >= 0) return idx("rest");
   return 0;
@@ -91,20 +90,13 @@ function pickNode(run: Run, policy: Policy, r: () => number): number {
 
 function fightLoop(run: Run, margins: number[]) {
   let guard = 0;
-  while (run.phase === "fight" && run.fight && (run.fight.phase === "play" || run.fight.phase === "pay")) {
+  while (run.phase === "fight" && run.fight && run.fight.phase === "play") {
     const f = run.fight;
-    if (guard++ > 2000) throw new Error(`stuck fight, seed ${run.seed}: ${JSON.stringify({ e: f.enemy, shield: f.shield, hand: run.hand.map((c) => [c.def, c.value, c.suit]), draw: run.draw.length, disc: run.discard.length, ref: run.refreshes, log: f.log.slice(-6) })}`);
-    if (f.phase === "pay") {
-      const uids = choosePayment(run, f.owed);
-      if (uids) pay(run, uids);
-      else refresh(run); // only reachable with a Refresh left
-      continue;
-    }
+    if (guard++ > 3000) throw new Error(`stuck fight, seed ${run.seed}: ${JSON.stringify({ e: f.enemy, block: f.block, hp: run.hp, log: f.log.slice(-6) })}`);
     const d = chooseMove(run);
     margins.push(d.margin);
-    if (d.move.k === "play") play(run, d.move.uids);
-    else if (d.move.k === "refresh") refresh(run);
-    else yieldTurn(run);
+    if (d.move.k === "play") play(run, d.move.uid);
+    else endTurn(run);
   }
 }
 
@@ -123,7 +115,7 @@ export function playRun(seed: number, policy: Policy): RunRecord {
         const enemy = start.enemy.id, tier = start.enemy.tier, floor = run.floor;
         fightLoop(run, margins);
         const f = run.fight!;
-        encounters.push({ enemy, tier, floor, turns: f.turn, won: f.phase === "won", exact: f.exact });
+        encounters.push({ enemy, tier, floor, turns: f.turn, won: f.phase === "won", exact: f.exact, perfect: f.perfect, hpLost: f.hpLost });
       }
     } else if (run.phase === "reward") {
       const rw = run.reward!;
@@ -144,11 +136,10 @@ export function playRun(seed: number, policy: Policy): RunRecord {
       leaveReward(run);
     } else if (run.phase === "rest") {
       const w = worstCard(run);
-      if (run.discard.length >= 8 || !w) rest(run, "recover");
+      if (health(run) < 0.7 || !w) rest(run, "heal");
       else rest(run, "upgrade", w.uid);
     } else if (run.phase === "shop") {
       const s = run.shop!;
-      if (run.gold >= s.refreshPrice && run.refreshes < 3) buyRefresh(run);
       for (let i = 0; i < s.guides.length; i++)
         if (!s.guides[i].sold && run.gold >= s.guides[i].price && !guidesFull(run) && (policy === "greedy" || r() < 0.5)) buyGuide(run, i);
       for (let i = 0; i < s.cards.length; i++)

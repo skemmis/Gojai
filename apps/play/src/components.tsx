@@ -9,7 +9,7 @@ export const SUIT_COLOR: Record<Suit, string> = {
   spades: "#00e5ff",
   clubs: "#7dff3a",
 };
-export const POWER: Record<Suit, string> = { hearts: "Shield", diamonds: "Draw", spades: "Attack", clubs: "Recycle" };
+export const POWER: Record<Suit, string> = { hearts: "Block", diamonds: "Draw", spades: "Attack", clubs: "Recall" };
 
 export function valueLabel(c: Card): string {
   const d = cardDef(c.def);
@@ -28,12 +28,15 @@ export function CardView({
   onClick,
   disabled,
   small,
+  badge,
 }: {
   card: Card;
   selected?: boolean;
   onClick?: () => void;
   disabled?: boolean;
   small?: boolean;
+  /** A tag in the corner, e.g. the matching bonus this card would get. */
+  badge?: string;
 }) {
   const d = cardDef(card.def);
   const junk = isJunk(card);
@@ -55,6 +58,7 @@ export function CardView({
         </span>
       )}
       {d.face && <span className="card-facetag">{card.value}</span>}
+      {badge && <span className="card-badge">{badge}</span>}
     </button>
   );
 }

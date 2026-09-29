@@ -188,17 +188,6 @@ header {
   gap: 8px;
   border: 1px solid var(--line);
 }
-.life-total {
-  padding: 6px 10px;
-  border-right: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.life-total b {
-  font-family: var(--pixel);
-  font-size: 22px;
-}
 .piles {
   flex: 1;
   display: grid;
@@ -650,7 +639,65 @@ header {
     gap: 8px;
     font-size: 9px;
   }
-  .life-total b {
-    font-size: 18px;
-  }
+}
+
+/* ─── HP, actions, intents ─────────────────────────────────────────────── */
+.life .hpbar.you {
+  flex: 1.2;
+  height: auto;
+  min-height: 34px;
+  border: 0;
+  border-right: 1px solid var(--line);
+}
+.hpbar.you .hpfill {
+  background: repeating-linear-gradient(90deg, var(--hearts) 0 6px, #a01d57 6px 8px);
+}
+.intent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
+  padding: 6px 8px;
+  border: 1px dashed var(--line-dim);
+  font-size: 20px;
+}
+.intent-attack {
+  color: var(--hearts);
+}
+.intent-other {
+  color: var(--diamonds);
+}
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--pixel);
+  font-size: 10px;
+}
+.pip {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--line);
+}
+.pip.on {
+  background: var(--spades);
+  box-shadow: 0 0 6px var(--spades);
+}
+.hpbar.you .hptext {
+  mix-blend-mode: normal;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+}
+.card-badge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  padding: 2px 4px;
+  font-family: var(--pixel);
+  font-size: 9px;
+  color: #000;
+  background: var(--diamonds);
+  border: 2px solid #000;
 }

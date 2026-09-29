@@ -3,20 +3,24 @@
  * (see setConfig); nothing else in core should hard-code a balance constant.
  */
 export const DEFAULT_CONFIG = {
-  handSize: 8,
-  comboCap: 10,
-  startRefreshes: 2,
+  playerHp: 40,
+  actionsPerTurn: 3,
+  drawPerTurn: 5,
+  maxHand: 10,
   maxGuides: 5,
-  /** After this many turns in one fight, your shield halves every turn (no stalling). */
-  fatigueTurn: 20,
   startGold: 50,
   startSuits: ["hearts", "spades"] as ("hearts" | "diamonds" | "spades" | "clubs")[],
   /** Plain reward cards lean toward the suits you don't start with. */
   rewardSuitWeights: { hearts: 1, spades: 1, diamonds: 2, clubs: 2 },
 
-  /** Between fights you catch your breath: discards back into the deck, then refill your hand. */
-  postFightRecover: 6,
-  refillHandEachFight: true,
+  // Suit powers
+  /** Diamonds draw 1 + floor(N / this). */
+  diamondsPer: 4,
+  /** Clubs recall 1 + floor(N / this) cards from discard to hand. */
+  clubsPer: 5,
+
+  // Perfect fight (no HP lost): bonus gold and a guaranteed rare in the card choice
+  perfectGoldPct: 0.5,
 
   // Run structure
   bossEvery: 8,
@@ -25,8 +29,8 @@ export const DEFAULT_CONFIG = {
   nodeWeights: { fight: 50, elite: 12, rest: 14, shop: 12, event: 12 },
 
   // Enemy scaling per floor (floor 1 = ×1)
-  hpGrowth: 0.05,
-  attackGrowth: 0.04,
+  hpGrowth: 0.04,
+  attackGrowth: 0.03,
 
   // Rewards
   fightGold: [12, 20] as [number, number],
@@ -37,10 +41,10 @@ export const DEFAULT_CONFIG = {
   namedCardChance: 0.5,
   rareChance: 0.25,
 
-  // Rest: Recover moves this many random discards back into your deck
-  restRecover: 14,
+  // Rest
+  restHealPct: 0.3,
   restUpgrade: 2,
-  bossRecover: 10,
+  bossHealPct: 0.3,
 
   // Shop
   shopCards: 4,
@@ -49,7 +53,6 @@ export const DEFAULT_CONFIG = {
   guidePrice: { common: 110, rare: 160 } as Record<string, number>,
   removeBase: 50,
   removeStep: 25,
-  refreshPrice: 60,
 };
 
 export type Config = typeof DEFAULT_CONFIG;

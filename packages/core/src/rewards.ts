@@ -42,11 +42,13 @@ export function cardKey(c: Card): string {
   return c.def === "plain" ? `plain_${c.value}` : c.def;
 }
 
-export function giveFightReward(run: Run, tier: Tier, gold: number, caught: Card | null): void {
+/** A perfect fight (no HP lost) guarantees a rare in the card choice. */
+export function giveFightReward(run: Run, tier: Tier, gold: number, caught: Card | null, perfect: boolean): void {
   run.gold += gold;
   const cards = Array.from({ length: CONFIG.cardChoices }, () => randomRewardCard(run));
+  if (perfect) cards[0] = randomNamed(run, "rare");
   const guides = tier === "normal" ? [] : randomGuides(run, CONFIG.guideChoices);
-  run.reward = { gold, cards, guides, caught, cardTaken: false, guideTaken: guides.length === 0 };
+  run.reward = { gold, cards, guides, caught, perfect, cardTaken: false, guideTaken: guides.length === 0 };
   run.phase = "reward";
 }
 
