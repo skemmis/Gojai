@@ -240,7 +240,7 @@ function FightScreen({ run, act, onPowers }: { run: Run; act: Act; onPowers: (s:
             {attack !== e.attack && <span className="dim"> ({e.attack})</span>}
           </span>
           <span>
-            SHIELD <b className="s-spades">{f.shield}</b>
+            SHIELD <b className="s-hearts">{f.shield}</b>
           </span>
           <span>
             IMMUNE{" "}
@@ -297,7 +297,7 @@ function PlayBar({ run, sel, onPlay, onYield, onRefresh }: { run: Run; sel: numb
             </span>
             {pv.powers.map((p) => (
               <span key={p.suit} className={`power ${p.immune ? "blocked" : ""}`}>
-                <SuitMark suit={p.suit} /> {POWER[p.suit]} {p.suit === "clubs" ? "×2" : p.n}
+                <SuitMark suit={p.suit} /> {POWER[p.suit]} {p.n}
                 {p.immune && " BLOCKED"}
               </span>
             ))}
@@ -438,7 +438,7 @@ function RestScreen({ run, act }: { run: Run; act: Act }) {
       <p className="dim">A quiet bench under the oaks. Choose one.</p>
       <div className="nodes">
         <button className="node" onClick={() => act((r) => rest(r, "recover"))}>
-          <span className="node-icon s-hearts">♥</span>
+          <span className="node-icon s-clubs">♣</span>
           <span className="node-label">Recover</span>
           <span className="node-sub">
             {CONFIG.restRecover} discards back to deck, refill hand

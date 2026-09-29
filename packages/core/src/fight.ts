@@ -2,14 +2,18 @@
  * The fight: Regicide's loop, one enemy at a time, inside a run.
  *
  *   1. PLAY a card, a same-value combo (total ≤ 10), or an Ace + any card.
- *   2. Each suit in the play fires its POWER with N = total value, unless
- *      the enemy is immune to that suit. Order: hearts, diamonds, spades, clubs.
- *   3. DAMAGE = total (×2 with clubs). HP to exactly 0 = the enemy is CAUGHT.
- *   4. The enemy ATTACKS: discard cards worth at least (attack − shield),
+ *   2. Each suit in the play does its job with N = total value, unless the
+ *      enemy is immune to that suit. One job per suit:
+ *        ♣ clubs    recycle: N cards from your discard pile to your draw pile
+ *        ♦ diamonds draw N
+ *        ♥ hearts   shield N against attacks, for the rest of the fight
+ *        ♠ spades   deal N damage (the only suit that attacks)
+ *      Order: clubs, diamonds, hearts, spades. HP to exactly 0 = CAUGHT.
+ *   3. The enemy ATTACKS: discard cards worth at least (attack − shield),
  *      or the run is over.
  *
  * There's no HP bar: your deck is your life. The draw pile never reshuffles;
- * only Hearts (and rests) bring discarded cards back.
+ * only Clubs (and rests) bring discarded cards back.
  *
  * Every function here mutates the run in place. Callers that need an
  * untouched copy (UI undo, bot lookahead) clone first.
@@ -20,6 +24,9 @@ import { shuffle, next, int } from "./rng";
 import { giveFightReward } from "./rewards";
 import type { Card, Effect, EnemyState, Fight, PlayLog, Run, Suit, Tier } from "./types";
 import { SUITS } from "./types";
+
+/** The order suit powers resolve in: recycle and draw before you defend and hit. */
+export const POWER_ORDER: Suit[] = ["clubs", "diamonds", "hearts", "spades"];
 
 // ─── Card helpers ─────────────────────────────────────────────────────────────
 
@@ -140,7 +147,8 @@ export function startFight(run: Run, enemyId: string): void {
   run.carriedShield = 0;
   run.phase = "fight";
   run.stats.fights++;
-  if (hasGuide(run, "leadbeater")) drawCards(run, 2);
+  if (CONFIG.refillHandEachFight) drawCards(run, handSize(run));
+  if (hasGuide(run, "leadbeater")) run.fight.shield += 4;
   checkEmptyHanded(run);
 }
 
@@ -181,15 +189,14 @@ function playNumbers(run: Run, cs: Card[]) {
   for (const c of cs) for (const s of cardSuits(run, c)) suits.add(s);
   const pierce = cs.some((c) => has(c, "pierce")) || (f.plays === 0 && hasGuide(run, "ceremony"));
   const silenced = f.plays === 0 && f.enemy.trick.k === "silence";
-  const powers = SUITS.filter((s) => suits.has(s)).map((s) => ({
+  const powers = POWER_ORDER.filter((s) => suits.has(s)).map((s) => ({
     suit: s,
     n: total,
     immune: silenced || (!pierce && f.enemy.suits.includes(s)),
   }));
-  const clubs = powers.some((p) => p.suit === "clubs" && !p.immune);
-  let damage = total + cs.reduce((s, c) => s + sumEffect(c, "dmg"), 0);
-  if (cs.length > 1 && hasGuide(run, "besant")) damage += 4;
-  if (clubs) damage *= 2;
+  const spades = powers.some((p) => p.suit === "spades" && !p.immune);
+  let damage = (spades ? total : 0) + cs.reduce((s, c) => s + sumEffect(c, "dmg"), 0);
+  if (spades && cs.length > 1 && hasGuide(run, "besant")) damage += 4;
   if (f.plays === 0 && hasGuide(run, "life_coach")) damage *= 2;
   if (f.enemy.trick.k === "armor") damage = Math.max(0, damage - f.enemy.trick.n);
   return { total, powers, damage };
@@ -217,18 +224,16 @@ export function play(run: Run, uids: number[]): void {
     }
     run.stats.powerUses[p.suit]++;
     run.stats.powerTotal[p.suit] += p.n;
-    if (p.suit === "hearts") {
+    if (p.suit === "clubs") {
       const n = recover(run, p.n + (hasGuide(run, "farmers_market") ? 2 : 0));
-      log(run, `Hearts: recovered ${n} cards.`);
+      log(run, `Clubs: ${n} cards back into your deck.`);
     } else if (p.suit === "diamonds") {
       const n = drawCards(run, p.n + (hasGuide(run, "libbey") ? 1 : 0));
       log(run, `Diamonds: drew ${n}.`);
-    } else if (p.suit === "spades") {
+    } else if (p.suit === "hearts") {
       const n = p.n + (hasGuide(run, "crystal_shop") ? 2 : 0);
       f.shield += n;
-      log(run, `Spades: shield +${n} (now ${f.shield}).`);
-    } else {
-      log(run, `Clubs: double damage.`);
+      log(run, `Hearts: shield +${n} (now ${f.shield}).`);
     }
   }
   run.discard.push(...cs);
@@ -395,7 +400,7 @@ function winFight(run: Run, exact: boolean) {
   f.exact = exact;
   stripJunk(run);
   if (hasGuide(run, "blavatsky")) run.carriedShield = Math.min(5, Math.floor(f.shield / 2));
-  if (hasGuide(run, "meditation_mount")) recover(run, 4);
+  recover(run, CONFIG.postFightRecover + (hasGuide(run, "meditation_mount") ? 4 : 0));
   if (exact && hasGuide(run, "pink_moment_g")) recover(run, 5);
   if (f.enemy.tier === "boss") {
     recover(run, CONFIG.bossRecover);

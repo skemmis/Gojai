@@ -10,6 +10,13 @@ export const DEFAULT_CONFIG = {
   /** After this many turns in one fight, your shield halves every turn (no stalling). */
   fatigueTurn: 20,
   startGold: 50,
+  startSuits: ["hearts", "spades"] as ("hearts" | "diamonds" | "spades" | "clubs")[],
+  /** Plain reward cards lean toward the suits you don't start with. */
+  rewardSuitWeights: { hearts: 1, spades: 1, diamonds: 2, clubs: 2 },
+
+  /** Between fights you catch your breath: discards back into the deck, then refill your hand. */
+  postFightRecover: 6,
+  refillHandEachFight: true,
 
   // Run structure
   bossEvery: 8,
@@ -18,8 +25,8 @@ export const DEFAULT_CONFIG = {
   nodeWeights: { fight: 50, elite: 12, rest: 14, shop: 12, event: 12 },
 
   // Enemy scaling per floor (floor 1 = ×1)
-  hpGrowth: 0.08,
-  attackGrowth: 0.06,
+  hpGrowth: 0.05,
+  attackGrowth: 0.04,
 
   // Rewards
   fightGold: [12, 20] as [number, number],

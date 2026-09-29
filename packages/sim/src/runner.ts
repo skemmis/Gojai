@@ -136,7 +136,7 @@ export function playRun(seed: number, policy: Policy): RunRecord {
         }
       } else {
         const ranked = rw.cards
-          .map((c, i) => ({ i, v: cardDef(c.def).rarity === "rare" ? 20 : c.def !== "plain" ? 12 + c.value : c.value }))
+          .map((c, i) => ({ i, v: cardDef(c.def).rarity === "rare" ? 20 : c.def !== "plain" ? 12 + c.value : c.value + (c.suit === "diamonds" || c.suit === "clubs" ? 5 : 0) }))
           .sort((a, b) => b.v - a.v);
         if (ranked[0].v >= 7) takeRewardCard(run, ranked[0].i);
         if (rw.guides.length && !guidesFull(run)) takeRewardGuide(run, Math.floor(r() * rw.guides.length));

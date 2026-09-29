@@ -11,7 +11,6 @@ import { drawCards, handSize, recover, startFight } from "./fight";
 import { cardKey, plainCard, randomGuides, randomNamed, randomRewardCard } from "./rewards";
 import { makeRng, next, pick, sample, shuffle } from "./rng";
 import type { Card, NodeKind, Run, Tier } from "./types";
-import { SUITS } from "./types";
 
 export function newRun(seed: number): Run {
   const run: Run = {
@@ -51,8 +50,9 @@ export function newRun(seed: number): Run {
       offers: [],
     },
   };
-  // A standard deck, Ace to 10 in every suit. Face cards are earned by catching.
-  for (const suit of SUITS) for (let v = 1; v <= 10; v++) run.draw.push(plainCard(run, v, suit));
+  // Start with Ace to 10 in hearts and spades: enough to attack and defend.
+  // Diamonds and clubs come as rewards; face cards are earned by catching.
+  for (const suit of CONFIG.startSuits) for (let v = 1; v <= 10; v++) run.draw.push(plainCard(run, v, suit));
   shuffle(run.rng, run.draw);
   drawCards(run, handSize(run));
   run.nodes = makeNodes(run);

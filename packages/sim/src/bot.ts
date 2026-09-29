@@ -58,6 +58,7 @@ function keepValue(run: Run, c: Card): number {
   if (isJunk(c)) return -5;
   let v = c.value;
   const suits = cardSuits(run, c);
+  if (suits.includes("spades")) v += 2;
   if (suits.includes("diamonds")) v += 1.5;
   if (suits.includes("hearts")) v += 1;
   if (suits.includes("clubs")) v += 1;
@@ -114,12 +115,12 @@ export function chooseMove(run: Run): Decision {
       let shield = f.shield;
       for (const pw of p.powers) {
         if (pw.immune) continue;
-        if (pw.suit === "hearts") score += Math.min(pw.n, run.discard.length) * 0.9;
+        if (pw.suit === "clubs") score += Math.min(pw.n, run.discard.length) * 0.9;
         if (pw.suit === "diamonds") {
           drawn = Math.min(pw.n + (hasGuide(run, "libbey") ? 1 : 0), handSize(run) - (run.hand.length - uids.length), run.draw.length);
           score += drawn * 3;
         }
-        if (pw.suit === "spades") {
+        if (pw.suit === "hearts") {
           const s = pw.n + (hasGuide(run, "crystal_shop") ? 2 : 0);
           const useful = Math.max(0, Math.min(s, e.attack - shield));
           shield += s;

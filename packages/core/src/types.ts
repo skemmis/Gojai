@@ -1,11 +1,11 @@
 import type { Rng } from "./rng";
 
 /**
- * A standard deck. Each suit is a power (as in Regicide):
- *   hearts   → Heal:   recover N cards from discard to the bottom of your deck
- *   diamonds → Draw:   draw N cards (up to hand size)
- *   spades   → Shield: the enemy's attack drops by N for the rest of the fight
- *   clubs    → Double: this play deals ×2 damage
+ * A standard deck. Each suit has one job:
+ *   spades   → Attack:  deal N damage (the only suit that hits)
+ *   hearts   → Defend:  shield N against attacks for the rest of the fight
+ *   diamonds → Draw:    draw N cards (up to hand size)
+ *   clubs    → Recycle: move N cards from your discard pile to your draw pile
  */
 export type Suit = "hearts" | "diamonds" | "spades" | "clubs";
 export const SUITS: Suit[] = ["hearts", "diamonds", "spades", "clubs"];

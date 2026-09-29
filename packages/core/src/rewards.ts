@@ -3,9 +3,8 @@
  */
 import { CONFIG } from "./config";
 import { CARDS, GUIDES, cardDef } from "./content";
-import { int, next, pick } from "./rng";
+import { int, next, pick, weighted } from "./rng";
 import type { Card, Run, Tier } from "./types";
-import { SUITS } from "./types";
 
 export function makeCard(run: Run, def: string, value?: number, suit?: Card["suit"]): Card {
   const d = cardDef(def);
@@ -25,7 +24,7 @@ export function randomNamed(run: Run, rarity?: "common" | "rare"): Card {
 
 export function randomRewardCard(run: Run): Card {
   if (next(run.rng) < CONFIG.namedCardChance) return randomNamed(run);
-  return plainCard(run, int(run.rng, 1, 10), pick(run.rng, SUITS));
+  return plainCard(run, int(run.rng, 1, 10), weighted(run.rng, CONFIG.rewardSuitWeights));
 }
 
 export function randomGuides(run: Run, k: number): string[] {

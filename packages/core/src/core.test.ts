@@ -9,9 +9,10 @@ function withHand(run: Run, cards: [number, Suit][]) {
   return run.hand.map((c) => c.uid);
 }
 
-test("a run starts with a 40-card standard deck and a hand of 8", () => {
+test("a run starts with Ace to 10 in hearts and spades, and a hand of 8", () => {
   const run = newRun(1);
-  assert.equal(allCards(run).length, 40);
+  assert.equal(allCards(run).length, 20);
+  assert.deepEqual([...new Set(allCards(run).map((c) => c.suit))].sort(), ["hearts", "spades"]);
   assert.equal(run.hand.length, 8);
   assert.equal(run.phase, "map");
   assert.equal(run.nodes.length, 3);
@@ -27,25 +28,32 @@ test("combos: same value up to 10, or an Ace with any card", () => {
   assert.notEqual(playError(run, [a, b, c, d]), null);
 });
 
-test("clubs double damage; an enemy is immune to its own suit", () => {
+test("only spades deal damage; an enemy is immune to its own suit", () => {
   const run = newRun(3);
-  startFight(run, "nine_latte"); // clubs
-  const [club, heart] = withHand(run, [[7, "clubs"], [7, "hearts"], [10, "spades"], [10, "diamonds"]]);
-  assert.equal(previewPlay(run, [club])!.damage, 7); // immune to clubs
-  const p = previewPlay(run, [heart])!;
-  assert.equal(p.damage, 7);
-  assert.deepEqual(p.powers.map((x) => [x.suit, x.immune]), [["hearts", false]]);
-  const run2 = newRun(3);
-  startFight(run2, "crystal_vendor"); // spades, armor 1
-  const [c2] = withHand(run2, [[7, "clubs"], [10, "hearts"]]);
-  assert.equal(previewPlay(run2, [c2])!.damage, 13); // 7×2 − 1
+  startFight(run, "crystal_vendor"); // diamonds, armor 1
+  const [sp, he, di] = withHand(run, [[7, "spades"], [7, "hearts"], [5, "diamonds"], [10, "spades"]]);
+  assert.equal(previewPlay(run, [sp])!.damage, 6); // 7 − armor 1
+  assert.equal(previewPlay(run, [he])!.damage, 0); // hearts defend, don't hit
+  const p = previewPlay(run, [di])!;
+  assert.deepEqual(p.powers.map((x) => [x.suit, x.immune]), [["diamonds", true]]);
 });
 
-test("spades shield the next attack", () => {
+test("clubs move discards back into your draw pile", () => {
+  const run = newRun(11);
+  startFight(run, "short_term_rental");
+  run.fight!.enemy.attack = 0;
+  const [c] = withHand(run, [[4, "clubs"], [9, "spades"]]);
+  const before = run.discard.length;
+  const drawBefore = run.draw.length;
+  play(run, [c]);
+  assert.equal(run.draw.length, drawBefore + Math.min(4, before));
+});
+
+test("hearts shield the next attack", () => {
   const run = newRun(4);
-  startFight(run, "influencer"); // hearts
+  startFight(run, "nine_latte"); // clubs
   run.fight!.enemy.attack = 6;
-  const [s] = withHand(run, [[4, "spades"], [10, "diamonds"], [10, "clubs"]]);
+  const [s] = withHand(run, [[4, "hearts"], [10, "diamonds"], [10, "clubs"]]);
   play(run, [s]);
   assert.equal(run.fight!.shield, 4);
   assert.equal(run.fight!.phase, "pay");
@@ -55,9 +63,9 @@ test("spades shield the next attack", () => {
 test("an exact kill catches the enemy as a face card on top of your deck", () => {
   const run = newRun(5);
   startFight(run, "manifestor"); // hearts
-  run.fight!.enemy.hp = 14;
-  const [a, b] = withHand(run, [[7, "clubs"], [3, "hearts"]]);
-  play(run, [a]); // 7 × 2 = 14
+  run.fight!.enemy.hp = 4;
+  const [a, b] = withHand(run, [[4, "spades"], [9, "hearts"]]);
+  play(run, [a]); // exactly 4
   assert.equal(run.fight!.phase, "won");
   assert.equal(run.fight!.exact, true);
   assert.equal(run.draw[0].def, "catch_manifestor");
@@ -71,7 +79,7 @@ test("you must discard enough to cover the attack, or you lose", () => {
   startFight(run, "crystal_vendor");
   run.fight!.enemy.attack = 6;
   run.refreshes = 0;
-  const [a, b, c] = withHand(run, [[2, "hearts"], [3, "diamonds"], [1, "clubs"]]);
+  const [a, b, c] = withHand(run, [[2, "spades"], [3, "diamonds"], [1, "clubs"]]);
   play(run, [a]); // 2 dmg, then owe 6 with only 4 left
   assert.equal(run.fight!.phase, "lost");
   assert.equal(run.phase, "over");
@@ -91,6 +99,7 @@ test("paying moves cards to the discard pile; hex junk leaves after the fight", 
   run.fight!.enemy.hp = 3;
   const [d] = withHand(run, [[3, "spades"]]);
   play(run, [d]);
+  assert.equal(run.fight!.phase, "won");
   assert.ok(!allCards(run).some((x) => x.def === "junk_latte"));
   void c;
 });
