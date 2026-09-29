@@ -1,0 +1,138 @@
+<!doctype html><html><head>
+<script type="importmap">{ "imports": { "three": "../../node_modules/three/build/three.module.js" } }</script>
+<style>@font-face { font-family: Silkscreen; src: url(../../fonts/Silkscreen.ttf); }</style>
+</head><body style="margin:0">
+<script type="module">
+// Blue-sky option: build the subject as a rough 3D diorama and render it the
+// way Obra Dinn does. Three passes at the exact logical resolution, no
+// anti-aliasing: object ids, surface normals and plain lighting. The ink
+// renderer (src/ink.ts) turns them into lines + three-tone light.
+import * as THREE from "three";
+
+let seed = 3;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const R = (a, b) => a + (b - a) * rnd();
+
+function passes(scene, camera, w, h, lights) {
+  const renderer = new THREE.WebGLRenderer({ antialias: false, preserveDrawingBuffer: true });
+  renderer.setSize(w, h); renderer.setPixelRatio(1);
+  renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+  const rt = new THREE.WebGLRenderTarget(w, h);
+  const read = () => { const buf = new Uint8Array(w * h * 4); renderer.readRenderTargetPixels(rt, 0, 0, w, h, buf);
+    // flip vertically (GL origin is bottom-left)
+    const out = new Uint8Array(w * h * 4); for (let y = 0; y < h; y++) out.set(buf.subarray((h - 1 - y) * w * 4, (h - y) * w * 4), y * w * 4); return Array.from(out); };
+  const meshes = []; scene.traverse((o) => { if (o.isMesh) meshes.push(o); });
+  const orig = meshes.map((m) => m.material);
+  const bg = scene.background;
+  // 1) ids
+  scene.background = new THREE.Color(0, 0, 0);
+  meshes.forEach((m, i) => { const id = i + 1; m.material = new THREE.MeshBasicMaterial({ color: new THREE.Color(((id >> 16) & 255) / 255, ((id >> 8) & 255) / 255, (id & 255) / 255) }); });
+  lights.forEach((l) => (l.visible = false));
+  renderer.setRenderTarget(rt); renderer.render(scene, camera); const ids = read();
+  // 2) normals (view space)
+  scene.background = new THREE.Color(0.5, 0.5, 0.5);
+  meshes.forEach((m) => (m.material = new THREE.MeshNormalMaterial({ flatShading: !!m.userData.flat })));
+  renderer.render(scene, camera); const normals = read();
+  // 3) lighting with the real materials
+  scene.background = bg; meshes.forEach((m, i) => (m.material = orig[i])); lights.forEach((l) => (l.visible = true));
+  renderer.render(scene, camera); const light = read();
+  return { w, h, ids, normals, light };
+}
+
+const mat = (hex, flat = false) => new THREE.MeshLambertMaterial({ color: new THREE.Color(hex), flatShading: flat });
+
+function oak(scene, x, z, s) {
+  const trunkM = mat('#5a5048');
+  for (let i = 0; i < 4; i++) { const t = new THREE.Mesh(new THREE.CylinderGeometry(s * .04, s * .1, s * .9, 6), trunkM);
+    t.position.set(x + R(-s*.1, s*.1), s * .45, z + R(-s*.1, s*.1)); t.rotation.z = R(-.5, .5); t.rotation.x = R(-.3, .3); scene.add(t); }
+  const leaf = mat('#8a9078', true);
+  for (let i = 0; i < 14; i++) { const b = new THREE.Mesh(new THREE.IcosahedronGeometry(s * R(.22, .38), 1), leaf); b.userData.flat = true;
+    b.position.set(x + R(-s * .75, s * .75), s * R(.85, 1.25), z + R(-s * .4, s * .4)); scene.add(b); }
+}
+
+function place(w, h) {
+  seed = 3;
+  const scene = new THREE.Scene(); scene.background = new THREE.Color('#f4efe4');
+  const camera = new THREE.PerspectiveCamera(38, w / h, 1, 2000); camera.position.set(0, 9, 30); camera.lookAt(0, 16, -200);
+  const sun = new THREE.DirectionalLight("#ffffff", 2.2); sun.position.set(-1.4, 0.35, 0.5);
+  const amb = new THREE.AmbientLight('#ffffff', 0.55); scene.add(sun, amb);
+  // Topatopa bluffs: heightfield with a steep lit face and gullies. The only accent.
+  const bw = 900, bd = 120, bluffs = new THREE.PlaneGeometry(bw, bd, 300, 60); bluffs.rotateX(-Math.PI / 2);
+  const p = bluffs.attributes.position;
+  for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i); const t = THREE.MathUtils.smoothstep(-z, -20, 25);
+    const top = 70 + Math.sin(x / 60) * 8 + (Math.abs(x) < 160 ? 22 : 0) * THREE.MathUtils.smoothstep(160 - Math.abs(x), 0, 30);
+    const gully = Math.pow(Math.abs(Math.sin(x / 9 + Math.sin(x / 23))), 3) * 10 * (1 - t);
+    p.setY(i, t * top - gully * t * 2 + Math.sin(x * 1.7) * 0.8);
+    // buttresses and gullies across the face
+    p.setZ(i, z + 30 * Math.pow(Math.abs(Math.sin(x / 7 + Math.sin(x / 19) * 2)), 1.5) * Math.sin(Math.PI * t)); }
+  bluffs.computeVertexNormals();
+  const bm = new THREE.Mesh(bluffs, mat('#ff3d8e', true)); bm.userData.flat = true; bm.position.set(0, 0, -300); scene.add(bm);
+  // foothills
+  const hills = new THREE.PlaneGeometry(900, 90, 120, 20); hills.rotateX(-Math.PI / 2);
+  const q = hills.attributes.position;
+  for (let i = 0; i < q.count; i++) { const x = q.getX(i), z = q.getZ(i); q.setY(i, Math.max(0, 14 + Math.sin(x / 45) * 7 + Math.sin(x / 13) * 2 - Math.abs(z + 10) * 0.35)); }
+  hills.computeVertexNormals(); const hm = new THREE.Mesh(hills, mat('#b8b4a8', true)); hm.userData.flat = true; hm.position.set(0, -2, -190); scene.add(hm);
+  // valley floor + orchard grid
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(900, 200), mat('#e4ded0')); floor.rotation.x = -Math.PI / 2; floor.position.set(0, -2, -110); scene.add(floor);
+  const crownM = mat('#8a8e80'), crownG = new THREE.SphereGeometry(1.9, 10, 8);
+  for (let z = -40; z > -170; z -= 7) for (let x = -180; x < 180; x += 7) { const c = new THREE.Mesh(crownG, crownM); c.position.set(x + (z % 14 ? 3.5 : 0), 0.6, z); scene.add(c); }
+  // the shelf the road runs along, and the road itself
+  const shelf = new THREE.Mesh(new THREE.BoxGeometry(400, 4, 40), mat('#b0a898')); shelf.position.set(0, 0, 8); scene.add(shelf);
+  const road = new THREE.Mesh(new THREE.BoxGeometry(400, 4.2, 6), mat('#f0ebe0')); road.position.set(0, 0.1, 12); scene.add(road);
+  // fence
+  const postM = mat('#3a342e');
+  for (let x = -60; x <= 60; x += 6) { const post = new THREE.Mesh(new THREE.BoxGeometry(.25, 2.4, .25), postM); post.position.set(x, 3.2, 8); scene.add(post); }
+  for (const y of [3.4, 4.2]) { const wire = new THREE.Mesh(new THREE.BoxGeometry(120, .06, .06), postM); wire.position.set(0, y, 8); scene.add(wire); }
+  // walkers
+  const personM = mat('#2a2622');
+  for (const [x, z, s] of [[-1.2, 12, 1], [0.3, 12.6, .95], [1.6, 12.2, .85]]) {
+    const body = new THREE.Mesh(new THREE.CapsuleGeometry(.28 * s, 1.1 * s, 4, 8), personM); body.position.set(x, 2.8 + .55 * s, z); scene.add(body);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(.24 * s, 10, 8), personM); head.position.set(x, 2.8 + 1.45 * s, z); scene.add(head); }
+  oak(scene, -17, 4, 11); oak(scene, 19, -2, 8);
+  return passes(scene, camera, w, h, [sun, amb]);
+}
+
+function enemy(w, h) {
+  seed = 5;
+  const scene = new THREE.Scene(); scene.background = new THREE.Color('#f4efe4');
+  const camera = new THREE.PerspectiveCamera(30, w / h, .1, 100); camera.position.set(0, 4.5, 20); camera.lookAt(0.6, 4, 0);
+  const key = new THREE.DirectionalLight('#ffffff', 2.4); key.position.set(-1, 1.2, 1.2);
+  const amb = new THREE.AmbientLight('#ffffff', 0.5); scene.add(key, amb);
+  const add = (geo, m, x, y, z, flat = false) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.userData.flat = flat; scene.add(o); return o; };
+  add(new THREE.CylinderGeometry(1.9, 1.35, 5.2, 40, 1, true), mat('#f2eee6'), 0, 2.6, 0);
+  add(new THREE.CircleGeometry(1.35, 40), mat('#f2eee6'), 0, 0, 0).rotation.x = Math.PI / 2;
+  add(new THREE.CylinderGeometry(1.84, 1.62, 1.8, 40, 1, true), mat('#dcc8a8'), 0, 3.0, 0).scale.set(1.04, 1, 1.04);
+  // lid: rim + dome + sip slot
+  add(new THREE.CylinderGeometry(2.0, 2.0, .35, 40), mat('#4a4440'), 0, 5.3, 0);
+  add(new THREE.CylinderGeometry(1.7, 1.95, .45, 40), mat('#5a524c'), 0, 5.65, 0);
+  add(new THREE.BoxGeometry(.6, .12, .3), mat('#1a1614'), .6, 5.9, .9);
+  // face: brows, eyes (accent), smirk
+  const ink = mat('#1e1a16');
+  const brow = (x, r) => { const b = add(new THREE.BoxGeometry(.75, .14, .1), ink, x, 3.55, 1.82); b.rotation.z = r; };
+  brow(-.6, -.35); brow(.6, .35);
+  add(new THREE.SphereGeometry(.13, 12, 8), new THREE.MeshBasicMaterial({ color: '#ff1a10' }), -.55, 3.3, 1.86);
+  add(new THREE.SphereGeometry(.13, 12, 8), new THREE.MeshBasicMaterial({ color: '#ff1a10' }), .55, 3.3, 1.86);
+  const smirk = add(new THREE.TorusGeometry(.6, .06, 6, 20, Math.PI * .7), ink, .1, 2.95, 1.8); smirk.rotation.z = Math.PI * 1.1;
+  // steam
+  for (const dx of [-.7, .1, .8]) { const c = new THREE.CatmullRomCurve3([new THREE.Vector3(dx, 6, 0), new THREE.Vector3(dx - .3, 6.8, .2), new THREE.Vector3(dx + .3, 7.6, 0), new THREE.Vector3(dx, 8.4, .1)]);
+    add(new THREE.TubeGeometry(c, 20, .07, 6), mat('#8a847a'), 0, 0, 0); }
+  // price tag on a string (gold accent)
+  const s = new THREE.CatmullRomCurve3([new THREE.Vector3(1.9, 5.1, 0), new THREE.Vector3(2.6, 4.9, .3), new THREE.Vector3(2.95, 4.3, .5)]);
+  add(new THREE.TubeGeometry(s, 12, .03, 5), mat('#3a3228'), 0, 0, 0);
+  const tag = add(new THREE.BoxGeometry(1.3, 1.0, .08), mat('#ffb000'), 3.05, 3.7, .6); tag.rotation.y = -.25;
+  // shadow disc
+  add(new THREE.CircleGeometry(2.6, 40), mat('#cfc8b8'), 0, .01, 0).rotation.x = -Math.PI / 2;
+  const out = passes(scene, camera, w, h, [key, amb]);
+  // Lettering: set in a pixel font at logical size, placed where the tag lands on screen.
+  const v = new THREE.Vector3(3.05, 3.7, .64).project(camera);
+  const cx = Math.round((v.x + 1) / 2 * w), cy = Math.round((1 - v.y) / 2 * h);
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const t = c.getContext('2d');
+  const fpx = 8 * Math.max(1, Math.round(w / 160)); t.font = fpx + 'px Silkscreen'; t.fillStyle = '#000'; const tw = t.measureText('$9').width; t.fillText('$9', Math.round(cx - tw / 2), cy + Math.round(fpx * 0.4));
+  const d = t.getImageData(0, 0, w, h).data; out.text = []; for (let i = 0; i < w * h; i++) out.text.push(d[i * 4 + 3] >= 110 ? 1 : 0);
+  return out;
+}
+
+window.render = async (sizes) => { await document.fonts.load('8px Silkscreen');
+  return { place: sizes.place.map(([w, h]) => place(w, h)), enemy: sizes.enemy.map(([w, h]) => enemy(w, h)) }; };
+window.ready = true;
+</script></body></html>

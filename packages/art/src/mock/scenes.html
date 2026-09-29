@@ -1,0 +1,177 @@
+<!doctype html><html><head><style>
+@font-face { font-family: Jacquard; src: url(../../fonts/Jacquard12.ttf); }
+@font-face { font-family: Silkscreen; src: url(../../fonts/Silkscreen.ttf); }
+@font-face { font-family: Jersey; src: url(../../fonts/Jersey10.ttf); }
+</style></head><body style="margin:0">
+<script>
+// Procedural stand-ins for the sample subjects, drawn at 4x logical size.
+// Each subject is drawn as a stack of named layers, each tagged with a ROLE
+// (sky, far, mid, ground, mass, figure, object, text...). The "plates"
+// renderer treats each role differently, the way an engraver would; the
+// other renderers only see the flattened picture.
+// Colours are "natural": neutrals become ink, strong saturation marks intent.
+let seed = 7;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const R = (a, b) => a + (b - a) * rnd();
+
+function stack(W, H) {
+  const layers = [];
+  return {
+    layer(name, role) {
+      const c = document.createElement('canvas'); c.width = W; c.height = H;
+      layers.push({ name, role, c });
+      return c.getContext('2d');
+    },
+    done() {
+      const flat = document.createElement('canvas'); flat.width = W; flat.height = H;
+      const f = flat.getContext('2d');
+      layers.forEach((l) => f.drawImage(l.c, 0, 0));
+      return { flat: flat.toDataURL(), layers: layers.map((l) => ({ name: l.name, role: l.role, url: l.c.toDataURL() })) };
+    },
+  };
+}
+
+// Lettering is set at the logical pixel size (1/4 of the canvas) and scaled
+// up without smoothing, so pixel fonts land exactly on the grid.
+function pixText(g, text, x, y, px, family, color, align = 'left') {
+  const W = g.canvas.width, H = g.canvas.height, c = document.createElement('canvas'); c.width = W / 4; c.height = H / 4;
+  const t = c.getContext('2d'); t.font = `${px}px ${family}`; t.fillStyle = color;
+  const w = t.measureText(text).width;
+  t.fillText(text, Math.round(align === 'center' ? x / 4 - w / 2 : x / 4), Math.round(y / 4));
+  const d = t.getImageData(0, 0, c.width, c.height);
+  for (let i = 3; i < d.data.length; i += 4) d.data[i] = d.data[i] >= 110 ? 255 : 0;
+  t.putImageData(d, 0, 0);
+  g.imageSmoothingEnabled = false; g.drawImage(c, 0, 0, W, H);
+}
+
+function spadePath(g, x, y, s) {
+  g.beginPath(); g.moveTo(x, y - s); g.bezierCurveTo(x + s * 1.1, y - s * .2, x + s * .9, y + s * .6, x, y + s * .25);
+  g.bezierCurveTo(x - s * .9, y + s * .6, x - s * 1.1, y - s * .2, x, y - s); g.fill();
+  g.beginPath(); g.moveTo(x, y + s * .1); g.lineTo(x + s * .35, y + s * .8); g.lineTo(x - s * .35, y + s * .8); g.fill();
+}
+
+function oak(g, cx, cy, s, dark, light) {
+  g.strokeStyle = '#2a2420'; g.lineCap = 'round';
+  for (let i = 0; i < 5; i++) { g.lineWidth = s * R(0.05, 0.12); g.beginPath(); g.moveTo(cx + R(-s*.05, s*.05), cy + s * .9);
+    g.bezierCurveTo(cx + R(-s*.3, s*.3), cy + s*.4, cx + R(-s*.6, s*.6), cy + s*.1, cx + R(-s*.8, s*.8), cy - s*.1); g.stroke(); }
+  for (let i = 0; i < 260; i++) { const a = R(0, Math.PI * 2), d = Math.sqrt(rnd()) * s * .85;
+    const x = cx + Math.cos(a) * d * 1.3, y = cy - s * .15 + Math.sin(a) * d * .55; const r = R(s * .04, s * .12);
+    g.fillStyle = (y < cy - s*.2 && rnd() < .6) ? light : dark; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); }
+}
+
+function place() {
+  seed = 7;
+  const W = 1280, H = 720, S = stack(W, H);
+  let g = S.layer('sky', 'sky');
+  const sky = g.createLinearGradient(0, 0, 0, H * .55);
+  sky.addColorStop(0, '#46566e'); sky.addColorStop(.6, '#8a8fa0'); sky.addColorStop(1, '#d9b9a6');
+  g.fillStyle = sky; g.fillRect(0, 0, W, H);
+  g = S.layer('moon', 'light');
+  g.fillStyle = '#eee8dc'; g.beginPath(); g.arc(1080, 90, 18, 0, 7); g.fill();
+  g.globalCompositeOperation = 'destination-out'; g.beginPath(); g.arc(1090, 84, 16, 0, 7); g.fill(); g.globalCompositeOperation = 'source-over';
+  g.fillStyle = '#e8e4da'; for (let i = 0; i < 40; i++) g.fillRect(Math.round(R(0, W) / 4) * 4, Math.round(R(0, 180) / 4) * 4, 4, 4);
+  // Topatopa bluffs: the lit face is the event.
+  g = S.layer('bluffs', 'feature');
+  const ridge = []; for (let x = 0; x <= W; x += 8) ridge.push([x, 250 + Math.sin(x / 140) * 18 + Math.sin(x / 37) * 7 + (x > 380 && x < 1000 ? -60 : 0) + R(-4, 4)]);
+  g.fillStyle = '#e03e8c'; g.beginPath(); g.moveTo(0, 420); ridge.forEach(([x, y]) => g.lineTo(x, y)); g.lineTo(W, 420); g.fill();
+  g.save(); g.clip();
+  for (let i = 0; i < 180; i++) { const x = R(0, W), y0 = 240 + R(0, 40); g.strokeStyle = rnd() < .5 ? '#a0205e' : '#ff78b4'; g.lineWidth = R(2, 5);
+    g.beginPath(); g.moveTo(x, y0); g.lineTo(x + R(-20, 20), y0 + R(60, 160)); g.stroke(); }
+  for (let i = 0; i < 14; i++) { const x = R(0, W); g.fillStyle = '#7a1848'; g.beginPath(); g.moveTo(x, 250); g.lineTo(x + R(10, 40), 420); g.lineTo(x - R(10, 40), 420); g.fill(); }
+  g.restore();
+  g = S.layer('foothills', 'mid');
+  g.fillStyle = '#4e5a44'; g.beginPath(); g.moveTo(0, H); for (let x = 0; x <= W; x += 10) g.lineTo(x, 400 + Math.sin(x / 90) * 25 + Math.sin(x / 23) * 6); g.lineTo(W, H); g.fill();
+  g.save(); g.clip(); for (let i = 0; i < 900; i++) { const x = R(0, W), y = R(390, 470); g.fillStyle = rnd() < .5 ? '#3a4432' : '#66725a'; g.beginPath(); g.arc(x, y, R(3, 7), 0, 7); g.fill(); } g.restore();
+  g = S.layer('orchard-floor', 'ground');
+  g.fillStyle = '#8a8a6a'; g.fillRect(0, 470, W, 130);
+  g = S.layer('orchard', 'mass');
+  for (let row = 0; row < 6; row++) { const y = 480 + row * row * 3.4 + row * 8; const s = 6 + row * 3;
+    for (let x = -20; x < W; x += s * 2.6) { g.fillStyle = '#2f3a28'; g.beginPath(); g.arc(x + row * 11, y, s, 0, 7); g.fill(); } }
+  g = S.layer('road', 'ground');
+  g.fillStyle = '#c5b69c'; g.beginPath(); g.moveTo(0, 640); g.bezierCurveTo(300, 600, 700, 590, W, 612); g.lineTo(W, 660); g.bezierCurveTo(700, 640, 300, 660, 0, 700); g.fill();
+  g = S.layer('verge', 'near');
+  g.fillStyle = '#5a5244'; g.beginPath(); g.moveTo(0, 700); g.bezierCurveTo(300, 660, 700, 640, W, 660); g.lineTo(W, H); g.lineTo(0, H); g.fill();
+  for (let i = 0; i < 700; i++) { g.strokeStyle = rnd() < .5 ? '#3e3a2e' : '#7a7462'; g.lineWidth = 2; const x = R(0, W), y = R(670, H); g.beginPath(); g.moveTo(x, y); g.lineTo(x + R(-6, 6), y - R(8, 22)); g.stroke(); }
+  g = S.layer('fence', 'figure');
+  g.strokeStyle = '#2c2620'; g.lineWidth = 6; for (let x = 60; x < W; x += 110) { const y = 612 - (x / W) * 20; g.beginPath(); g.moveTo(x, y); g.lineTo(x + 2, y + 56); g.stroke(); }
+  g.lineWidth = 4; for (const dy of [10, 28]) { g.beginPath(); for (let x = 60; x < W; x += 110) g.lineTo(x, 612 - (x / W) * 20 + dy + 6); g.stroke(); }
+  g = S.layer('walkers', 'figure');
+  const walker = (x, y, s) => { g.fillStyle = '#1e1a18'; g.beginPath(); g.arc(x, y - s * 2.6, s * .38, 0, 7); g.fill(); g.fillRect(x - s * .4, y - s * 2.2, s * .8, s * 1.3);
+    g.fillRect(x - s * .35, y - s * .9, s * .25, s * .9); g.fillRect(x + s * .1, y - s * .9, s * .25, s * .9); };
+  walker(640, 628, 16); walker(676, 626, 15); walker(705, 630, 12);
+  g = S.layer('oaks', 'mass');
+  oak(g, 170, 470, 230, '#34402c', '#56644a'); oak(g, 1190, 520, 150, '#3a4632', '#5a684e');
+  return S.done();
+}
+
+function card() {
+  seed = 11;
+  const W = 600, H = 840, S = stack(W, H);
+  let g = S.layer('paper', 'paper');
+  g.fillStyle = '#ece8dc'; g.fillRect(0, 0, W, H);
+  g = S.layer('frame', 'figure');
+  g.strokeStyle = '#1c1612'; g.lineWidth = 8; g.strokeRect(20, 20, W - 40, H - 40); g.lineWidth = 4; g.strokeRect(36, 36, W - 72, H - 72);
+  g = S.layer('fleurons', 'feature');
+  for (const [x, y] of [[36, 36], [W - 36, 36], [36, H - 36], [W - 36, H - 36]]) { g.fillStyle = '#e8a820'; g.beginPath(); g.arc(x, y, 18, 0, 7); g.fill(); g.fillStyle = '#8a5a08'; g.beginPath(); g.arc(x, y, 8, 0, 7); g.fill(); }
+  g = S.layer('index', 'text');
+  g.fillStyle = '#1c1612'; pixText(g, 'A', 52, 128, 16, 'Silkscreen', '#1c1612'); spadePath(g, 84, 168, 24);
+  g.save(); g.translate(W, H); g.rotate(Math.PI); pixText(g, 'A', 52, 128, 16, 'Silkscreen', '#1c1612'); spadePath(g, 84, 168, 24); g.restore();
+  const clip = (g) => { g.beginPath(); g.ellipse(W / 2, 400, 200, 250, 0, 0, 7); g.clip(); };
+  g = S.layer('vignette-sky', 'sky'); clip(g);
+  let sky = g.createLinearGradient(0, 150, 0, 650); sky.addColorStop(0, '#8a96a4'); sky.addColorStop(1, '#e6d8c0'); g.fillStyle = sky; g.fillRect(0, 0, W, H);
+  g = S.layer('hill', 'mid'); clip(g);
+  g.fillStyle = '#6e7466'; g.beginPath(); g.moveTo(80, 520); for (let x = 80; x < 540; x += 10) g.lineTo(x, 470 + Math.sin(x / 50) * 20); g.lineTo(540, 700); g.lineTo(80, 700); g.fill();
+  g = S.layer('path', 'ground'); clip(g);
+  g.fillStyle = '#c8b894'; g.beginPath(); g.moveTo(300, 700); g.bezierCurveTo(320, 600, 260, 560, 300, 520); g.lineTo(306, 520); g.bezierCurveTo(290, 580, 360, 620, 380, 700); g.fill();
+  g = S.layer('spade-oak', 'mass'); clip(g);
+  g.strokeStyle = '#2a2420'; g.lineWidth = 14; g.beginPath(); g.moveTo(300, 530); g.bezierCurveTo(296, 470, 310, 430, 300, 380); g.stroke();
+  g.fillStyle = '#3a342e'; spadePath(g, 300, 330, 150);
+  for (let i = 0; i < 400; i++) { g.fillStyle = rnd() < .5 ? '#5a5048' : '#141210'; g.beginPath(); g.arc(R(160, 440), R(190, 440), R(3, 8), 0, 7); g.fill(); }
+  g = S.layer('wanderer', 'figure'); clip(g);
+  g.fillStyle = '#1c1612'; g.beginPath(); g.arc(420, 540, 8, 0, 7); g.fill(); g.fillRect(412, 548, 16, 28);
+  g = S.layer('ring', 'figure');
+  g.strokeStyle = '#1c1612'; g.lineWidth = 6; g.beginPath(); g.ellipse(W / 2, 400, 200, 250, 0, 0, 7); g.stroke();
+  g = S.layer('banner', 'text');
+  g.fillStyle = '#1c1612'; g.fillRect(96, 668, W - 192, 72); pixText(g, 'THE PATHLESS LAND', W / 2, 716, 8, 'Silkscreen', '#ece8dc', 'center');
+  g = S.layer('seal', 'badge');
+  g.fillStyle = '#d42a1e'; g.beginPath(); g.arc(W / 2, 776, 28, 0, 7); g.fill();
+  g = S.layer('seal-value', 'text');
+  pixText(g, '1', W / 2, 788, 8, 'Silkscreen', '#ece8dc', 'center');
+  return S.done();
+}
+
+function enemy() {
+  seed = 13;
+  const W = 640, H = 640, S = stack(W, H);
+  let g = S.layer('paper', 'paper');
+  g.fillStyle = '#e6e2da'; g.fillRect(0, 0, W, H);
+  g = S.layer('shadow', 'mid');
+  g.fillStyle = '#9a9080'; g.beginPath(); g.ellipse(320, 590, 150, 24, 0, 0, 7); g.fill();
+  g = S.layer('steam', 'line');
+  g.strokeStyle = '#6c665c'; g.lineWidth = 8; g.lineCap = 'round';
+  for (const dx of [-40, 10, 55]) { g.beginPath(); g.moveTo(320 + dx, 150); g.bezierCurveTo(300 + dx, 110, 350 + dx, 80, 320 + dx, 30); g.stroke(); }
+  const cup = (g) => { g.beginPath(); g.moveTo(205, 175); g.lineTo(435, 175); g.lineTo(400, 575); g.lineTo(240, 575); g.closePath(); };
+  g = S.layer('cup', 'object');
+  let body = g.createLinearGradient(205, 0, 435, 0); body.addColorStop(0, '#9a948a'); body.addColorStop(.35, '#f2eee6'); body.addColorStop(1, '#6e6a62');
+  g.fillStyle = body; cup(g); g.fill();
+  g = S.layer('sleeve', 'object');
+  let sl = g.createLinearGradient(215, 0, 425, 0); sl.addColorStop(0, '#6e5438'); sl.addColorStop(.35, '#b89a74'); sl.addColorStop(1, '#584230');
+  g.fillStyle = sl; g.beginPath(); g.moveTo(216, 300); g.lineTo(424, 300); g.lineTo(412, 440); g.lineTo(228, 440); g.fill();
+  g = S.layer('face', 'figure');
+  g.fillStyle = '#1e1a16'; g.beginPath(); g.moveTo(255, 340); g.lineTo(305, 360); g.lineTo(255, 372); g.fill(); g.beginPath(); g.moveTo(385, 340); g.lineTo(335, 360); g.lineTo(385, 372); g.fill();
+  g.strokeStyle = '#1e1a16'; g.lineWidth = 6; g.beginPath(); g.moveTo(272, 404); g.quadraticCurveTo(330, 420, 372, 392); g.stroke();
+  g = S.layer('eyes', 'feature');
+  g.fillStyle = '#e8261c'; g.beginPath(); g.arc(276, 360, 8, 0, 7); g.fill(); g.beginPath(); g.arc(364, 360, 8, 0, 7); g.fill();
+  g = S.layer('lid', 'mass');
+  g.fillStyle = '#3e3834'; g.beginPath(); g.ellipse(320, 175, 128, 22, 0, 0, 7); g.fill(); g.fillRect(196, 150, 248, 26);
+  g.fillStyle = '#5a524c'; g.beginPath(); g.ellipse(320, 150, 124, 18, 0, 0, 7); g.fill(); g.fillStyle = '#0e0c0a'; g.fillRect(350, 144, 34, 8);
+  g = S.layer('string', 'line');
+  g.strokeStyle = '#3a3228'; g.lineWidth = 4; g.beginPath(); g.moveTo(430, 200); g.quadraticCurveTo(480, 230, 490, 290); g.stroke();
+  g = S.layer('tag', 'badge');
+  g.fillStyle = '#eaa820'; g.fillRect(444, 292, 100, 76);
+  g = S.layer('tag-text', 'text');
+  pixText(g, '$9', 496, 348, 16, 'Silkscreen', '#1e1a16', 'center');
+  return S.done();
+}
+window.render = async () => { await document.fonts.load('48px Jacquard'); await document.fonts.load('32px Silkscreen'); await document.fonts.load('10px Jersey'); return { place: place(), card: card(), enemy: enemy() }; };
+</script></body></html>
