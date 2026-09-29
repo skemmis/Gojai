@@ -41,6 +41,23 @@ const fromInput = (v: string) => {
   return zoned(y, mo, d, h, mi);
 };
 
+/** Below this zoom the map is "far": event pins shrink and small neighborhoods drop their names. */
+const FAR_ZOOM = 14.6;
+const MINOR_HOOD_KM2 = 0.5;
+/** Spots within this walk of you are highlighted. */
+const NEAR_M = 250;
+
+/** Rough area of a neighborhood, for deciding whose name fits when zoomed out. */
+function areaKm2(n: Neighborhood) {
+  const kx = 111.32 * Math.cos((34.45 * Math.PI) / 180);
+  let a = 0;
+  for (const poly of n.polygons) {
+    const r = poly[0];
+    for (let i = 0; i < r.length - 1; i++) a += (r[i][0] * r[i + 1][1] - r[i + 1][0] * r[i][1]) * kx * 111.32;
+  }
+  return Math.abs(a) / 2;
+}
+
 /** A stand-in player, so the page can show what "you" would find at a spot. */
 const DEMO_PLAYER = "demo";
 
@@ -52,6 +69,7 @@ export default function App() {
   const [tick, setTick] = useState(() => new Date());
   const [you, setYou] = useState<LngLat | null>(null);
   const [geoError, setGeoError] = useState<string | null>(null);
+  const [demo, setDemo] = useState<string | null>(null);
   const youMarker = useRef<maplibregl.Marker | null>(null);
 
   useEffect(() => {
@@ -88,7 +106,10 @@ export default function App() {
       if (img && !m.hasImage(e.id)) m.addImage(e.id, img, { pixelRatio: 2 });
     });
     m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
-    const zoomClass = () => mapEl.current?.classList.toggle("labels", m.getZoom() >= 15.5);
+    const zoomClass = () => {
+      mapEl.current?.classList.toggle("labels", m.getZoom() >= 15.5);
+      mapEl.current?.classList.toggle("far", m.getZoom() < FAR_ZOOM);
+    };
     m.on("zoom", zoomClass);
     zoomClass();
     m.on("click", (e) => {
@@ -96,13 +117,16 @@ export default function App() {
         [e.point.x - 10, e.point.y - 10],
         [e.point.x + 10, e.point.y + 10],
       ];
-      const spot = m.queryRenderedFeatures(box, { layers: ["spots"] })[0];
+      const layers = ["near-cards", "spots", "spot-dots"].filter((id) => m.getLayer(id));
+      const spot = m.queryRenderedFeatures(box, { layers })[0];
       if (spot) return setSel({ kind: "spot", id: String(spot.properties.id) });
       const hit = m.queryRenderedFeatures(e.point, { layers: ["hood-fill"] })[0];
       if (hit) setSel({ kind: "hood", id: String(hit.properties.id) });
     });
-    m.on("mouseenter", "spots", () => (m.getCanvas().style.cursor = "pointer"));
-    m.on("mouseleave", "spots", () => (m.getCanvas().style.cursor = ""));
+    for (const id of ["near-cards", "spots", "spot-dots"]) {
+      m.on("mouseenter", id, () => (m.getCanvas().style.cursor = "pointer"));
+      m.on("mouseleave", id, () => (m.getCanvas().style.cursor = ""));
+    }
     map.current = m;
     return () => m.remove();
   }, []);
@@ -155,11 +179,11 @@ export default function App() {
         ev.stopPropagation();
         setSel({ kind: "spot", id: s.id });
       };
-      return new maplibregl.Marker({ element: el, anchor: "left", offset: [-13, 0] }).setLngLat(s.at).addTo(m);
+      return new maplibregl.Marker({ element: el, anchor: "left" }).setLngLat(s.at).addTo(m);
     });
     const names = NEIGHBORHOODS.filter((n) => n.id !== "trail").map((n) => {
       const el = document.createElement("div");
-      el.className = "hood-name";
+      el.className = "hood-name" + (areaKm2(n) < MINOR_HOOD_KM2 ? " minor" : "");
       el.textContent = n.name;
       return new maplibregl.Marker({ element: el }).setLngLat(labelPoint(n)).addTo(m);
     });
@@ -176,18 +200,46 @@ export default function App() {
     youMarker.current = new maplibregl.Marker({ element: el }).setLngLat(you).addTo(m);
   }, [you]);
 
+  // Spots within walking reach of you show as blue cards at every zoom.
+  const near = useMemo(
+    () => (you ? SPOTS.filter((s) => s.kind === "spot" && distanceM(you, s.at) <= NEAR_M) : []),
+    [you],
+  );
+  useEffect(() => {
+    const m = map.current!;
+    const data = {
+      type: "FeatureCollection" as const,
+      features: near.map((s) => ({ type: "Feature" as const, properties: { id: s.id }, geometry: { type: "Point" as const, coordinates: s.at } })),
+    };
+    const apply = () => (m.getSource("near") as maplibregl.GeoJSONSource | undefined)?.setData(data);
+    apply();
+    m.on("styledata", apply);
+    return () => void m.off("styledata", apply);
+  }, [near]);
+
+  // Outside Ojai (or without location), pretend the player stands at the Arcade.
+  const pretendHere = (why: string) => {
+    const at = spotById("arcade")!.at;
+    setDemo(why);
+    setYou((prev) => {
+      if (!prev) map.current?.flyTo({ center: at, zoom: 15.5 });
+      return at;
+    });
+  };
   const locate = () => {
-    if (!navigator.geolocation) return setGeoError("This browser has no location.");
+    if (!navigator.geolocation) return pretendHere("This browser has no location");
     navigator.geolocation.watchPosition(
       (p) => {
         const ll: LngLat = [p.coords.longitude, p.coords.latitude];
         setGeoError(null);
+        if (!neighborhoodOf(ll)) return pretendHere("You're not in Ojai");
+        setDemo(null);
         setYou((prev) => {
           if (!prev) map.current?.flyTo({ center: ll, zoom: 16 });
           return ll;
         });
       },
-      (e) => setGeoError(e.code === 1 ? "Location permission was denied (or this page can't ask for it)." : e.message),
+      (e) => pretendHere(e.code === 1 ? "Location permission was denied" : "Location isn't available"),
       { enableHighAccuracy: true },
     );
   };
@@ -259,6 +311,7 @@ export default function App() {
           </p>
         )}
         {geoError && <p className="you-line warn">{geoError}</p>}
+        {demo && <p className="you-line muted">{demo}, so the map pretends you're at the Arcade.</p>}
 
         {sel?.kind === "events" && (
           <EventsPanel
@@ -445,7 +498,11 @@ function KeyPanel() {
       <ul className="list key">
         <li>
           <span className="glyph-sm"><span className="pin" /></span>
-          <div><b>Spot</b><small>{nSpots} of them. Walk up to see what's there: usually a fight, sometimes rest, an elite, a shop or a mystery.</small></div>
+          <div><b>Spot</b><small>{nSpots} of them: a dot when zoomed out, a card up close. Walk up to see what's there: usually a fight, sometimes rest, an elite, a shop or a mystery.</small></div>
+        </li>
+        <li>
+          <span className="glyph-sm"><span className="pin near" /></span>
+          <div><b>Near you</b><small>Spots within a short walk turn blue.</small></div>
         </li>
         <li>
           <span className="glyph-sm"><span className="pin big">♛</span></span>

@@ -4,7 +4,7 @@ import { color, font } from "../../../packages/art/src/theme.ts";
 
 /**
  * How the map uses the app's tokens: an ink survey map on paper. Pink is the
- * live-event colour, and plain spots get a map-local blue so they read at a glance. Blood (danger) and
+ * live-event colour; spots near you get a map-local blue so they stand out. Blood (danger) and
  * gilt (reward) appear only in the spot panel's odds.
  */
 export interface Theme {
@@ -13,7 +13,7 @@ export interface Theme {
   ink: string; // roads, outlines, text
   inkSoft: string; // streets, buildings, contours
   rule: string; // hairlines
-  spot: string; // map-local: the fill of plain spot pins, so they read against the map
+  spot: string; // map-local: spots within walking reach of you
   live: string; // a live event: its spot, its range, the band
   find: Record<Find, string>;
   font: typeof font;

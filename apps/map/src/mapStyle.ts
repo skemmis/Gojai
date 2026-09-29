@@ -37,6 +37,9 @@ const SPOT_POINTS: FC = {
   })),
 };
 
+/** Zoom at which plain spots turn from dots into cards. */
+export const CARD_ZOOM = 15.3;
+
 const byTier = (v: [number, number, number, number]): ExpressionSpecification =>
   ["interpolate", ["linear"], ["zoom"], 12, ["match", ["get", "t"], 3, v[3] * 0.6, 2, v[2] * 0.5, 1, v[1] * 0.4, v[0] * 0.3], 17, ["match", ["get", "t"], 3, v[3] * 2, 2, v[2] * 2, 1, v[1] * 2, v[0] * 2]];
 
@@ -69,18 +72,21 @@ export function drawImage(t: Theme, name: string): { width: number; height: numb
       c.fillRect(2, 2, 1, 1);
       c.fillRect(7, 7, 1, 1);
     });
-  if (name === "card" || name === "card-live") {
+  if (name === "card" || name === "card-near" || name === "card-live") {
     // A little tarot card: outer rule, inner rule, a diamond pip. Drawn at 2x.
+    // Plain cards are ink on paper; a spot near you is blue; a live one pink.
+    const fill = name === "card-live" ? t.live : name === "card-near" ? t.spot : t.paper;
+    const fg = name === "card-near" ? t.paper : t.ink;
     return make(28, 40, (c) => {
-      c.fillStyle = name === "card-live" ? t.live : t.spot;
+      c.fillStyle = fill;
       c.fillRect(1, 1, 26, 38);
       c.strokeStyle = t.ink;
       c.lineWidth = 3;
       c.strokeRect(1.5, 1.5, 25, 37);
-      c.strokeStyle = t.paper;
+      c.strokeStyle = fg;
       c.lineWidth = 1;
       c.strokeRect(5.5, 5.5, 17, 29);
-      c.fillStyle = t.paper;
+      c.fillStyle = fg;
       c.beginPath();
       c.moveTo(14, 13);
       c.lineTo(19, 20);
@@ -108,6 +114,7 @@ export function buildStyle(t: Theme, active: { spots: string[] }): StyleSpecific
       hoods: { type: "geojson", data: HOODS as never, promoteId: "id" },
       ranges: { type: "geojson", data: RANGES as never },
       spots: { type: "geojson", data: SPOT_POINTS as never, promoteId: "id" },
+      near: { type: "geojson", data: { type: "FeatureCollection", features: [] }, promoteId: "id" },
     },
     layers: [
       { id: "paper", type: "background", paint: { "background-color": t.paper } },
@@ -257,12 +264,38 @@ export function buildStyle(t: Theme, active: { spots: string[] }): StyleSpecific
         },
       },
       {
+        // Zoomed out, a spot is a small ink dot so the map stays readable.
+        id: "spot-dots",
+        type: "circle",
+        source: "spots",
+        maxzoom: CARD_ZOOM,
+        paint: {
+          "circle-color": ["case", isLive, t.live, t.ink],
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 1.4, CARD_ZOOM, 3.2],
+          "circle-stroke-color": t.paper,
+          "circle-stroke-width": 0.8,
+        },
+      },
+      {
         id: "spots",
         type: "symbol",
         source: "spots",
+        minzoom: CARD_ZOOM,
         layout: {
           "icon-image": ["case", isLive, "card-live", "card"],
-          "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.42, 14, 0.62, 17, 1],
+          "icon-size": ["interpolate", ["linear"], ["zoom"], CARD_ZOOM, 0.7, 17, 1],
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+        },
+      },
+      {
+        // Spots within walking reach of you are always cards, in blue.
+        id: "near-cards",
+        type: "symbol",
+        source: "near",
+        layout: {
+          "icon-image": "card-near",
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.42, 14, 0.58, 17, 1.05],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
         },
