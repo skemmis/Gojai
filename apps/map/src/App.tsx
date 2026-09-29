@@ -5,8 +5,8 @@ import {
   neighborhoodOf, spotById, spotOdds, spotsInRange, upcomingEvents, zoned,
   type EventWindow, type Find, type LngLat, type Neighborhood, type Spot,
 } from "@gojai/map";
-import { buildStyle } from "./mapStyle.ts";
-import { FIND_GLYPH, FIND_LABEL, THEMES, type Theme } from "./theme.ts";
+import { buildStyle, drawImage } from "./mapStyle.ts";
+import { FIND_GLYPH, FIND_LABEL, THEME as theme } from "./theme.ts";
 
 type Selection =
   | { kind: "spot"; id: string }
@@ -47,9 +47,6 @@ const DEMO_PLAYER = "demo";
 export default function App() {
   const mapEl = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
-  const [theme, setTheme] = useState<Theme>(() =>
-    window.matchMedia?.("(prefers-color-scheme: dark)").matches ? THEMES[1] : THEMES[0],
-  );
   const [sel, setSel] = useState<Selection>({ kind: "events" });
   const [pretend, setPretend] = useState<Date | null>(null);
   const [tick, setTick] = useState(() => new Date());
@@ -66,11 +63,7 @@ export default function App() {
   const windows = useMemo(() => upcomingEvents(now, 10), [now]);
   const live = windows.filter((w) => w.start <= now && w.end > now);
   const liveKey = live.map((w) => w.event.id).join();
-  const active = useMemo(() => {
-    const spots = [...new Set(live.flatMap((w) => w.event.spots))];
-    const hoods = [...new Set(spots.map((id) => neighborhoodOf(spotById(id)!.at)?.id).filter(Boolean) as string[])];
-    return { spots, hoods };
-  }, [liveKey]);
+  const active = useMemo(() => ({ spots: [...new Set(live.flatMap((w) => w.event.spots))] }), [liveKey]);
 
   // Map setup (once).
   useEffect(() => {
@@ -90,6 +83,10 @@ export default function App() {
     });
     // Keep downtown clear of the bottom sheet on phones.
     if (phone) m.setPadding({ top: 40, bottom: Math.round(window.innerHeight * 0.4), left: 0, right: 0 });
+    m.on("styleimagemissing", (e) => {
+      const img = drawImage(theme, e.id);
+      if (img && !m.hasImage(e.id)) m.addImage(e.id, img, { pixelRatio: 2 });
+    });
     m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
     const zoomClass = () => mapEl.current?.classList.toggle("labels", m.getZoom() >= 15.5);
     m.on("zoom", zoomClass);
@@ -110,18 +107,13 @@ export default function App() {
     return () => m.remove();
   }, []);
 
-  // Restyle on theme / live-event changes (MapLibre diffs the style).
+  // Restyle on live-event changes (MapLibre diffs the style).
+  const styled = useRef(active);
   useEffect(() => {
+    if (styled.current === active) return; // the map was built with this style
+    styled.current = active;
     map.current?.setStyle(buildStyle(theme, active));
-    const root = document.documentElement.style;
-    root.setProperty("--bg", theme.ui.bg);
-    root.setProperty("--fg", theme.ui.fg);
-    root.setProperty("--muted", theme.ui.muted);
-    root.setProperty("--line", theme.ui.line);
-    root.setProperty("--paper", theme.paper);
-    root.setProperty("--boss", theme.event.boss);
-    root.setProperty("--hood", theme.hood);
-  }, [theme, active]);
+  }, [active]);
 
   // Selected neighborhood highlight.
   const selHood = sel?.kind === "hood" ? sel.id : sel?.kind === "spot" ? neighborhoodOf(spotById(sel.id)!.at)?.id : undefined;
@@ -157,9 +149,8 @@ export default function App() {
     const spots = SPOTS.filter((s) => s.kind === "event").map((s) => {
       const el = document.createElement("button");
       el.className = `spot ${s.kind}` + (active.spots.includes(s.id) ? " live" : "");
-      el.style.setProperty("--c", s.kind === "event" ? theme.eventSpot : theme.spot);
       el.setAttribute("aria-label", s.name);
-      el.innerHTML = `<span class="glyph">${s.kind === "event" ? "♛" : ""}</span><span class="label">${s.name.replace(/ \(.*\)/, "")}</span>`;
+      el.innerHTML = `<span class="glyph">♛</span><span class="label">${s.name.replace(/ \(.*\)/, "")}</span>`;
       el.onclick = (ev) => {
         ev.stopPropagation();
         setSel({ kind: "spot", id: s.id });
@@ -173,7 +164,7 @@ export default function App() {
       return new maplibregl.Marker({ element: el }).setLngLat(labelPoint(n)).addTo(m);
     });
     return () => [...spots, ...names].forEach((mk) => mk.remove());
-  }, [theme, active]);
+  }, [active]);
 
   // "You are here".
   useEffect(() => {
@@ -182,9 +173,8 @@ export default function App() {
     if (!you) return;
     const el = document.createElement("div");
     el.className = "you";
-    el.style.setProperty("--c", theme.you);
     youMarker.current = new maplibregl.Marker({ element: el }).setLngLat(you).addTo(m);
-  }, [you, theme]);
+  }, [you]);
 
   const locate = () => {
     if (!navigator.geolocation) return setGeoError("This browser has no location.");
@@ -217,12 +207,27 @@ export default function App() {
       <div ref={mapEl} className="map" />
 
       <header className="bar">
-        <strong>Ojai · The Pathless Land</strong>
+        <h1>The Pathless Land</h1>
         <div className="tools">
-          <button onClick={() => setTheme((t) => THEMES[(THEMES.indexOf(t) + 1) % THEMES.length])}>{theme.name}</button>
           <button onClick={locate}>Locate me</button>
         </div>
       </header>
+      {live.length > 0 && (
+        <button
+          className="live-band"
+          onClick={() => {
+            const first = spotById(live[0].event.spots[0]);
+            setSel({ kind: "events" });
+            if (first) flyTo(first.at, 15.5);
+          }}
+        >
+          <span>
+            <small>Happening now</small>
+            <b>{live.map((w) => w.event.name).join(" · ")}</b>
+          </span>
+          <span className="t">until {clockFmt.format(live[0].end)}</span>
+        </button>
+      )}
 
       <aside className="sheet">
         <nav className="tabs">
@@ -237,7 +242,7 @@ export default function App() {
           </button>
           <button
             className={sel?.kind === "hood" ? "on" : ""}
-            onClick={() => setSel({ kind: "hood", id: sel?.kind === "hood" ? sel.id : "downtown" })}
+            onClick={() => setSel({ kind: "hood", id: sel?.kind === "hood" ? sel.id : "arcade" })}
           >
             Areas
           </button>
@@ -261,20 +266,18 @@ export default function App() {
             now={now}
             pretend={pretend}
             setPretend={setPretend}
-            theme={theme}
             onPick={(w) => {
               const first = w.event.spots[0] && spotById(w.event.spots[0]);
               if (first) flyTo(first.at, 15.5);
             }}
           />
         )}
-        {sel?.kind === "spot" && <SpotPanel s={spotById(sel.id)!} windows={windows} now={now} theme={theme} onPick={pickSpot} />}
+        {sel?.kind === "spot" && <SpotPanel s={spotById(sel.id)!} windows={windows} now={now} onPick={pickSpot} />}
         {sel?.kind === "hood" && (
           <HoodPanel
             n={neighborhoodById(sel.id)!}
             windows={windows}
             now={now}
-            theme={theme}
             onPick={pickSpot}
             onPickHood={(n) => {
               setSel({ kind: "hood", id: n.id });
@@ -282,17 +285,17 @@ export default function App() {
             }}
           />
         )}
-        {sel?.kind === "key" && <KeyPanel theme={theme} />}
+        {sel?.kind === "key" && <KeyPanel />}
       </aside>
     </div>
   );
 }
 
-function WindowRow({ w, now, theme, onClick }: { w: EventWindow; now: Date; theme: Theme; onClick?: () => void }) {
+function WindowRow({ w, now, onClick }: { w: EventWindow; now: Date; onClick?: () => void }) {
   const isLive = w.start <= now && w.end > now;
   return (
     <li onClick={onClick} className={isLive ? "live" : ""}>
-      <span className="chip" style={{ background: theme.event[w.event.kind] }}>{w.event.kind}</span>
+      <span className={"chip" + (isLive ? " live" : "")}>{w.event.kind}</span>
       <div>
         <b>{w.event.name}</b>
         <small>{isLive ? `On now, until ${clockFmt.format(w.end)}` : when(w)}</small>
@@ -312,7 +315,6 @@ function EventsPanel(p: {
   now: Date;
   pretend: Date | null;
   setPretend: (d: Date | null) => void;
-  theme: Theme;
   onPick: (w: EventWindow) => void;
 }) {
   const rows = nextPerEvent(p.windows, p.now);
@@ -332,7 +334,7 @@ function EventsPanel(p: {
       <p className="muted">Times are Ojai time. Events happen at event spots (♛).</p>
       <ul className="list">
         {rows.map((w) => (
-          <WindowRow key={w.event.id} w={w} now={p.now} theme={p.theme} onClick={() => p.onPick(w)} />
+          <WindowRow key={w.event.id} w={w} now={p.now} onClick={() => p.onPick(w)} />
         ))}
       </ul>
       {tbd.length > 0 && (
@@ -344,7 +346,7 @@ function EventsPanel(p: {
   );
 }
 
-function SpotPanel(p: { s: Spot; windows: EventWindow[]; now: Date; theme: Theme; onPick: (s: Spot) => void }) {
+function SpotPanel(p: { s: Spot; windows: EventWindow[]; now: Date; onPick: (s: Spot) => void }) {
   const { s } = p;
   const odds = spotOdds(s);
   const found = findAt(s, DEMO_PLAYER, p.now);
@@ -366,22 +368,20 @@ function SpotPanel(p: { s: Spot; windows: EventWindow[]; now: Date; theme: Theme
         ))}
       </select>
       <h2>
-        <span className="chip" style={{ background: s.kind === "event" ? p.theme.eventSpot : p.theme.spot }}>
-          {s.kind === "event" ? "Event spot" : "Spot"}
-        </span>{" "}
+        <small className="kicker">{s.kind === "event" ? "Event spot" : "Spot"}</small>
         {s.name}
       </h2>
       <p>{s.note}</p>
       {s.verify && <p className="warn">To check: {s.verify}</p>}
       <p className="find">
-        Right now you'd find: <b style={{ color: p.theme.find[found] }}>{FIND_GLYPH[found]} {FIND_LABEL[found]}</b>
+        Right now you'd find: <b style={{ color: theme.find[found] }}>{FIND_GLYPH[found]} {FIND_LABEL[found]}</b>
         <small className="muted"> (rerolls every {REFRESH_MIN} min, differs per player)</small>
       </p>
       <div className="odds" aria-label="What turns up here">
         {FINDS.map((f) => (
           <div key={f} className="odds-row">
             <span>{FIND_GLYPH[f]} {FIND_LABEL[f]}</span>
-            <span className="meter"><i style={{ width: `${odds[f] * 100}%`, background: p.theme.find[f] }} /></span>
+            <span className="meter"><i style={{ width: `${odds[f] * 100}%`, background: theme.find[f] }} /></span>
             <span className="num">{Math.round(odds[f] * 100)}%</span>
           </div>
         ))}
@@ -391,7 +391,7 @@ function SpotPanel(p: { s: Spot; windows: EventWindow[]; now: Date; theme: Theme
         <>
           <h3>Events here</h3>
           <ul className="list">
-            {here.map((w) => <WindowRow key={w.event.id} w={w} now={p.now} theme={p.theme} />)}
+            {here.map((w) => <WindowRow key={w.event.id} w={w} now={p.now} />)}
           </ul>
         </>
       )}
@@ -403,7 +403,6 @@ function HoodPanel(p: {
   n: Neighborhood;
   windows: EventWindow[];
   now: Date;
-  theme: Theme;
   onPick: (s: Spot) => void;
   onPickHood: (n: Neighborhood) => void;
 }) {
@@ -431,7 +430,7 @@ function HoodPanel(p: {
         <>
           <h3>Events here</h3>
           <ul className="list">
-            {here.map((w) => <WindowRow key={w.event.id} w={w} now={p.now} theme={p.theme} />)}
+            {here.map((w) => <WindowRow key={w.event.id} w={w} now={p.now} />)}
           </ul>
         </>
       )}
@@ -439,33 +438,37 @@ function HoodPanel(p: {
   );
 }
 
-function KeyPanel({ theme }: { theme: Theme }) {
+function KeyPanel() {
   const nSpots = SPOTS.filter((s) => s.kind === "spot").length;
   return (
     <section>
       <ul className="list key">
         <li>
-          <span className="glyph-sm"><span className="key-dot" style={{ background: theme.spot }} /></span>
+          <span className="glyph-sm"><span className="pin" /></span>
           <div><b>Spot</b><small>{nSpots} of them. Walk up to see what's there: usually a fight, sometimes rest, an elite, a shop or a mystery.</small></div>
         </li>
         <li>
-          <span className="glyph-sm"><span className="key-dot big" style={{ background: theme.eventSpot }}>♛</span></span>
-          <div><b>Event spot</b><small>Like a gym. Timed events and bosses happen here. Pulses while one is on.</small></div>
+          <span className="glyph-sm"><span className="pin big">♛</span></span>
+          <div><b>Event spot</b><small>Like a gym. Timed events and bosses happen here.</small></div>
         </li>
         <li>
-          <span className="glyph-sm swatch" style={{ borderColor: theme.hood, borderWidth: 2 }} />
+          <span className="glyph-sm"><span className="pin big live">♛</span></span>
+          <div><b>Live now</b><small>Pink means an event is on right now, and nothing else on the map is pink.</small></div>
+        </li>
+        <li>
+          <span className="glyph-sm swatch dashed" />
           <div><b>Neighborhood</b><small>Territory, bordered by real streets. Tap one to see its spots.</small></div>
         </li>
         <li>
-          <span className="glyph-sm swatch" style={{ background: theme.hoodTints[4] }} />
+          <span className="glyph-sm swatch deep" />
           <div><b>The Ojai Valley Trail</b><small>Its own territory: the main walking artery, with a spot every 200 m.</small></div>
         </li>
         <li>
-          <span className="glyph-sm swatch" style={{ background: theme.school, borderColor: theme.event.raid }} />
+          <span className="glyph-sm swatch hatch" />
           <div><b>School grounds</b><small>No-go: nothing is ever placed here.</small></div>
         </li>
         <li>
-          <span className="glyph-sm swatch" style={{ background: theme.park }} />
+          <span className="glyph-sm swatch stipple" />
           <div><b>Parks and preserves</b></div>
         </li>
       </ul>
