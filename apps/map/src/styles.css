@@ -1,0 +1,82 @@
+:root {
+  --bg: #fffdf8; --fg: #26241f; --muted: #7a7468; --line: #e2dccf; --paper: #f4f1ea; --boss: #e64980;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light dark;
+}
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; height: 100%; background: var(--paper); color: var(--fg); }
+.app { position: fixed; inset: 0; }
+.map { position: absolute; inset: 0; }
+button { font: inherit; cursor: pointer; }
+
+.bar {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 2;
+  display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; justify-content: space-between;
+  padding: calc(8px + env(safe-area-inset-top)) 56px 8px 12px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line); font-size: 14px;
+}
+.tools { display: flex; gap: 6px; flex-wrap: wrap; }
+.tools button, .tabs button, .pretend button {
+  border: 1px solid var(--line); background: var(--bg); color: var(--fg);
+  border-radius: 999px; padding: 4px 10px; font-size: 13px;
+}
+.tools button.on, .tabs button.on { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.maplibregl-ctrl-top-right { top: 52px; }
+
+.sheet {
+  position: absolute; z-index: 2; left: 8px; right: 8px; bottom: calc(8px + env(safe-area-inset-bottom));
+  max-height: 46vh; overflow: auto; padding: 10px 14px 12px;
+  background: var(--bg); border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.18); font-size: 14px;
+}
+@media (min-width: 760px) {
+  .sheet { left: auto; right: 12px; top: 60px; bottom: 28px; width: 360px; max-height: none; }
+  .maplibregl-ctrl-top-right { right: 380px; }
+}
+.tabs { display: flex; gap: 6px; margin-bottom: 8px; position: sticky; top: -10px; background: var(--bg); padding: 4px 0; }
+.dot { display: inline-block; width: 7px; height: 7px; margin-left: 5px; border-radius: 50%; background: var(--boss); vertical-align: middle; }
+h2 { font-size: 17px; margin: 8px 0 6px; }
+h3 { font-size: 14px; margin: 12px 0 4px; }
+p { margin: 6px 0; line-height: 1.4; }
+.muted { color: var(--muted); font-size: 12.5px; }
+.warn { color: #c2410c; font-size: 13px; }
+.you-line { margin: 0 0 8px; }
+.list { list-style: none; margin: 6px 0; padding: 0; }
+.list li { display: flex; gap: 10px; align-items: center; padding: 7px 4px; border-top: 1px solid var(--line); cursor: pointer; }
+.list li.live { background: color-mix(in srgb, var(--boss) 12%, transparent); }
+.list li div { display: flex; flex-direction: column; }
+.list small { color: var(--muted); }
+.chip {
+  display: inline-block; min-width: 54px; text-align: center; padding: 2px 6px; border-radius: 4px;
+  color: #fff; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .03em;
+}
+.glyph-sm { width: 22px; text-align: center; }
+.picker, .pretend input { font: inherit; font-size: 13px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--fg); max-width: 100%; }
+.pretend { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; }
+
+/* Hotspot markers */
+.spot {
+  display: flex; align-items: center; gap: 5px; padding: 0; border: 0; background: none; color: var(--fg);
+}
+.spot .glyph {
+  width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--c); color: #fff; font-size: 14px; font-weight: 700;
+  border: 2px solid var(--bg); box-shadow: 0 1px 4px rgba(0,0,0,.35);
+}
+.map:not(.labels) .spot .label { display: none; }
+.spot .label {
+  font-size: 11.5px; font-weight: 600; white-space: nowrap; padding: 1px 5px; border-radius: 4px;
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+}
+.spot.venue .glyph { border-radius: 6px; }
+.spot.live .glyph { animation: pulse 1.6s ease-out infinite; background: var(--boss); }
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--boss) 70%, transparent); }
+  100% { box-shadow: 0 0 0 16px transparent; }
+}
+.you { width: 16px; height: 16px; border-radius: 50%; background: var(--c); border: 3px solid #fff; box-shadow: 0 0 0 6px color-mix(in srgb, var(--c) 30%, transparent); }
+.dot-lg { display: grid; place-items: center; height: 22px; border-radius: 50%; color: #fff; font-weight: 700; font-size: 12px; }
+.dot-lg.sq { border-radius: 5px; }
+.swatch { height: 16px; border: 1px solid var(--line); border-radius: 3px; }
+.key li { cursor: default; }
