@@ -584,6 +584,44 @@ footer {
 .foe-zone.armed {
   border-color: var(--on-night-soft);
 }
+/* The place behind the enemy: a night plate, a band of drifting ground fog, the vignette */
+.foe-zone {
+  position: relative;
+  overflow: hidden;
+  margin-inline: -16px;
+  padding-inline: 16px;
+  border-bottom: 3px double var(--on-night-soft);
+}
+.foe-zone > :not(.scene) {
+  position: relative;
+  z-index: 1;
+}
+.scene {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.scene .plate {
+  position: absolute;
+  max-width: none;
+  user-select: none;
+}
+.scene .fog {
+  position: absolute;
+  left: 0;
+  right: 0;
+  opacity: 0.16;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='140'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006 0.04' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.93 0 0 0 0 0.89 0 0 0 0 0.82 0 0 0 1.6 -0.75'/%3E%3C/filter%3E%3Crect width='600' height='140' filter='url(%23f)'/%3E%3C/svg%3E");
+  background-size: 600px 100%;
+  animation: fog 60s linear infinite;
+}
+@keyframes fog {
+  to { background-position-x: 600px; }
+}
+.foe-plate {
+  padding: 6px 10px;
+  background: color-mix(in srgb, var(--night) 82%, transparent);
+}
 .intents {
   display: flex;
   gap: 8px;
@@ -1003,6 +1041,9 @@ footer {
   text-transform: uppercase;
   padding: 4px 10px;
   box-shadow: 2px -1px 0 color-mix(in srgb, var(--gilt) 50%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene .fog { animation: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .table.shake,

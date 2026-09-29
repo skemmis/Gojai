@@ -9,6 +9,7 @@ import { cardDef, CONFIG, endTurn, hitSize, incoming, intent, isJunk, multiplier
 import type { Card, EnemyAction, Run, Suit } from "@gojai/core";
 import { Icon, rankLabel, powerAmount, sortCards, type IconName } from "./components";
 import aceSpades from "./assets/ace-spades.webp";
+import vignette from "./assets/scene-vignette.webp";
 
 type Act = (fn: (r: Run) => void) => boolean;
 
@@ -32,6 +33,53 @@ function Glyph({ name, fallback }: { name: string; fallback: IconName }) {
   if (!url) return <Icon name={fallback} />;
   return <span className="glyph" style={{ maskImage: `url(${url})`, WebkitMaskImage: `url(${url})` }} aria-hidden="true" />;
 }
+/** Fight backgrounds from the art thread: 1344×768 night plates of real places (assets/scene-<id>.webp). */
+const SCENES: Record<string, string> = Object.fromEntries(
+  Object.entries(import.meta.glob<string>("./assets/scene-*.webp", { eager: true, import: "default" }))
+    .map(([path, url]) => [path.replace(/^.*scene-(.*)\.webp$/, "$1"), url])
+    .filter(([id]) => id !== "vignette"),
+);
+const PLATE = { w: 1344, h: 768, floor: 630, foeX: 0.69 };
+/** Night plates a fight can land on. Spots don't carry a territory yet, so the run seed and floor pick one. */
+const NIGHT_SCENES = ["arcade", "libbey_park", "ojai_trail"];
+
+/** Pink Moment is a live event. Until the event clock exists, `?pink` previews it on the trail. */
+function sceneFor(run: Run): string {
+  if (typeof location !== "undefined" && new URLSearchParams(location.search).has("pink")) return "ojai_trail_pink";
+  return NIGHT_SCENES[Math.abs((run.seed ?? 0) * 31 + run.floor) % NIGHT_SCENES.length];
+}
+
+/** Time of day is a value shift only, never a hue: the plates are night, so day lifts them a little. */
+function daylight(): number {
+  const h = new Date().getHours();
+  if (h >= 8 && h < 17) return 1.25;
+  if ((h >= 6 && h < 8) || (h >= 17 && h < 19)) return 1.12;
+  return 1;
+}
+
+/**
+ * The place behind the enemy. Scaled so the plate's floor line meets the
+ * sprite's feet and its enemy spot sits under the sprite, while still
+ * covering the whole zone. The vignette scales with it.
+ */
+function Scene({ id, zone, feet }: { id: string; zone: { w: number; h: number }; feet: number }) {
+  const url = SCENES[id];
+  if (!url || !zone.w) return null;
+  const s = Math.max(zone.w / PLATE.w, feet / PLATE.floor, (zone.h - feet) / (PLATE.h - PLATE.floor));
+  const w = PLATE.w * s;
+  const h = PLATE.h * s;
+  const left = Math.min(0, Math.max(zone.w - w, zone.w / 2 - PLATE.foeX * w));
+  const top = feet - PLATE.floor * s;
+  const box = { left, top, width: w, height: h };
+  return (
+    <div className="scene" aria-hidden="true">
+      <img className="plate" src={url} style={{ ...box, filter: `brightness(${daylight()})` }} alt="" draggable={false} />
+      <div className="fog" style={{ top: feet - 60 * s, height: 140 * s }} />
+      <img className="plate" src={vignette} style={box} alt="" draggable={false} />
+    </div>
+  );
+}
+
 /** Illustrated cards: aces, caught enemies and rares. Only the Ace of Spades is drawn so far. */
 const CARD_ART: Record<string, string> = { "1:spades": aceSpades };
 
@@ -52,6 +100,9 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
   const [floaters, setFloaters] = useState<Floater[]>([]);
   const [shake, setShake] = useState<"foe" | "you" | null>(null);
   const tableRef = useRef<HTMLDivElement>(null);
+  const zoneRef = useRef<HTMLDivElement>(null);
+  const spriteRef = useRef<HTMLDivElement>(null);
+  const [stage, setStage] = useState({ w: 0, h: 0, feet: 0 });
   const handRef = useRef<HTMLDivElement>(null);
   const prev = useRef({ foe: e.hp, you: run.hp, block: f.block, foeBlock: e.block });
   const nextId = useRef(0);
@@ -129,6 +180,22 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+  // Measure where the sprite stands so the scene's floor line meets its feet
+  useLayoutEffect(() => {
+    const measure = () => {
+      const z = zoneRef.current?.getBoundingClientRect();
+      const sp = spriteRef.current?.getBoundingClientRect();
+      if (!z || !sp) return;
+      const next = { w: Math.round(z.width), h: Math.round(z.height), feet: Math.round(sp.bottom - z.top) };
+      setStage((o) => (o.w === next.w && o.h === next.h && o.feet === next.feet ? o : next));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (zoneRef.current) ro.observe(zoneRef.current);
+    return () => ro.disconnect();
+  }, [e.id]);
+  const scene = sceneFor(run);
+
   const cardW = width < 420 ? 78 : 92;
   const overlap = n > 1 ? Math.max(0, (n * cardW - (width - 24)) / (n - 1)) : 0;
 
@@ -142,13 +209,14 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
   return (
     <div className={`table ${shake === "you" ? "shake" : ""}`} ref={tableRef} onPointerMove={onMove} onPointerUp={onUp}>
       {/* ─── Enemy ─── */}
-      <div className={`foe-zone ${drag?.armed ? "armed" : ""}`}>
+      <div className={`foe-zone ${drag?.armed ? "armed" : ""}`} ref={zoneRef}>
+        <Scene id={scene} zone={stage} feet={stage.feet} />
         <div className="intents">
           {intent(run).map((a, i) => (
             <IntentBadge key={i} run={run} a={a} />
           ))}
         </div>
-        <div className={`sprite-wrap ${shake === "foe" ? "hit" : ""} tier-${tier}`}>
+        <div className={`sprite-wrap ${shake === "foe" ? "hit" : ""} tier-${tier}`} ref={spriteRef}>
           {SPRITES[e.id] ? <img className="sprite" src={SPRITES[e.id]} alt={e.name} draggable={false} /> : <Silhouette />}
           {floaters
             .filter((x) => x.where === "foe")
