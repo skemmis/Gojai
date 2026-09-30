@@ -1,0 +1,209 @@
+/* The living style guide page. Layout only; every part draws itself from kit.css. */
+.sg {
+  min-height: 100dvh;
+  background: var(--night);
+  color: var(--on-night);
+  padding: 0 var(--s4) var(--s6);
+}
+.sg-hero {
+  position: relative;
+  margin: 0 calc(-1 * var(--s4));
+  min-height: 360px;
+  display: grid;
+  place-items: end center;
+  overflow: hidden;
+  isolation: isolate;
+}
+.sg-hero > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+  opacity: 0.55;
+  z-index: -1;
+  -webkit-mask-image: linear-gradient(#000 55%, transparent);
+  mask-image: linear-gradient(#000 55%, transparent);
+}
+.sg-hero > div {
+  max-width: 640px;
+  display: grid;
+  justify-items: center;
+  gap: var(--s3);
+  padding: var(--s6) var(--s4) var(--s5);
+  text-align: center;
+}
+.sg-hero h1 {
+  margin: 0;
+  font-size: var(--t-title);
+}
+.sg-hero p,
+.sg-lede {
+  margin: 0;
+  color: var(--on-night-soft);
+  max-width: 60ch;
+}
+.sg-section {
+  max-width: 1120px;
+  margin: var(--s6) auto 0;
+  display: grid;
+  gap: var(--s4);
+}
+.sg-section > h2 {
+  margin: 0;
+  font-size: var(--t-title);
+  border-bottom: 1px solid var(--rule-night);
+  padding-bottom: var(--s2);
+}
+.sg-sub {
+  margin: var(--s3) 0 0;
+  color: var(--on-night-soft);
+}
+.sg-rules {
+  margin: 0;
+  padding-left: 1.4em;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--s3) var(--s6);
+  color: var(--on-night-soft);
+}
+.sg-rules b {
+  color: var(--on-night);
+}
+.sg-inks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--s4);
+}
+.sg-ink {
+  display: grid;
+  gap: 2px;
+  font-size: var(--t-small);
+}
+.sg-ink .chip {
+  height: 56px;
+  margin-bottom: var(--s1);
+  border: 1px solid var(--rule-night);
+}
+.sg-ink code,
+.sg-ink span {
+  color: var(--on-night-soft);
+}
+.sg-type {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--s5);
+  color: var(--on-night-soft);
+}
+.sg-type p {
+  margin: 0 0 var(--s1);
+}
+.sg-display {
+  font-family: var(--display);
+  font-size: 36px;
+  color: var(--on-night);
+}
+.sg-ui {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--on-night);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.sg-scale,
+.sg-space {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--s3) var(--s5);
+}
+.sg-scale div,
+.sg-space div {
+  display: grid;
+  gap: var(--s1);
+  justify-items: start;
+}
+.sg-scale small,
+.sg-space small {
+  color: var(--on-night-soft);
+  font-size: var(--t-label);
+}
+.sg-space i {
+  display: block;
+  background: var(--on-night-soft);
+}
+.sg-parts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: var(--s5);
+}
+.sg-part {
+  display: grid;
+  gap: var(--s2);
+  align-content: start;
+  min-width: 0;
+}
+.sg-part header h3 {
+  margin: 0;
+}
+.sg-part header p {
+  margin: 0;
+  font-size: var(--t-small);
+  color: var(--on-night-soft);
+}
+.sg-stage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s4);
+  min-height: 150px;
+  padding: var(--s5) var(--s4);
+  border: 1px solid var(--rule-night);
+  background: var(--night-raised);
+}
+.sg-stage.paper {
+  background: var(--paper);
+  color: var(--ink);
+}
+.sg-state {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: var(--s2);
+}
+.sg-state figcaption {
+  color: var(--on-night-soft);
+}
+.sg-col {
+  width: 100%;
+  display: grid;
+  gap: var(--s3);
+  justify-items: center;
+}
+.sg-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+}
+.sg-stage .gcard {
+  --card-w: 76px;
+}
+.sg-screens {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: var(--s4);
+}
+.sg-screens figure {
+  margin: 0;
+  display: grid;
+  gap: var(--s2);
+  justify-items: center;
+}
+.sg-screens img {
+  width: 100%;
+  border: 1px solid var(--rule-night);
+}
+.sg-screens figcaption {
+  color: var(--on-night-soft);
+}

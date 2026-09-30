@@ -1,0 +1,514 @@
+/*
+ * Screen layouts. Every part on these screens comes from the design library
+ * (kit/kit.css); this file only arranges them. Spacing and type use the kit's
+ * tokens (--s1..--s6, --t-*); no new colours, borders or ornaments here.
+ */
+
+/* ─── App frame ────────────────────────────────────────────────────────── */
+.app.screens {
+  position: relative;
+  max-width: none;
+  padding: 0;
+  gap: 0;
+  background: var(--night);
+  color: var(--on-night);
+}
+.app.screens.on-map {
+  height: 100dvh;
+  overflow: hidden;
+}
+.app > .error {
+  position: fixed;
+  z-index: 50;
+  left: var(--s4);
+  right: var(--s4);
+  top: calc(var(--s4) + env(safe-area-inset-top));
+  background: var(--paper);
+}
+.grow {
+  flex: 1;
+}
+.k-screen-body > .k-label {
+  align-self: center;
+  margin: var(--s2) 0 0;
+}
+
+/* ─── Map chrome ───────────────────────────────────────────────────────── */
+.map-top {
+  position: absolute;
+  z-index: 5;
+  top: calc(var(--s3) + env(safe-area-inset-top));
+  left: var(--s3);
+  right: var(--s3);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s3);
+  pointer-events: none;
+}
+.map-top > * {
+  pointer-events: auto;
+}
+.map-status {
+  width: auto;
+}
+/* Nothing else on the map while a spot is open */
+.world:has(.spot-layer) .map-nav,
+.world:has(.spot-layer) .map-notes {
+  display: none;
+}
+.map-notes {
+  position: absolute;
+  z-index: 5;
+  top: calc(80px + env(safe-area-inset-top));
+  left: var(--s3);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s2);
+}
+.map-nav {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--s3) + env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: center;
+  gap: var(--s3);
+}
+.map-screen .hood-name .hood-badge {
+  vertical-align: -0.2em;
+}
+
+/* ─── Spot sheet: rises over the darkened map ──────────────────────────── */
+.spot-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: var(--s4) var(--s4) calc(var(--s5) + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--night) 55%, transparent);
+  animation: rise-in 0.2s ease-out;
+}
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(12px); }
+}
+.spot-sheet {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s2);
+}
+.spot-sheet .k-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+  margin-top: -18px;
+}
+.spot-sheet .held {
+  margin: 0;
+  text-align: center;
+}
+.vignette {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--night);
+}
+.vignette img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+}
+.waits {
+  margin: 0;
+  text-align: center;
+  font-family: var(--display);
+  font-size: var(--t-name);
+  line-height: 1.15;
+}
+.waits .holds,
+.waits .walk {
+  display: block;
+}
+.waits .walk {
+  font-family: var(--body);
+  font-size: var(--t-small, 0.85rem);
+  opacity: 0.75;
+}
+.waits .kind {
+  height: 1.15em;
+  vertical-align: -0.3em;
+}
+.hourglass {
+  height: 1em;
+  vertical-align: -0.12em;
+}
+.tug {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  font-variant-numeric: tabular-nums;
+}
+.gain {
+  margin: 0;
+  text-align: center;
+  font-size: var(--t-small);
+  color: var(--ink-soft);
+}
+.acts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s5);
+  color: var(--on-night);
+}
+
+/* ─── Join ─────────────────────────────────────────────────────────────── */
+.app > .join {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  overflow-y: auto;
+}
+.fan3 {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-top: var(--s4);
+}
+.fan3 .k-arch {
+  width: 112px;
+  margin: 0 -3px;
+}
+.fan3 .k-arch.up { z-index: 1; }
+.faction-sheet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--s1);
+}
+.faction-sheet h2,
+.faction-sheet p {
+  margin: 0;
+}
+.motto {
+  font-style: italic;
+}
+.why {
+  font-size: var(--t-small);
+  color: var(--ink-soft);
+}
+.ink-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+}
+.ink-field input {
+  padding: var(--s1) 0;
+  border: 0;
+  border-bottom: 1px dotted currentColor;
+  background: none;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: var(--t-name);
+  outline: none;
+}
+.ink-field input::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.7;
+}
+
+/* ─── Profile ──────────────────────────────────────────────────────────── */
+.title-line {
+  margin: 0;
+  font-family: var(--display);
+  font-size: var(--t-name);
+}
+.faces {
+  display: flex;
+  gap: var(--s3);
+}
+.caught-shelf {
+  display: flex;
+  gap: var(--s2);
+}
+.caught-shelf .pinned {
+  width: 60px;
+}
+.caught-shelf img {
+  width: 100%;
+  display: block;
+}
+.run-tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--s1) var(--s3);
+  font-size: var(--t-small);
+}
+.run-seed {
+  margin: 0;
+  opacity: 0.5;
+}
+
+/* ─── Boards ───────────────────────────────────────────────────────────── */
+.ranks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rank {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+.rank .k-line {
+  flex: 1;
+  min-width: 0;
+}
+.rank.me .k {
+  font-weight: 800;
+}
+.rank .n {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  font-variant-numeric: tabular-nums;
+}
+.rank .n img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.rank .n b {
+  position: relative;
+  font-size: var(--t-small);
+  text-box: trim-both cap alphabetic;
+}
+.empty,
+.nudge,
+.season-day,
+.last-night,
+.score-note {
+  margin: 0;
+  text-align: center;
+  font-size: var(--t-small);
+}
+.unit {
+  opacity: 0.7;
+}
+
+/* ─── Clan / season ────────────────────────────────────────────────────── */
+.score-block {
+  width: 100%;
+}
+.score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s2);
+}
+.score b {
+  font-size: var(--t-num);
+  font-variant-numeric: tabular-nums;
+}
+.score .vs {
+  flex: 1;
+  max-width: 90px;
+  overflow: hidden;
+}
+.score .vs img {
+  width: 100%;
+  height: 18px;
+  object-fit: fill;
+  filter: invert(0.85) sepia(0.4);
+}
+.score .k-emblem {
+  filter: invert(0.85) sepia(0.4);
+}
+.ground {
+  padding: var(--s1) 0 var(--s2);
+}
+.ground + .ground {
+  border-top: 1px dotted color-mix(in srgb, var(--ink) 30%, transparent);
+}
+.ground .none {
+  font-weight: 500;
+  opacity: 0.6;
+}
+.turning {
+  display: block;
+  font-size: var(--t-label);
+  color: var(--ink-soft);
+}
+
+/* ─── Live ─────────────────────────────────────────────────────────────── */
+.live-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s2);
+}
+
+/* ─── Between-fight screens: cards, guides, wares ──────────────────────── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, var(--card-w));
+  justify-content: center;
+  gap: var(--s2);
+  --card-w: 76px;
+}
+.card-row,
+.wares,
+.guide-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s3);
+}
+.card-row {
+  --card-w: 92px;
+}
+.wares {
+  --card-w: 84px;
+  align-items: flex-start;
+  gap: var(--s2) var(--s4);
+}
+/* Guides for sale: one per row, full width, so their rules read in lines, not words */
+.wares.guides {
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+.wares.guides .ware {
+  align-items: center;
+}
+.wares.guides .k-guide {
+  flex: 1;
+  width: auto;
+  min-height: 0;
+}
+.k-screen .ware {
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+}
+.card-pick {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.15s ease-out;
+}
+.card-pick:not(:disabled):hover {
+  transform: translateY(-4px);
+}
+.card-pick:disabled {
+  cursor: default;
+}
+.choices {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+.spoils {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s1);
+}
+.spoils .gilt {
+  color: var(--gilt);
+}
+.k-screen .caught {
+  --card-w: 92px; /* same size as the cards on offer, so a long name like "The Influencer" fits */
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+}
+.k-screen .caught p {
+  margin: 0;
+}
+.influence {
+  margin: 0;
+  font-size: var(--t-small);
+  text-align: center;
+}
+.influence .k-emblem {
+  filter: invert(0.85) sepia(0.4);
+}
+.story p {
+  margin: 0;
+  line-height: 1.5;
+}
+.fell {
+  margin: 0;
+  font-family: var(--display);
+  font-size: var(--t-name);
+}
+.k-line.total {
+  border-top: 1px solid color-mix(in srgb, var(--ink) 40%, transparent);
+  margin-top: var(--s1);
+}
+
+/* A picker rises over the screen it belongs to */
+.picker-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s3);
+  padding: calc(var(--s4) + env(safe-area-inset-top)) var(--s4) calc(var(--s4) + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  background: var(--night);
+  color: var(--on-night);
+}
+.picker-layer .k-screen-head {
+  max-width: 420px;
+}
+/* A long deck scrolls the layer; nothing in it may be squeezed to fit (a squeezed ribbon lifts its title off centre) */
+.picker-layer > * {
+  flex-shrink: 0;
+}
+.picker-layer > p {
+  margin: 0;
+}
+
+/* Long screens scroll under their main action, which stays in reach on a band of night */
+.k-screen-foot {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  width: calc(100% + 2 * var(--s4));
+  margin-bottom: calc(-1 * (var(--s4) + env(safe-area-inset-bottom)));
+  padding: var(--s5) var(--s4) calc(var(--s3) + env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, var(--night) 45%);
+}
+
+/* Short screens gather in the middle rather than hugging the top over empty night */
+.k-screen-body {
+  justify-content: safe center;
+}
+.k-screen.clan .k-screen-body,
+.k-screen.deck .k-screen-body,
+.k-screen.rest .k-screen-body,
+.k-screen.shop .k-screen-body,
+.k-screen.event .k-screen-body {
+  justify-content: flex-start;
+}

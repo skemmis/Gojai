@@ -1,0 +1,64 @@
+# The map
+
+The play area is Ojai and Meiners Oaks, cut into **neighborhoods** bordered by real streets (the territory factions will hold). The Ojai Valley Trail is its own thin territory: with downtown, it's the game's main walking artery. The shape follows Pokémon Go: plain **spots** everywhere (its PokéStops) and a few **event spots** (its gyms) where timed events and bosses happen.
+
+- **Spots** have no fixed type. What you find is rolled per player and rerolls every 20 minutes: usually a fight, sometimes rest, an elite, a shop or a mystery. A spot can lean toward some finds (Krotona toward rest, the Arcade toward shop). Odds live in `BASE_ODDS` and each spot's `leans`.
+- **Event spots** work like spots between events, and host **timed events**: Pink Moment (sunset −15 to +20 min at Shelf Road and Meditation Mount), the Sunday farmers market, the Thursday People's Market (3 to 7 PM on the old school district grounds), full moons, solstices, Aug 3.
+- **Neighborhoods** are cut along a hand-picked list of streets (Ojai Ave, Maricopa Hwy, Signal, Montgomery, Fox, Matilija, Grand, Gridley, Foothill, Del Norte, El Paseo, Country Club Dr) and San Antonio Creek. Each piece goes to the neighborhood whose seed point it holds. Downtown is split into the Arcade, Libbey Park, West Matilija, North End and Sarzotti so the busiest ground is contested block by block.
+- **Density:** about 220 spots. Beyond the hand-placed ones: public landmarks from the open data (churches, galleries, parks, libraries, cafés), a marker every 200 m along the trail, and street corners wherever a walker would otherwise be more than ~140 m from a spot. No two spots are closer than 55 m.
+
+## Pieces
+
+- `packages/map` is the source of truth, pure TypeScript with no I/O, so the phone, the server and the lab share it:
+  - `neighborhoods.ts`: the 13 neighborhoods plus the trail (the play area), `neighborhoodOf(point)`, GeoJSON export. Shapes come from `generated/territory.ts`.
+  - `spots.ts`: hand-placed spots and event spots (with leans), plus the generated ones; `findAt(spot, player, time)`.
+  - `events.ts`: timed events as rules (`sunset`, `weekly`, `fullMoon`, `annual`, `tbd`) and `windowsBetween` / `activeEvents` / `upcomingEvents`.
+  - `time.ts`: Ojai local time (PST/PDT), sunset (NOAA equation, within a couple of minutes), full moons (mean synodic month, within about half a day).
+  - `area.ts`: map extent, distance, and former school sites that aren't no-go zones.
+- `apps/map` draws it: MapLibre over our own GeoJSON (no tile service, no API key, as in la-brea-madre). It follows the app style guide (`docs/ART_DIRECTION.md`, tokens in `packages/art/src/theme.ts`): an ink survey map on paper, spots drawn as solid ink dots, names in IM Fell English SC and everything else in Libre Franklin. Pink means a live event (its pin, its range and the "Happening now" band). Spots are ink dots at every zoom, growing as you zoom in; up close each carries the mark of what it holds this roll. Spots within 250 m of you are always blue dots (a map-local token, not one of the shared inks), so what's walkable stands out. You stand on the map as your own portrait in a soft, pulsing glow of that same Prussian blue (#1F4E79, darker and inkier than the hearts slate #3F6F95), like a phone map's location dot; it is CSS, so it fits any character, and it is drawn above every marker. The map opens zoomed in (about z15.6). Away from Ojai, "Locate me" pretends you're at the Arcade. `apps/map/src/theme.ts` maps the tokens onto the map. `npm run build:map` also writes a single self-contained `dist/pathless-land-map.html`.
+- `tools/map/territory.json` is the hand-crafted input: border streets, a seed per neighborhood, names and notes, trail settings, places to leave out. `python3 tools/map/build_territory.py` turns it into `packages/map/src/generated/territory.ts`. To redraw a neighborhood, add or drop a border street or move a seed, then rerun.
+- `tools/map` also rebuilds the base map (`npm run map:extract`). Roads, trails, water, land use, buildings and the Ojai boundary come from [Overture Maps](https://overturemaps.org) (OpenStreetMap-derived, ODbL), read from its public S3 bucket with pyarrow. Contours are traced from the AWS Terrain Tiles. Needs `python3 -m pip install pyarrow shapely`.
+
+## Rules the tests enforce
+
+- Every spot sits in exactly one neighborhood, every neighborhood has a spot, and neighborhoods don't overlap.
+- Downtown has a spot within 150 m of every point, and there are at least 150 spots.
+- No spot sits on active school grounds (checked against the school polygons in the land-use layer). The old Ojai Unified grounds at 414 E Ojai Ave are listed as a former school site, per Sam.
+- Finds follow the odds and stay fixed within a refresh window.
+
+## To check on the ground
+
+Spots flagged `verify` in `spots.ts` and events flagged in `events.ts`, mainly:
+
+- Sunday market hours; Meditation Mount and Krotona public hours and access; Daly Ranch and the demonstration garden access.
+- The Oak Grove: the spot is on Besant Rd by the Krishnamurti Foundation, outside Oak Grove School. Confirm it's public.
+- Real businesses (Bart's Books, Ojai Playhouse) need parody names.
+- Dates for Ojai Day, the Music Festival and the Lavender Festival.
+- Neighborhood names and lines: drafts to redraw.
+- Generated landmark spots come from open data: some may be private or misplaced. Drop them via `excludePlaces` in `territory.json`.
+
+## Not here yet
+
+Faction control of neighborhoods and event spots, server check-ins, anti-spoofing, and the Expo app's map screen. The page's "Locate me" works when the page is served from the repo or a host; embedded previews usually block location.
+
+## Using the map in the game
+
+`apps/map` exports `MapScreen` (`import { MapScreen } from "@gojai/map-app/MapScreen"`), the whole map screen as one React component that fills its positioned parent. It brings its own CSS; the page should load the two fonts (see `apps/map/index.html`).
+
+```tsx
+const [visits, setVisits] = useState<Visits>({});
+<MapScreen
+  playerId={player.id}
+  visits={visits}
+  anywhere={testMode}           // open any spot from anywhere (cooldowns still apply)
+  autoLocate
+  onOpen={(o) => {              // o: SpotOpened
+    setVisits((v) => visit(v, o.spot, o.at));
+    enterEncounter(run, o.find, { spotId: o.spot.id, name: o.spot.name, place: o.place });
+  }}
+/>
+```
+
+- A spot opens only when you stand within its range (35–60 m). Once opened it cools down until the next 20-minute reroll, so a roll can't be farmed. Rules and helpers live in `packages/map/src/visits.ts` (`spotState`, `visit`, `nextReroll`, `spotOpened`).
+- `SpotOpened` carries the spot, the find (`fight | elite | rest | shop | mystery`, a subset of the game's encounter kinds), the time, the territory id, `place` (the fight-backdrop key: `arcade`, `libbey-park`, `ojai-valley-trail`, `shelf-road`, …) and the ids of events live there (e.g. `pink-moment`).
+- What a spot rolls comes from `findAt`/`spotOdds` in `packages/map`, which should be the only copy of the odds.
