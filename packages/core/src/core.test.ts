@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { newRun, startFight, play, endTurn, playError, previewPlay, plainCard, allCards, visitSpot, enterEncounter, takeRewardCard, leaveReward, intent, incoming, CONFIG } from "./index";
+import { newRun, startFight, play, endTurn, playError, previewPlay, plainCard, allCards, visitSpot, enterEncounter, takeRewardCard, leaveReward, intent, incoming, CONFIG, ENEMY_BY_ID } from "./index";
 import type { Run, Suit } from "./index";
 
 function withHand(run: Run, cards: [number, Suit][]) {
@@ -9,29 +9,41 @@ function withHand(run: Run, cards: [number, Suit][]) {
   return run.hand.map((c) => c.uid);
 }
 
-test("a run starts with Ace to 10 in hearts and spades and full HP", () => {
+test("a run starts with Ace to 10 in hearts and spades, a few diamonds and clubs, and full HP", () => {
   const run = newRun(1);
-  assert.equal(allCards(run).length, 20);
-  assert.deepEqual([...new Set(allCards(run).map((c) => c.suit))].sort(), ["hearts", "spades"]);
+  assert.equal(allCards(run).length, 26);
+  assert.deepEqual([...new Set(allCards(run).map((c) => c.suit))].sort(), ["clubs", "diamonds", "hearts", "spades"]);
   assert.equal(run.hp, CONFIG.playerHp);
   assert.equal(run.phase, "map");
 });
 
-test("a turn is a hand of 5 and 3 actions", () => {
+test("a fight opens with a hand of 8 and 3 actions a turn", () => {
   const run = newRun(1);
   startFight(run, "ebike_teen");
-  assert.equal(run.hand.length, 5);
+  assert.equal(run.hand.length, 8);
   assert.equal(run.fight!.actions, 3);
+});
+
+test("you keep your hand between turns and only draw by playing diamonds", () => {
+  const run = newRun(1);
+  startFight(run, "ebike_teen");
+  const [a] = withHand(run, [[5, "hearts"], [6, "hearts"], [7, "hearts"]]);
+  play(run, a);
+  endTurn(run);
+  assert.equal(run.hand.length, 2);
+  const [d] = withHand(run, [[8, "diamonds"]]);
+  play(run, d);
+  assert.equal(run.hand.length, 3); // 8♦ draws 1 + 8/4
 });
 
 test("a card matching one already played this turn, in another suit, counts double", () => {
   const run = newRun(2);
   startFight(run, "ebike_teen");
   const [h, sp, sp2, c] = withHand(run, [[5, "hearts"], [5, "spades"], [5, "spades"], [5, "clubs"]]);
-  assert.equal(previewPlay(run, sp)!.damage, 5); // nothing played yet
+  assert.equal(previewPlay(run, sp)!.damage, 10); // spades hit double
   play(run, h);
   assert.equal(previewPlay(run, sp)!.mult, 2);
-  assert.equal(previewPlay(run, sp)!.damage, 10);
+  assert.equal(previewPlay(run, sp)!.damage, 20);
   play(run, sp);
   assert.equal(previewPlay(run, sp2)!.mult, 2); // same suit as the spade: no extra step
   assert.equal(previewPlay(run, c)!.mult, 3); // third suit: three of a kind
@@ -58,14 +70,15 @@ test("each play costs an action; with none left you must end your turn", () => {
   assert.notEqual(playError(run, d), null);
 });
 
-test("only spades deal damage; an enemy is immune to its own suit", () => {
+test("every card hits for its value, spades double; no enemy is immune", () => {
   const run = newRun(3);
-  startFight(run, "crystal_vendor"); // diamonds, armor 1
+  startFight(run, "crystal_vendor"); // armor 1
   const [sp, he, di] = withHand(run, [[7, "spades"], [7, "hearts"], [5, "diamonds"], [10, "spades"]]);
-  assert.equal(previewPlay(run, sp)!.damage, 6); // 7 − armor 1
-  assert.equal(previewPlay(run, he)!.damage, 0); // hearts defend, don't hit
+  assert.equal(previewPlay(run, sp)!.damage, 13); // 2 × 7 − armor 1
+  assert.equal(previewPlay(run, he)!.damage, 6); // hearts hit too
+  assert.equal(previewPlay(run, he)!.block, 7); // and block
   const p = previewPlay(run, di)!;
-  assert.deepEqual(p.powers.map((x) => [x.suit, x.immune]), [["diamonds", true]]);
+  assert.deepEqual(p.powers.map((x) => [x.suit, x.immune]), [["diamonds", false]]);
 });
 
 test("hearts block the enemy's attack, then block wears off", () => {
@@ -113,8 +126,8 @@ test("an exact kill catches the enemy as a face card", () => {
   const run = newRun(5);
   startFight(run, "manifestor"); // hearts
   run.fight!.enemy.hp = 4;
-  const [a] = withHand(run, [[4, "spades"], [9, "hearts"]]);
-  play(run, a); // exactly 4
+  const [a] = withHand(run, [[2, "spades"], [9, "hearts"]]);
+  play(run, a); // 2♠ hits double: exactly 4
   assert.equal(run.fight!.phase, "won");
   assert.equal(run.fight!.exact, true);
   assert.ok(allCards(run).some((c) => c.def === "catch_manifestor" && c.value === 10));
@@ -194,12 +207,26 @@ test("the map can hand the run an encounter it rolled, with its place", () => {
   assert.equal(run.spot?.place, "libbey-park");
   const early = newRun(7);
   early.floor = 2;
+  early.stats.fights = 1;
   enterEncounter(early, "elite");
-  assert.equal(early.fight?.enemy.tier, "normal", "elites wait a few floors");
+  assert.equal(early.fight?.enemy.tier, "normal", "elites wait for the second tier");
   const boss = newRun(8);
-  boss.floor = CONFIG.bossEvery;
+  boss.floor = 12;
+  boss.stats.fights = CONFIG.tierEvery - 1;
   enterEncounter(boss, "shop");
-  assert.equal(boss.fight?.enemy.tier, "boss");
+  assert.equal(boss.phase, "shop", "a shop stays a shop even with the boss next");
+  enterEncounter(Object.assign(boss, { phase: "map" }), "fight");
+  assert.equal(boss.fight?.enemy.tier, "boss", "the tier's last fight is its boss");
+  const tier2 = newRun(9);
+  tier2.floor = 13;
+  tier2.stats.fights = CONFIG.tierEvery;
+  enterEncounter(tier2, "fight");
+  const base = newRun(9);
+  base.floor = 2;
+  base.stats.fights = 1;
+  enterEncounter(base, "fight");
+  const scale = (r: Run) => r.fight!.enemy.maxHp / ENEMY_BY_ID[r.fight!.enemy.id].hp;
+  assert.ok(scale(tier2) > scale(base) * 1.5, "enemies jump a tier after each boss");
   const other = newRun(6);
   other.floor = 3;
   enterEncounter(other, "mystery");

@@ -33,7 +33,7 @@ const CENTRED = [
   ["attack number on blot", ".threat.atk > b", ".threat.atk", "xy"],
   ["intent on paper blot", ".threat > .mark", ".threat", "xy"],
   ["block number on shield", ".shield-mark b", ".shield-mark", "x"],
-  ["card value on seal", ".gcard .seal b", ".gcard .seal", "xy"],
+  ["suit and value on seal", ".gcard .seal .stamp", ".gcard .seal", "xy"],
   ["End turn on scroll", ".end span", ".end", "xy"],
   ["pile counts", ".pile b", ".pile b", "xy"],
   ["title on ribbon", ".k-screen-head .ribbon span", ".k-screen-head .ribbon span", "xy"],
@@ -199,10 +199,11 @@ await checkState("fight-start");
 
 const heart = page.locator(".gcard.s-hearts").first();
 if (await heart.count()) {
-  await heart.click();
+  // Click its left edge: in a full hand the next card covers the rest
+  await heart.click({ position: { x: 8, y: 30 } });
   await pause(300);
   await checkState("fight-holding-heart");
-  await heart.click();
+  await heart.click({ position: { x: 8, y: 30 } });
   await pause(600);
   await checkState("fight-after-heart");
 }
@@ -211,15 +212,25 @@ await pause(1500);
 await checkState("fight-next-turn");
 
 // A foe whose next move isn't an attack: its glyph and number sit together on a paper blot
-await steer("Object.assign(r.fight.enemy, { id: 'influencer', name: 'The Influencer', intentIdx: 0 })", 600);
-await checkState("fight-hex");
+// Every kind of move that isn't an attack: its glyph and number sit together, centred on a paper blot
+for (const [id, name, idx, state] of [
+  ["influencer", "The Influencer", 0, "fight-hex"],
+  ["crystal_vendor", "The Crystal Vendor", 1, "fight-brace"],
+  ["short_term_rental", "The Short-Term Rental", 1, "fight-buff"],
+  ["manifestor", "The Manifestor", 0, "fight-heal"],
+]) {
+  await steer(`Object.assign(r.fight.enemy, { id: '${id}', name: '${name}', intentIdx: ${idx} })`, 600);
+  await checkState(state);
+}
 
 // Win it: one hit left, then a spade
 await steer("r.fight.enemy.hp = 1; r.fight.enemy.block = 0", 400);
 const spade = page.locator(".gcard.s-spades").first();
 if (await spade.count()) {
-  await click(spade, 300);
-  await click(spade, 1800);
+  await spade.click({ position: { x: 8, y: 30 } });
+  await pause(300);
+  await spade.click({ position: { x: 8, y: 30 } });
+  await pause(1800);
 }
 if (await page.locator(".k-screen.reward").count()) {
   // Show a catch, with the longest foe name, so the named card on the reward screen is measured too

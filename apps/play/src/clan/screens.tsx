@@ -7,7 +7,7 @@
 import { useMemo, useState } from "react";
 import { spotOpened, upcomingEvents, type EventWindow, type Find, type Spot, type SpotState } from "@gojai/map";
 import { BOARDS, CLAN, FACTIONS, settle, standing, validName, type FactionId, type Scope } from "@gojai/clans";
-import { encounterFor, isBossFloor, type NodeKind, type Run } from "@gojai/core";
+import { CONFIG, bossNext, difficultyTier, encounterFor, fightsWon, type NodeKind, type Run } from "@gojai/core";
 import { ArchCard, Drops, Emblem, Gold, InkLink, LiveTag, Line, Medallion, Note, Rope, RunStatus, SCENES, SPRITES, Screen, ScrollButton, Seal, Sheet, Switch, Title, UI } from "../kit";
 import { ME, PORTRAIT_NAMES, dayOf, dealFaces, factionFor, groundName, groundOfSpot, influenceIn, lastFullMoon, seasonDays, seasonName, type Town } from "./town";
 
@@ -31,7 +31,7 @@ export function MapChrome({ run, town, now, go, anywhere, toggleAnywhere }: { ru
   return (
     <>
       <header className="map-top">
-        <RunStatus hp={run.hp} max={run.maxHp} gold={run.gold} floor={isBossFloor(run.floor) ? "Boss next" : `Floor ${run.floor}`} />
+        <RunStatus hp={run.hp} max={run.maxHp} gold={run.gold} floor={bossNext(run) ? "Boss next" : `Tier ${difficultyTier(run) + 1} · fight ${(fightsWon(run) % CONFIG.tierEvery) + 1} of ${CONFIG.tierEvery}`} />
         <Medallion seed={town.portraits[ME]} size="l" onClick={() => go("you")} label="Your profile" />
       </header>
       <div className="map-notes">

@@ -793,11 +793,23 @@ footer {
   width: 22px;
   height: 22px;
 }
+/* The glyph sits over its number, so both share one centre line on the blot */
 .threat > .mark {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
+}
+.threat > .mark .glyph,
+.threat > .mark .ico {
+  width: 30px;
+  height: 30px;
+}
+/* Proportional digits here: a tabular "1" carries blank space that pushes it off centre */
+.threats .threat > .mark b {
+  font-size: 24px;
+  font-variant-numeric: proportional-nums;
 }
 .threat > b,
 .threat > .mark b {
@@ -858,8 +870,7 @@ footer {
   position: relative;
   width: 56px;
   height: 56px;
-  margin-top: -30px;
-  margin-left: 52px;
+  margin-top: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -870,7 +881,7 @@ footer {
 .threat.atk .shield-mark {
   position: absolute;
   left: 50%;
-  bottom: -44px;
+  bottom: -64px;
   transform: translateX(-50%);
   margin: 0;
 }
@@ -890,7 +901,7 @@ footer {
 }
 /* Only a card you're holding: the shield breathes until you play it */
 .shield-mark.preview {
-  opacity: 0.6;
+  opacity: 0.8;
 }
 @keyframes breathe {
   from { opacity: 0.75; }
@@ -1031,7 +1042,7 @@ footer {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  padding: 18px 0 0;
+  padding: 18px 0 16px;
   min-height: 150px;
 }
 .fan {
@@ -1279,29 +1290,42 @@ footer {
   transform: rotate(-8deg);
 }
 .gcard .seal.wide b {
-  font-size: calc(var(--card-w, 84px) * 0.19);
+  font-size: calc(var(--card-w, 84px) * 0.17);
 }
-.gcard .seal svg {
+.gcard .seal > svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
-.gcard .seal path {
+.gcard .seal > svg path {
   fill: var(--suit);
 }
-.gcard .seal circle {
+.gcard .seal > svg circle {
   fill: none;
   stroke: var(--paper);
   stroke-opacity: 0.35;
   stroke-width: 2;
 }
+/* The seal is stamped with its suit over the number, so the suit reads without colour */
+.gcard .seal .stamp {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+.gcard .seal .stamp .ico {
+  width: calc(var(--card-w, 84px) * 0.13);
+  height: calc(var(--card-w, 84px) * 0.13);
+  fill: currentColor;
+}
 .gcard .seal b {
   position: relative;
-  font-size: calc(var(--card-w, 84px) * 0.24);
+  font-size: calc(var(--card-w, 84px) * 0.2);
+  font-variant-numeric: proportional-nums;
   font-weight: 800;
   line-height: 1;
-  font-variant-numeric: tabular-nums;
 }
 .gcard.off::before {
   content: "";
@@ -1323,10 +1347,11 @@ footer {
   border: 2px solid var(--gilt);
   pointer-events: none;
 }
+/* Top-left, the corner a fanned card always shows */
 .mult-tag {
   position: absolute;
   top: -12px;
-  right: -8px;
+  left: -8px;
   z-index: 3;
   width: 42px;
   height: 24px;

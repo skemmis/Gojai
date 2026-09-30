@@ -4,7 +4,7 @@
  * CSS for these lives in styles.css under the same class names, which
  * tools/ui-check/check.mjs measures (.ribbon span, .shield-mark b, .gcard .seal b ...).
  */
-import { cardDef, isJunk } from "@gojai/core";
+import { CONFIG, cardDef, isJunk } from "@gojai/core";
 import type { Card, Run, Suit } from "@gojai/core";
 import { Icon, rankLabel, powerAmount, type IconName } from "../components";
 
@@ -102,6 +102,8 @@ export function GameCard({ card, mult = 1, off, dud, armed }: { card: Card; mult
   const junk = isJunk(card);
   const art = junk ? undefined : artFor(card, !!d.name);
   const value = card.value * mult;
+  // When every card hits, the seal shows what it hits for (its value); otherwise its suit power
+  const sealN = card.suit ? (CONFIG.allDamage ? value : powerAmount(card.suit, value)) : 0;
   const cls = ["gcard", card.suit ? `s-${card.suit}` : "", off || junk ? "off" : "", dud ? "dud" : "", armed ? "armed" : "", art ? "art" : "", d.face ? "face" : "", d.rarity === "rare" ? "rare" : ""].filter(Boolean).join(" ");
   return (
     <div className={cls} title={d.name ? `${d.name}: ${d.text}` : undefined}>
@@ -122,12 +124,15 @@ export function GameCard({ card, mult = 1, off, dud, armed }: { card: Card; mult
         )}
       </span>
       {art && card.suit ? (
-        <span className={`seal ${powerAmount(card.suit, value) >= 10 ? "wide" : ""}`} aria-label={`${card.suit} ${powerAmount(card.suit, value)}`}>
+        <span className={`seal ${sealN >= 10 ? "wide" : ""}`} aria-label={`${card.suit} ${sealN}`}>
           <svg viewBox="0 0 100 100" aria-hidden="true">
             <path d={SEAL} />
             <circle cx="50" cy="50" r="33" />
           </svg>
-          <b>{powerAmount(card.suit, value)}</b>
+          <span className="stamp">
+            <Icon name={card.suit} />
+            <b>{sealN}</b>
+          </span>
         </span>
       ) : card.suit && !junk ? (
         <span className={`pw pw-${card.suit}`}>

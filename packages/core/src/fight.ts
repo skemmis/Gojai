@@ -1,24 +1,28 @@
 /**
- * The fight, Slay the Spire style, played with a standard deck.
+ * The fight, played with a standard deck.
  *
- * Each turn you draw 5 and get 3 ACTIONS. Each card you play costs 1
- * action, so you play any 3 cards a turn. Each suit does one job, with
- * N = the card's value:
+ * A fight opens with a hand of 8 and you KEEP your hand between turns
+ * (Regicide style): the only way to get more cards is to play diamonds, or
+ * clubs to get discards back. Each turn you get 3 ACTIONS; each card you
+ * play costs 1. Every card hits the enemy for its value, and its suit adds
+ * a power, with N = the card's value:
  *
- *   ♣ clubs    recall: your best card(s) come back from the discard pile
- *   ♦ diamonds draw 1 + floor(N / 4)
- *   ♥ hearts   N block against this turn's attacks
- *   ♠ spades   N damage (the only suit that hits)
+ *   ♣ clubs    also recall: your best card(s) come back from the discard pile
+ *   ♦ diamonds also draw 1 + floor(N / 4)
+ *   ♥ hearts   also N block against this turn's attacks
+ *   ♠ spades   hit double
+ *
+ * (Every rule here is a CONFIG switch, so the lab can compare them: the old
+ * "only spades hit, draw 5 a turn, enemies immune to a suit" is still one
+ * setConfig away.)
  *
  * MATCHING: play a card of the same value as one you already played this
  * turn, in a different suit, and it counts double (a pair). A third of
- * that value in yet another suit counts triple. So 7♥ then 7♠ blocks 7
- * and hits 14.
+ * that value in yet another suit counts triple.
  *
- * A wild card fires every suit's power, in the order above, unless the
- * enemy is immune to the suit. The enemy's next move (its INTENT) is always visible, so you know when
- * to block and when to go all in. End your turn: unplayed cards are
- * discarded, the enemy acts, your block wears off, and you draw again.
+ * The enemy's next move (its INTENT) is always visible, so you know when
+ * to block and when to go all in. End your turn: the enemy acts, your
+ * block wears off, and you play on with the hand you kept.
  *
  * Kill the enemy with EXACT damage (HP to exactly 0) and it's caught: it
  * joins your deck as a J/Q/K. Win without losing any HP and it's a PERFECT
@@ -81,7 +85,7 @@ export function drawCards(run: Run, n: number): number {
   let drawn = 0;
   while (drawn < n && run.hand.length < CONFIG.maxHand) {
     if (run.draw.length === 0) {
-      if (run.discard.length === 0) break;
+      if (run.discard.length === 0 || !CONFIG.reshuffle) break;
       run.draw = shuffle(run.rng, run.discard.splice(0));
       log(run, "Your discard pile is shuffled into your deck.");
     }
@@ -91,14 +95,19 @@ export function drawCards(run: Run, n: number): number {
   return drawn;
 }
 
-/** Clubs: bring your best n non-junk cards back from the discard pile to your hand. */
+/**
+ * Clubs: bring your best n non-junk cards back from the discard pile, to
+ * your hand or (clubsTo "deck") shuffled under your draw pile.
+ */
 export function recall(run: Run, n: number): Card[] {
+  const toHand = CONFIG.clubsTo === "hand";
   const best = run.discard
     .filter((c) => !isJunk(c))
     .sort((a, b) => b.value - a.value)
-    .slice(0, Math.max(0, Math.min(n, CONFIG.maxHand - run.hand.length)));
+    .slice(0, Math.max(0, toHand ? Math.min(n, CONFIG.maxHand - run.hand.length) : n));
   for (const c of best) run.discard.splice(run.discard.indexOf(c), 1);
-  run.hand.push(...best);
+  if (toHand) run.hand.push(...best);
+  else run.draw.push(...shuffle(run.rng, best));
   return best;
 }
 
@@ -114,10 +123,21 @@ export function heal(run: Run, n: number): number {
 
 // ─── Enemies ─────────────────────────────────────────────────────────────────
 
-export function scaledEnemy(id: string, floor: number): EnemyState {
+/** Fights won so far this run (every fight you lose ends it). */
+export function fightsWon(run: Run): number {
+  return run.stats.fights - (run.fight && run.fight.phase !== "won" ? 1 : 0);
+}
+
+/** Which difficulty tier the next or current fight is in (0 = first), when difficulty is stepped. */
+export function difficultyTier(run: Run): number {
+  return CONFIG.tierEvery > 0 ? Math.floor(fightsWon(run) / CONFIG.tierEvery) : 0;
+}
+
+export function scaledEnemy(id: string, floor: number, tier = 0): EnemyState {
   const d = ENEMY_BY_ID[id];
-  const f = floor - 1;
-  const hp = Math.round(d.hp * (1 + CONFIG.hpGrowth * f));
+  const stepped = CONFIG.tierEvery > 0;
+  const f = stepped ? 0 : floor - 1;
+  const hp = Math.round(d.hp * CONFIG.enemyHpMult * (stepped ? 1 + CONFIG.tierHp * tier : 1 + CONFIG.hpGrowth * f));
   return {
     id: d.id,
     name: d.name,
@@ -125,9 +145,9 @@ export function scaledEnemy(id: string, floor: number): EnemyState {
     hp,
     maxHp: hp,
     block: 0,
-    scale: 1 + CONFIG.attackGrowth * f,
+    scale: stepped ? 1 + CONFIG.tierAtk * tier : 1 + CONFIG.attackGrowth * f,
     buff: 0,
-    suits: d.suits.slice(),
+    suits: CONFIG.immunity ? d.suits.slice() : [],
     passive: d.passive,
     intentIdx: 0,
   };
@@ -161,7 +181,7 @@ export function incoming(run: Run): number {
 // ─── Starting a fight ────────────────────────────────────────────────────────
 
 export function startFight(run: Run, enemyId: string): void {
-  const enemy = scaledEnemy(enemyId, run.floor);
+  const enemy = scaledEnemy(enemyId, run.floor, difficultyTier(run));
   run.draw = shuffle(run.rng, [...run.draw, ...run.hand, ...run.discard]);
   run.hand = [];
   run.discard = [];
@@ -190,7 +210,8 @@ function startTurn(run: Run) {
   f.turnPlays = [];
   run.stats.turns++;
   f.actions = CONFIG.actionsPerTurn + (f.turn === 1 && hasGuide(run, "ojai_day") ? 1 : 0);
-  drawCards(run, CONFIG.drawPerTurn + (hasGuide(run, "oak_grove") ? 1 : 0));
+  drawCards(run, (f.turn === 1 ? CONFIG.startHand : CONFIG.drawPerTurn) + (hasGuide(run, "oak_grove") ? 1 : 0));
+  if (!run.hand.some((c) => !isJunk(c))) run.stats.deadHands++;
 }
 
 // ─── Playing ─────────────────────────────────────────────────────────────────
@@ -208,6 +229,30 @@ export function playError(run: Run, uid: number): string | null {
   if (isJunk(c)) return "Junk can't be played.";
   if (f.actions < actionCost(c)) return "No actions left. End your turn.";
   return null;
+}
+
+/** null if this card can be discarded to draw one, else the reason it can't. Junk can. */
+export function cycleError(run: Run, uid: number): string | null {
+  const f = run.fight;
+  if (CONFIG.cycleCost === null) return "You can't swap cards.";
+  if (!f || f.phase !== "play") return "Not your move.";
+  if (!run.hand.some((x) => x.uid === uid)) return "That card isn't in your hand.";
+  if (f.actions < CONFIG.cycleCost) return "No actions left. End your turn.";
+  return null;
+}
+
+/** Discard a card to draw one. Costs CONFIG.cycleCost actions and doesn't count as a play. */
+export function cycle(run: Run, uid: number): void {
+  const err = cycleError(run, uid);
+  if (err) throw new Error(err);
+  const f = run.fight!;
+  const c = run.hand.find((x) => x.uid === uid)!;
+  run.hand.splice(run.hand.indexOf(c), 1);
+  f.actions -= CONFIG.cycleCost!;
+  if (!isJunk(c)) run.discard.push(c);
+  run.stats.cycles++;
+  const got = drawCards(run, 1);
+  log(run, `You let go of ${cardName(c)}${got ? " and draw a card" : ", but your deck is empty"}.`);
 }
 
 /**
@@ -276,7 +321,7 @@ function playNumbers(run: Run, c: Card): PlayPreview {
     if (s === "clubs") amount = 1 + Math.floor(total / CONFIG.clubsPer) + (hasGuide(run, "farmers_market") ? 1 : 0);
     if (s === "diamonds") amount = 1 + Math.floor(total / CONFIG.diamondsPer) + (hasGuide(run, "libbey") ? 1 : 0);
     if (s === "hearts") amount = total + (hasGuide(run, "crystal_shop") ? 2 : 0);
-    if (s === "spades") amount = total + (mult > 1 && hasGuide(run, "besant") ? 4 : 0);
+    if (s === "spades") amount = (CONFIG.allDamage ? 2 * total : total) + (mult > 1 && hasGuide(run, "besant") ? 4 : 0);
     powers.push({ suit: s, amount, immune });
     if (immune) continue;
     if (s === "clubs") recallN += amount;
@@ -284,6 +329,8 @@ function playNumbers(run: Run, c: Card): PlayPreview {
     if (s === "hearts") block += amount;
     if (s === "spades") damage += amount;
   }
+  // Every card hits for its value; spades' power already counts it
+  if (CONFIG.allDamage && !suits.includes("spades")) damage += total;
   if (f.plays === 0 && hasGuide(run, "life_coach")) damage *= 2;
   if (e.passive.k === "armor" && damage > 0) damage = Math.max(0, damage - e.passive.n);
   const through = Math.max(0, damage - e.block);
@@ -323,12 +370,12 @@ export function play(run: Run, uid: number): void {
     run.stats.powerUses[pw.suit]++;
     run.stats.powerTotal[pw.suit] += pw.amount;
   }
-  run.discard.push(c);
   f.turnPlays.push(c);
   if (p.recall) {
     const back = recall(run, p.recall);
-    if (back.length) log(run, `Clubs: ${back.map(cardName).join(", ")} back to your hand.`);
+    if (back.length) log(run, `Clubs: ${back.map(cardName).join(", ")} back to your ${CONFIG.clubsTo === "hand" ? "hand" : "deck"}.`);
   }
+  run.discard.push(c); // after the recall, so a club can't bring itself back
   if (p.draw) drawCards(run, p.draw);
   if (p.block) f.block += p.block;
 
@@ -366,12 +413,13 @@ export function endTurn(run: Run): void {
   const f = run.fight;
   if (!f || f.phase !== "play") throw new Error("Not your move.");
   run.stats.endTurns++;
+  if (f.turnPlays.length === 0) run.stats.idleTurns++;
 
   // Unplayed cards: discard (with their "let go" effects), except retained ones
   let nextBlock = 0;
   const kept: Card[] = [];
   for (const c of run.hand) {
-    if (has(c, "retain")) {
+    if (CONFIG.keepHand || has(c, "retain")) {
       kept.push(c);
       continue;
     }

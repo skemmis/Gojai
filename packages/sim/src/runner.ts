@@ -14,7 +14,12 @@ import {
   buyGuide,
   cardDef,
   chooseEvent,
+  cycle,
   visitSpot,
+  bossNext,
+  enterEncounter,
+  fightsWon,
+  CONFIG,
   endTurn,
   EVENT_BY_ID,
   guidesFull,
@@ -34,7 +39,13 @@ import {
 } from "@gojai/core";
 import { chooseMove } from "./bot";
 
-export type Policy = "greedy" | "explore";
+/** static = never improves the deck (skips every reward, shop and upgrade): the "fall behind" baseline. */
+export type Policy = "greedy" | "explore" | "static";
+
+export interface RunOptions {
+  /** Pick what each spot holds (as if every spot showed its roll), instead of walking into whatever's there. */
+  route?: boolean;
+}
 
 export interface Encounter {
   enemy: string;
@@ -51,6 +62,8 @@ export interface RunRecord {
   seed: number;
   policy: Policy;
   depth: number;
+  /** Fights won: the depth that matters with stepped difficulty. */
+  wins: number;
   diedTo: string | null;
   guides: string[];
   deckSize: number;
@@ -76,24 +89,54 @@ function fightLoop(run: Run, margins: number[]) {
   let guard = 0;
   while (run.phase === "fight" && run.fight && run.fight.phase === "play") {
     const f = run.fight;
-    if (guard++ > 3000) throw new Error(`stuck fight, seed ${run.seed}: ${JSON.stringify({ e: f.enemy, block: f.block, hp: run.hp, log: f.log.slice(-6) })}`);
+    // A fight nobody can finish (no damage left in the deck) counts as a loss
+    if (guard++ > 3000 || f.turn > 80) {
+      f.phase = "lost";
+      run.phase = "over";
+      run.stats.diedTo = `${f.enemy.id} (stalled)`;
+      break;
+    }
     const d = chooseMove(run);
     margins.push(d.margin);
     if (d.move.k === "play") play(run, d.move.uid);
+    else if (d.move.k === "cycle") cycle(run, d.move.uid);
     else endTurn(run);
   }
 }
 
-export function playRun(seed: number, policy: Policy): RunRecord {
+/** Where a sensible player walks when they can see what each spot holds. */
+function routeChoice(run: Run, policy: Policy): "fight" | "elite" | "rest" | "shop" {
+  const hp = health(run);
+  const shopWorth = policy !== "static" && run.gold >= 90;
+  if (bossNext(run)) {
+    if (shopWorth) return "shop";
+    if (hp < 0.65) return "rest";
+    return "fight";
+  }
+  if (hp < 0.4) return "rest";
+  if (shopWorth && run.gold >= 150) return "shop";
+  // An elite now and then when healthy: better rewards, real risk
+  if (hp > 0.85 && run.floor >= CONFIG.eliteFromFloor && fightsWon(run) % 5 === 2) return "elite";
+  return "fight";
+}
+
+export function playRun(seed: number, policy: Policy, opts: RunOptions = {}): RunRecord {
   const run = newRun(seed);
   const rr = makeRng(seed ^ 0x5eed);
   const r = () => next(rr);
   const encounters: Encounter[] = [];
   const margins: number[] = [];
+  let last = "";
 
   while (run.phase !== "over" && run.floor < MAX_FLOOR) {
     if (run.phase === "map") {
-      visitSpot(run);
+      if (opts.route) {
+        const want = routeChoice(run, policy);
+        // Two shops or rests in a row with nothing between is a wasted walk: fight instead
+        const go = (want === "shop" || want === "rest") && last === want ? "fight" : want;
+        last = go;
+        enterEncounter(run, go);
+      } else visitSpot(run);
       if ((run.phase as string) === "fight") {
         const start = run.fight!;
         const enemy = start.enemy.id, tier = start.enemy.tier, floor = run.floor;
@@ -103,7 +146,9 @@ export function playRun(seed: number, policy: Policy): RunRecord {
       }
     } else if (run.phase === "reward") {
       const rw = run.reward!;
-      if (policy === "explore") {
+      if (policy === "static") {
+        // takes nothing
+      } else if (policy === "explore") {
         const i = Math.floor(r() * (rw.cards.length + 1));
         if (i < rw.cards.length) takeRewardCard(run, i);
         if (rw.guides.length) {
@@ -120,13 +165,13 @@ export function playRun(seed: number, policy: Policy): RunRecord {
       leaveReward(run);
     } else if (run.phase === "rest") {
       const w = worstCard(run);
-      if (health(run) < 0.7 || !w) rest(run, "heal");
+      if (health(run) < 0.7 || !w || policy === "static") rest(run, "heal");
       else rest(run, "upgrade", w.uid);
     } else if (run.phase === "shop") {
       const s = run.shop!;
-      for (let i = 0; i < s.guides.length; i++)
+      if (policy !== "static") for (let i = 0; i < s.guides.length; i++)
         if (!s.guides[i].sold && run.gold >= s.guides[i].price && !guidesFull(run) && (policy === "greedy" || r() < 0.5)) buyGuide(run, i);
-      for (let i = 0; i < s.cards.length; i++)
+      if (policy !== "static") for (let i = 0; i < s.cards.length; i++)
         if (!s.cards[i].sold && run.gold >= s.cards[i].price && (policy === "greedy" ? s.cards[i].card.def !== "plain" : r() < 0.5)) buyCard(run, i);
       leaveShop(run);
     } else if (run.phase === "event") {
@@ -143,6 +188,7 @@ export function playRun(seed: number, policy: Policy): RunRecord {
     seed,
     policy,
     depth: score(run),
+    wins: fightsWon(run),
     diedTo: run.stats.diedTo,
     guides: run.guides.slice(),
     deckSize: allCards(run).length,
