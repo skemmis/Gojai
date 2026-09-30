@@ -2,7 +2,9 @@
  * The fight screen, laid out like a card-battler table (Slay the Spire,
  * Balatro): the enemy and its intent up top, your hand fanned along the
  * bottom. Drag a card up onto the table to play it; each card spends one
- * action from the orb. Almost no words: numbers and icons carry the state.
+ * moon. The place runs the full height of the screen; everything on it is
+ * drawn as things you'd find there (a name ribbon, blood, a shield, moons, a
+ * scroll), no boxes.
  */
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { cardDef, CONFIG, endTurn, hitSize, incoming, intent, isJunk, multiplier, play, playError, previewPlay } from "@gojai/core";
@@ -64,12 +66,13 @@ function daylight(): number {
 }
 
 /**
- * The place behind the enemy. Scaled so the plate's ground line meets the
- * sprite's feet and its quiet column sits under the sprite, while still
- * covering the whole zone. The front layer is drawn separately, over the sprite.
+ * The place behind the whole table. Scaled so the plate's ground line meets
+ * the sprite's feet and its quiet column sits under the sprite. The plate stops
+ * short of the bottom of the screen, so the ground carries on below it as the
+ * plate's own mirror image, fading into the night under your hand.
  */
 function plateBox(zone: { w: number; h: number }, feet: number) {
-  const s = Math.max(zone.w / PLATE.w, feet / PLATE.floor, (zone.h - feet) / (PLATE.h - PLATE.floor));
+  const s = Math.max(zone.w / PLATE.w, feet / PLATE.floor);
   const w = PLATE.w * s;
   const h = PLATE.h * s;
   const left = Math.min(0, Math.max(zone.w - w, zone.w / 2 - PLATE.foeX * w));
@@ -86,6 +89,8 @@ function Scene({ id, zone, feet, pink }: { id: string; zone: { w: number; h: num
       {pink && <div className="pink-wash" style={{ ...box, height: box.height * 0.38 }} />}
       <div className="fog" style={{ top: feet - 60 * s, height: 140 * s }} />
       <img className="plate" src={vignette} style={box} alt="" draggable={false} />
+      <img className="plate mirror" src={url} style={{ ...box, top: box.top + box.height, filter: `brightness(${daylight() * 0.7})` }} alt="" draggable={false} />
+      <div className="ground-fade" style={{ top: feet + 40 * s }} />
     </div>
   );
 }
@@ -116,8 +121,6 @@ const SEAL =
 
 const SUIT_ICON: Record<Suit, IconName> = { spades: "blade", hearts: "shield", diamonds: "draw", clubs: "recall" };
 
-/** Extra room kept either side of the hand for the action orb and End turn (they sit above the outer cards, which fan lower). */
-const FLANK = 0;
 
 interface Floater {
   id: number;
@@ -217,7 +220,7 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
   // Measure where the sprite stands so the scene's floor line meets its feet
   useLayoutEffect(() => {
     const measure = () => {
-      const z = zoneRef.current?.getBoundingClientRect();
+      const z = tableRef.current?.getBoundingClientRect();
       const sp = spriteRef.current?.getBoundingClientRect();
       if (!z || !sp) return;
       const next = { w: Math.round(z.width), h: Math.round(z.height), feet: Math.round(sp.bottom - z.top) };
@@ -225,27 +228,27 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
     };
     measure();
     const ro = new ResizeObserver(measure);
-    if (zoneRef.current) ro.observe(zoneRef.current);
+    if (tableRef.current) ro.observe(tableRef.current);
     return () => ro.disconnect();
   }, [e.id]);
   const scene = sceneFor(run);
 
   const cardW = width < 420 ? 78 : 92;
-  const overlap = n > 1 ? Math.max(0, (n * cardW - (width - 24 - 2 * FLANK)) / (n - 1)) : 0;
+  const overlap = n > 1 ? Math.max(0, (n * cardW - (width - 24)) / (n - 1)) : 0;
 
   const hit = incoming(run);
   const through = Math.max(0, hit - f.block - (pv ? pv.block : 0));
-  const youPct = Math.max(0, (run.hp / run.maxHp) * 100);
-  const lossPct = Math.min(youPct, (through / run.maxHp) * 100);
   const maxActions = Math.max(CONFIG.actionsPerTurn, f.actions);
   const tier = e.tier;
 
   return (
     <div className={`table ${shake === "you" ? "shake" : ""}`} ref={tableRef} onPointerMove={onMove} onPointerUp={onUp}>
+      <Scene id={scene} zone={stage} feet={stage.feet} pink={pinkMoment(run)} />
+      <SceneFront id={scene} zone={stage} feet={stage.feet} />
+
       {/* ─── Enemy ─── */}
       <div className={`foe-zone ${drag?.armed ? "armed" : ""}`} ref={zoneRef}>
-        <Scene id={scene} zone={stage} feet={stage.feet} pink={pinkMoment(run)} />
-        <SceneFront id={scene} zone={stage} feet={stage.feet} />
+        <Ribbon name={e.name} />
         <div className={`sprite-wrap ${shake === "foe" ? "hit" : ""} tier-${tier}`} ref={spriteRef}>
           {SPRITES[e.id] ? <img className="sprite" src={SPRITES[e.id]} alt={e.name} draggable={false} /> : <Silhouette />}
           {floaters
@@ -256,15 +259,16 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
               </span>
             ))}
         </div>
-        <div className="foe-plate">
-          <div className="foe-name">{e.name}</div>
-          <Vitals who="foe" hp={e.hp} max={e.maxHp} block={e.block} loss={pv ? Math.max(0, pv.damage - e.block) : 0} />
-          {/* What it will do next, under it and facing your own bar */}
-          <div className="intents">
-            {intent(run).map((a, i) => (
-              <IntentBadge key={i} run={run} a={a} />
-            ))}
-          </div>
+        {/* What it will do next, splashed beside it; your block is laid over its attack */}
+        <div className="threats">
+          {intent(run).map((a, i) => (
+            <Threat key={i} run={run} a={a} adding={pv?.block ?? 0} />
+          ))}
+          <Guard block={f.block} adding={pv?.block ?? 0} />
+        </div>
+        <div className="foe-life">
+          {e.block > 0 && <ShieldMark n={e.block} small />}
+          <Drops who="foe" hp={e.hp} max={e.maxHp} loss={pv ? Math.max(0, pv.damage - e.block) : 0} />
           {e.suits.length > 0 && (
             <div className="immune" title="Immune">
               {e.suits.map((s) => (
@@ -277,33 +281,20 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
         </div>
       </div>
 
-      {/* ─── You ─── */}
+      {/* ─── You: your blood, mirroring its own ─── */}
       <div className="you-zone">
-        <div className="you-bar">
-          <Vitals who="you" hp={run.hp} max={run.maxHp} block={f.block} adding={pv?.block ?? 0} loss={through} />
-          {floaters
-            .filter((x) => x.where === "you")
-            .map((x) => (
-              <span key={x.id} className={`floater ${x.kind}`}>
-                {x.text}
-              </span>
-            ))}
-        </div>
+        <Drops who="you" hp={run.hp} max={run.maxHp} loss={through} />
+        {floaters
+          .filter((x) => x.where === "you")
+          .map((x) => (
+            <span key={x.id} className={`floater ${x.kind}`}>
+              {x.text}
+            </span>
+          ))}
       </div>
 
       {/* ─── Hand ─── */}
       <div className="hand-zone" ref={handRef}>
-        {/* Actions left (bottom-left) and End turn (bottom-right) flank the hand, as in Slay the Spire */}
-        <div className="orb" title={`${f.actions} actions left`}>
-          <b>{f.actions}</b>
-          <small>/{maxActions}</small>
-        </div>
-        <button className={`end ${f.actions === 0 ? "ready" : ""}`} onClick={() => act(endTurn) && setSel(null)}>
-          End
-          <br />
-          turn
-        </button>
-        <Pile n={run.draw.length} side="left" />
         <div className="fan" style={{ ["--card-w" as string]: `${cardW}px` }}>
           {cards.map((c, i) => {
             const mid = (n - 1) / 2;
@@ -321,6 +312,20 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
             );
           })}
         </div>
+      </div>
+
+      {/* ─── The table's edge: draw pile, moons (actions), End turn, discard ─── */}
+      <div className="rail">
+        <Pile n={run.draw.length} side="left" />
+        <div className="moons" title={`${f.actions} of ${maxActions} actions left`}>
+          {Array.from({ length: maxActions }, (_, i) => (
+            <Moon key={i} lit={i < f.actions} />
+          ))}
+        </div>
+        <button className={`end ${f.actions === 0 ? "ready" : ""}`} onClick={() => act(endTurn) && setSel(null)}>
+          <Scroll />
+          <span>End turn</span>
+        </button>
         <Pile n={run.discard.length} side="right" />
       </div>
       {pv && (
@@ -335,15 +340,66 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
 
 // ─── Pieces ──────────────────────────────────────────────────────────────────
 
-function IntentBadge({ run, a }: { run: Run; a: EnemyAction }) {
+/** Drawn shapes, in 0–100 boxes: an irregular blot with a few spatters, a shield, a drop of blood. */
+const BLOT =
+  "M93 44Q90 50 96 57Q103 64 93 67Q83 70 80 74Q76 78 72 81Q67 84 62 89Q57 95 51 91Q44 87 38 86Q32 85 29 80Q26 76 18 74Q10 73 10 67Q9 61 9 56Q8 50 12 45Q15 41 8 31Q1 21 12 21Q23 21 28 19Q33 16 39 16Q45 16 51 11Q57 6 61 13Q65 19 70 22Q75 24 78 28Q82 31 89 34Q96 38 93 44Z";
+const SHIELD = "M50 4L92 14L88 52Q80 82 50 97Q20 82 12 52L8 14Z";
+const DROP = "M10 1C10 1 18 12 18 18.5A8 8 0 0 1 2 18.5C2 12 10 1 10 1Z";
+
+/** The enemy's name on a paper ribbon across the top of the scene, like a tarot title. */
+function Ribbon({ name }: { name: string }) {
+  const size = Math.min(22, 380 / Math.max(10, name.length));
+  return (
+    <div className="ribbon" aria-label={name}>
+      <svg viewBox="0 0 300 76" aria-hidden="true">
+        <path className="tail" d="M2 30H52V66H2L16 48Z" />
+        <path className="tail" d="M298 30H248V66H298L284 48Z" />
+        <path className="fold" d="M40 58L52 66V52Z" />
+        <path className="fold" d="M260 58L248 66V52Z" />
+        <path className="band" d="M40 20Q150 0 260 20V58Q150 38 40 58Z" />
+        <path id="ribbon-line" d="M52 46Q150 26 248 46" fill="none" />
+        <text style={{ fontSize: size }}>
+          <textPath href="#ribbon-line" startOffset="50%" textAnchor="middle">
+            {name}
+          </textPath>
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+/**
+ * Its next move, splashed beside it. An attack is a blot of blood carrying
+ * what will actually get through your block; the full blow is kept small on
+ * its rim, struck through, once you've blocked any of it (a flurry shows its
+ * blows underneath, "3 × 2"). Fully blocked, the
+ * blood dries brown. Anything else it does is an ink mark on a paper blot.
+ */
+function Threat({ run, a, adding }: { run: Run; a: EnemyAction; adding: number }) {
+  const f = run.fight!;
   if (a.k === "attack") {
-    const n = hitSize(run, a.n);
+    const each = hitSize(run, a.n);
+    const hit = each * (a.times ?? 1);
+    const guard = f.block + adding;
+    const left = Math.max(0, hit - guard);
     return (
-      <span className="intent atk">
+      <div className={`threat atk ${left === 0 ? "stopped" : ""}`} title={`Attack ${hit}`}>
+        <svg viewBox="-6 -2 116 104" aria-hidden="true">
+          <path d={BLOT} />
+          <circle cx="104" cy="28" r="3.5" />
+          <circle cx="-1" cy="64" r="2.5" />
+          <circle cx="84" cy="97" r="3" />
+          <circle cx="22" cy="7" r="2" />
+        </svg>
         <Glyph name="attack" fallback="blade" />
-        <b>{n}</b>
-        {a.times && a.times > 1 && <small>×{a.times}</small>}
-      </span>
+        <b>{left}</b>
+        {guard > 0 && <s className="was">{hit}</s>}
+        {a.times && a.times > 1 && (
+          <small className="times">
+            {each} × {a.times}
+          </small>
+        )}
+      </div>
     );
   }
   const map: Record<string, [string, IconName, string]> = {
@@ -355,30 +411,59 @@ function IntentBadge({ run, a }: { run: Run; a: EnemyAction }) {
   const [glyph, icon, text] = map[a.k];
   const title = a.k === "hex" ? `Adds ${a.count} × ${cardDef(a.card).name} to your deck` : a.k;
   return (
-    <span className="intent" title={title}>
+    <div className="threat" title={title}>
+      <svg viewBox="-6 -2 116 104" aria-hidden="true">
+        <path d={BLOT} />
+      </svg>
       <Glyph name={glyph} fallback={icon} />
       <b>{text}</b>
-    </span>
+    </div>
+  );
+}
+
+/** Your block: a blue shield laid over the blow it will soak. Dashed while it's only a card you're holding. */
+function Guard({ block, adding }: { block: number; adding: number }) {
+  if (block + adding <= 0) return null;
+  return <ShieldMark n={block + adding} preview={adding > 0} />;
+}
+
+function ShieldMark({ n, small, preview }: { n: number; small?: boolean; preview?: boolean }) {
+  return (
+    <div className={`shield-mark ${small ? "small" : ""} ${preview ? "preview" : ""}`} title="Block">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <path d={SHIELD} />
+      </svg>
+      <b>{n}</b>
+    </div>
   );
 }
 
 /**
- * HP and block, drawn the same for the enemy and for you so the two read as a
- * pair: a shield (hollow at 0) then the bar, with what's about to be lost hatched.
- * `adding` is block a held card would add, shown hatched on the shield.
+ * Life as ten drops of blood, each a tenth of the whole, filled like a vial
+ * from the bottom; the exact number sits beside them. Drops that the next
+ * blow would drain are hatched. The enemy's and yours are drawn the same.
  */
-function Vitals({ hp, max, block, adding = 0, loss, who }: { hp: number; max: number; block: number; adding?: number; loss: number; who: "foe" | "you" }) {
-  const pct = Math.max(0, (hp / max) * 100);
-  const cut = Math.min(pct, (loss / max) * 100);
-  const shown = block + adding;
+function Drops({ hp, max, loss, who }: { hp: number; max: number; loss: number; who: "foe" | "you" }) {
+  const per = max / 10;
+  const after = Math.max(0, hp - loss);
   return (
-    <div className={`vitals ${who}`}>
-      <span className={`shield-mark ${shown > 0 ? "" : "empty"} ${adding > 0 ? "preview" : ""}`} title={who === "you" ? "Your block" : "Its block"}>
-        <b>{shown}</b>
-      </span>
-      <div className="bar">
-        <i style={{ width: `${pct}%` }} />
-        {cut > 0 && <u style={{ left: `${pct - cut}%`, width: `${cut}%` }} />}
+    <div className={`drops ${who}`}>
+      <div className="row">
+        {Array.from({ length: 10 }, (_, i) => {
+          const lo = i * per;
+          const fill = Math.min(1, Math.max(0, (hp - lo) / per));
+          const risk = loss > 0 && hp > lo && after < lo + per;
+          const id = `${who}-drop-${i}`;
+          return (
+            <svg key={i} viewBox="0 0 20 28" className={risk ? "risk" : ""} aria-hidden="true">
+              <clipPath id={id}>
+                <rect x="0" y={28 - 27 * fill} width="20" height="28" />
+              </clipPath>
+              <path className="empty" d={DROP} />
+              {fill > 0 && <path className="full" d={DROP} clipPath={`url(#${id})`} />}
+            </svg>
+          );
+        })}
       </div>
       <span className="num">
         <b>{Math.max(0, hp)}</b>/{max}
@@ -387,9 +472,33 @@ function Vitals({ hp, max, block, adding = 0, loss, who }: { hp: number; max: nu
   );
 }
 
+/** One action: a gibbous moon while it's yours to spend, a dark new moon once spent. */
+function Moon({ lit }: { lit: boolean }) {
+  return (
+    <svg className={`moon ${lit ? "lit" : ""}`} viewBox="0 0 40 40" aria-hidden="true">
+      <circle className="disc" cx="20" cy="20" r="17" />
+      {lit && <path className="light" d="M20 3A17 17 0 0 1 20 37A9 17 0 0 1 20 3Z" />}
+    </svg>
+  );
+}
+
+/** A paper scroll with rolled ends, for End turn. */
+function Scroll() {
+  return (
+    <svg viewBox="0 0 160 52" preserveAspectRatio="none" aria-hidden="true">
+      <path className="sheet" d="M14 8Q80 2 146 8V44Q80 50 14 44Z" />
+      <ellipse className="roll" cx="14" cy="26" rx="8" ry="20" />
+      <ellipse className="roll" cx="146" cy="26" rx="8" ry="20" />
+      <ellipse className="core" cx="14" cy="26" rx="3" ry="8" />
+      <ellipse className="core" cx="146" cy="26" rx="3" ry="8" />
+    </svg>
+  );
+}
+
 function Pile({ n, side }: { n: number; side: "left" | "right" }) {
   return (
     <div className={`pile ${side}`} title={side === "left" ? "Draw pile" : "Discard pile"}>
+      <span className="back" style={{ backgroundImage: `url(${cardBack})` }} />
       <span className="back" style={{ backgroundImage: `url(${cardBack})` }} />
       <b>{n}</b>
     </div>

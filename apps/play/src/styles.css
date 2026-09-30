@@ -571,37 +571,24 @@ footer {
   80% { transform: translate(3px, 0); }
 }
 
-/* Enemy */
-.foe-zone {
-  display: grid;
-  grid-template-rows: 1fr auto;
-  justify-items: center;
-  align-items: end;
-  min-height: 0;
-  padding: 16px 0 10px;
-  border: 1px dashed transparent;
-}
-.foe-zone.armed {
-  border-color: var(--on-night-soft);
-}
-/* The place behind the enemy: a night plate, a band of drifting ground fog, the vignette */
-.foe-zone {
-  position: relative;
+/* The place runs behind the whole table, edge to edge; the ground carries on under your hand */
+.table {
   overflow: hidden;
   margin-inline: -16px;
   padding-inline: 16px;
-  border-bottom: 3px double var(--on-night-soft);
 }
-.foe-zone > :not(.scene) {
+.table > .scene {
+  z-index: 0;
+}
+.table > .scene.front {
+  z-index: 2;
+}
+.table > :not(.scene) {
   position: relative;
-  z-index: 1;
-}
-.foe-zone > .intents,
-.foe-zone > .foe-plate {
   z-index: 3;
 }
-.scene.front {
-  z-index: 2;
+.table > .foe-zone {
+  z-index: auto;
 }
 .scene.front .plate {
   animation: drift 9s ease-in-out infinite alternate;
@@ -609,6 +596,17 @@ footer {
 @keyframes drift {
   from { transform: translateX(-4px); }
   to { transform: translateX(4px); }
+}
+.scene .plate.mirror {
+  transform: scaleY(-1);
+}
+/* Below the ground line the scene darkens toward the bottom, so the cards and controls read against it */
+.scene .ground-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(transparent, color-mix(in srgb, var(--night) 55%, transparent) 30%, color-mix(in srgb, var(--night) 88%, transparent) 75%);
 }
 /* Pink Moment: the sky band takes the pink, printed a little off-register; blacks stay black */
 .scene .pink-wash {
@@ -642,74 +640,60 @@ footer {
 @keyframes fog {
   to { background-position-x: 600px; }
 }
-.foe-plate {
-  padding: 6px 10px;
-  background: color-mix(in srgb, var(--night) 82%, transparent);
-}
-/* Intent: a paper tag hung on a string over the enemy's head, like a price tag.
-   Paper reads over any scene; attacks are printed in blood, everything else in ink. */
-.intents {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 10px;
-  margin-bottom: 4px;
-  white-space: nowrap;
-  pointer-events: none;
-}
-.intent {
+
+/* Enemy */
+.foe-zone {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 4px 10px 4px 8px;
-  background: var(--paper);
-  color: var(--ink);
-  border: 2px solid var(--ink);
-  font-variant-numeric: tabular-nums;
-  transform: rotate(-3deg);
-  box-shadow: 2px -1px 0 color-mix(in srgb, var(--ink) 45%, transparent);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  align-items: end;
+  min-height: 0;
+  padding: 6px 0 4px;
+  outline: 1px dashed transparent;
+  outline-offset: -6px;
 }
-.intent::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: 100%;
-  width: 1px;
-  height: 400px;
-  background: var(--on-night-soft);
+.foe-zone.armed {
+  outline-color: var(--on-night-soft);
 }
-.intent .ico {
-  width: 20px;
-  height: 20px;
+.foe-zone > .sprite-wrap {
+  z-index: 1;
 }
-.glyph {
-  display: inline-block;
-  width: 26px;
-  height: 26px;
-  background: currentColor;
-  mask-size: contain;
-  -webkit-mask-size: contain;
-  mask-repeat: no-repeat;
-  -webkit-mask-repeat: no-repeat;
-  mask-position: center;
-  -webkit-mask-position: center;
+.foe-zone > .ribbon,
+.foe-zone > .threats,
+.foe-zone > .foe-life {
+  position: relative;
+  z-index: 3;
 }
-.intent b {
-  font-size: 30px;
-  font-weight: 800;
-  line-height: 1;
+
+/* The name: a paper ribbon across the top, like a tarot title */
+.ribbon {
+  width: min(300px, 82%);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
 }
-.intent small {
-  font-size: 17px;
-  font-weight: 800;
+.ribbon svg {
+  display: block;
+  width: 100%;
+  height: auto;
 }
-.intent.atk {
-  color: var(--blood);
-  box-shadow: 2px -1px 0 color-mix(in srgb, var(--blood) 55%, transparent);
+.ribbon .band {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1.5;
 }
+.ribbon .tail {
+  fill: color-mix(in srgb, var(--paper) 78%, var(--ink));
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.ribbon .fold {
+  fill: var(--ink);
+}
+.ribbon text {
+  font-family: var(--display);
+  fill: var(--ink);
+}
+
 .sprite-wrap {
   position: relative;
   height: 100%;
@@ -768,65 +752,225 @@ footer {
   from { opacity: 1; transform: translate(-50%, 0); }
   to { opacity: 0; transform: translate(-50%, -50px); }
 }
-.foe-plate {
+
+/* Drawn intent glyphs are masks, so they take the colour of whatever they sit in */
+.glyph {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  background: currentColor;
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
+}
+/* What it will do next: blots splashed beside it, your shield laid over the blow */
+.threats {
+  position: absolute !important;
+  left: 4%;
+  top: 30%;
   display: grid;
   justify-items: center;
   gap: 4px;
-  width: 72%;
-  max-width: 300px;
 }
-.foe-name {
-  font-family: var(--display);
-  font-size: 22px;
-  line-height: 1;
-}
-.foe-hp,
-.you-hp {
+.threat {
   position: relative;
+  width: 84px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--ink);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
+}
+.threat svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.threat svg path,
+.threat svg circle {
+  fill: var(--paper);
+}
+.threat .glyph,
+.threat .ico {
+  position: relative;
+  width: 28px;
+  height: 28px;
+}
+.threat.atk .glyph,
+.threat.atk .ico {
+  width: 22px;
+  height: 22px;
+}
+.threat b {
+  position: relative;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.threat small {
+  position: relative;
+  font-size: 15px;
+  font-weight: 800;
+}
+.threat.atk {
+  width: 100px;
+  height: 90px;
+  color: var(--paper);
+}
+.threat.atk svg path,
+.threat.atk svg circle {
+  fill: var(--blood);
+}
+.threat.atk b {
+  font-size: 40px;
+}
+/* The whole blow, before your block: small on the rim, struck through in blue */
+.threat .was {
+  position: absolute;
+  top: -2px;
+  right: -8px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--paper);
+  text-shadow: 0 1px 2px var(--night);
+  text-decoration: line-through;
+  text-decoration-color: var(--suit-hearts-night);
+  text-decoration-thickness: 3px;
+}
+.threat .times {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--paper);
+  text-shadow: 0 1px 2px var(--night);
+}
+/* Fully blocked: the blood dries brown and the number drops back */
+.threat.atk.stopped svg path,
+.threat.atk.stopped svg circle {
+  fill: #5A3A26;
+}
+.threat.atk.stopped b {
+  opacity: 0.6;
+}
+.shield-mark {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  margin-top: -30px;
+  margin-left: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--paper);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.6));
+}
+.shield-mark svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.shield-mark path {
+  fill: var(--suit-hearts);
+  stroke: var(--paper);
+  stroke-width: 4;
+}
+.shield-mark b {
+  position: relative;
+  margin-top: -6px;
+  font-size: 24px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.shield-mark.preview path {
+  stroke-dasharray: 8 6;
+  animation: breathe 1.2s ease-in-out infinite alternate;
+}
+@keyframes breathe {
+  from { opacity: 0.75; }
+  to { opacity: 1; }
+}
+.shield-mark.small {
+  width: 32px;
+  height: 32px;
+  margin: 0;
+}
+.shield-mark.small b {
+  font-size: 15px;
+  margin-top: -4px;
+}
+
+/* Life: ten drops of blood, filled like vials, the exact number beside them */
+.foe-life {
   display: flex;
   align-items: center;
   gap: 8px;
-  width: 100%;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--night) 80%, transparent), transparent);
 }
-.bar {
-  position: relative;
-  flex: 1;
-  height: 10px;
-  border: 1px solid var(--on-night);
+.drops {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.bar i {
-  position: absolute;
-  inset: 0 auto 0 0;
-  background: var(--on-night);
+.drops .row {
+  display: flex;
+  gap: 3px;
 }
-.bar u {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  background: repeating-linear-gradient(135deg, var(--suit-spades-night) 0 2px, transparent 2px 4px);
+.drops svg {
+  width: 14px;
+  height: 20px;
+  overflow: visible;
 }
-.foe-hp .num,
-.you-hp .num {
+.drops .empty {
+  fill: color-mix(in srgb, var(--night) 60%, transparent);
+  stroke: var(--on-night-soft);
+  stroke-width: 1.2;
+}
+.drops .full {
+  fill: var(--suit-spades-night);
+}
+/* Drops the next blow would drain go pale */
+.drops .risk .full {
+  fill: var(--paper);
+}
+.drops .risk {
+  animation: breathe 0.8s ease-in-out infinite alternate;
+}
+.drops .risk .empty {
+  stroke: var(--paper);
+  stroke-width: 1.6;
+}
+.drops .num {
   font-size: 13px;
   color: var(--on-night-soft);
   font-variant-numeric: tabular-nums;
 }
-.foe-hp .num b,
-.you-hp .num b {
-  font-size: 18px;
+.drops .num b {
+  font-size: 20px;
+  font-weight: 800;
   color: var(--on-night);
 }
-.shield-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  font-weight: 800;
-  font-size: 16px;
+.drops.you svg {
+  width: 16px;
+  height: 23px;
 }
-.shield-badge .ico {
-  width: 18px;
-  height: 18px;
+.drops.you .num b {
+  font-size: 22px;
 }
+
 .immune {
   display: flex;
   gap: 6px;
@@ -850,61 +994,16 @@ footer {
   transform: rotate(-35deg);
 }
 
-/* You: action orb, HP, end turn */
+
+/* You: your blood, mirroring the enemy's, just above your hand */
 .you-zone {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  border-top: 1px solid var(--rule-night);
-}
-.orb {
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  border: 3px solid var(--on-night);
-  outline: 1px solid var(--on-night);
-  outline-offset: 3px;
   display: flex;
-  align-items: baseline;
   justify-content: center;
-  padding-top: 8px;
-  font-variant-numeric: tabular-nums;
+  padding: 4px 0 0;
 }
-.orb b {
+.you-zone .floater {
+  top: -40px;
   font-size: 30px;
-  font-weight: 800;
-  line-height: 1;
-}
-.orb small {
-  font-size: 13px;
-  color: var(--on-night-soft);
-  font-weight: 700;
-}
-.you-hp .bar {
-  height: 12px;
-}
-.you-hp .floater {
-  top: -44px;
-  left: 30%;
-  font-size: 30px;
-}
-.end {
-  min-height: 48px;
-  padding: 0 14px;
-  border: 2px solid var(--on-night);
-  background: transparent;
-  color: var(--on-night);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-.end.ready {
-  background: var(--on-night);
-  color: var(--night);
 }
 
 /* Hand */
@@ -913,8 +1012,8 @@ footer {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  padding: 26px 0 24px;
-  min-height: 180px;
+  padding: 18px 0 0;
+  min-height: 150px;
 }
 .fan {
   display: flex;
@@ -930,30 +1029,110 @@ footer {
   cursor: grabbing;
   transition: none;
 }
-.pile {
-  position: absolute;
-  bottom: 14px;
+
+/* The table's edge: draw pile, moons, End turn, discard */
+.rail {
   display: grid;
-  justify-items: center;
-  gap: 2px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--on-night-soft);
-  font-variant-numeric: tabular-nums;
-  z-index: 60;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0 14px;
+}
+.pile {
+  position: relative;
+  width: 34px;
+  height: 46px;
   pointer-events: none;
 }
-.pile.left {
-  left: -6px;
-}
-.pile.right {
-  right: -6px;
-}
 .pile .back {
-  width: 24px;
-  height: 38px;
+  position: absolute;
+  inset: 0 6px 6px 0;
+  border-radius: 3px;
   border: 1px solid var(--on-night-soft);
   background-size: cover;
+}
+.pile .back + .back {
+  inset: 4px 2px 2px 4px;
+  transform: rotate(4deg);
+}
+.pile b {
+  position: absolute;
+  right: -8px;
+  bottom: -6px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+.pile.right {
+  opacity: 0.8;
+}
+.moons {
+  display: flex;
+  gap: 8px;
+  padding-left: 6px;
+}
+.moon {
+  width: 30px;
+  height: 30px;
+}
+.moon .disc {
+  fill: color-mix(in srgb, var(--night) 70%, transparent);
+  stroke: var(--on-night-soft);
+  stroke-width: 1.5;
+}
+.moon.lit .disc {
+  stroke: var(--paper);
+}
+.moon .light {
+  fill: var(--paper);
+}
+.end {
+  position: relative;
+  width: 132px;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 18px;
+  cursor: pointer;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
+}
+.end svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.end .sheet,
+.end .roll {
+  fill: color-mix(in srgb, var(--paper) 72%, var(--night));
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.end .core {
+  fill: var(--ink);
+}
+.end span {
+  position: relative;
+}
+/* Out of moons: the scroll brightens to say it's time */
+.end.ready .sheet,
+.end.ready .roll {
+  fill: var(--paper);
+}
+.end.ready {
+  animation: breathe 1s ease-in-out infinite alternate;
 }
 
 /* Game cards: paper, big rank, one icon + number */
@@ -1201,119 +1380,4 @@ footer {
   height: 9px;
   border-radius: 50%;
   background: var(--gilt);
-}
-
-/* Your block: a hearts-blue shield always beside your HP; hollow when you have none */
-.shield-mark {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 40px;
-  background: var(--suit-hearts);
-  clip-path: polygon(0 0, 100% 0, 100% 58%, 50% 100%, 0 58%);
-}
-.shield-mark b {
-  margin-top: -6px;
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--paper);
-  font-variant-numeric: tabular-nums;
-}
-.shield-mark.empty {
-  background: var(--rule-night);
-}
-.shield-mark.empty b {
-  color: var(--on-night-soft);
-}
-.shield-mark.preview {
-  background: repeating-linear-gradient(135deg, var(--suit-hearts) 0 3px, color-mix(in srgb, var(--suit-hearts) 55%, var(--night)) 3px 5px);
-}
-
-/* ─── Vitals: the same HP-and-block bar for the enemy and for you, so they read as a pair ─── */
-.vitals {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 8px;
-  width: min(240px, 100%);
-}
-.vitals .bar {
-  height: 12px;
-}
-.vitals .num {
-  font-size: 13px;
-  color: var(--on-night-soft);
-  font-variant-numeric: tabular-nums;
-  min-width: 44px;
-}
-.vitals .num b {
-  font-size: 18px;
-  color: var(--on-night);
-}
-.foe-plate .intents {
-  position: static;
-  transform: none;
-  margin: 6px 0 0;
-  justify-content: center;
-}
-.foe-plate .intent {
-  transform: none;
-}
-.foe-plate .intent::before {
-  display: none;
-}
-/* Your side: just your vitals, centred under the enemy's */
-.you-zone {
-  display: flex;
-  justify-content: center;
-  padding: 10px 0;
-}
-.you-bar {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  width: min(240px, 100%);
-}
-.you-bar .floater {
-  top: -40px;
-  left: 45%;
-  font-size: 30px;
-}
-/* Orb and End turn sit at the hand's corners */
-.hand-zone .orb {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 50px;
-  height: 50px;
-  padding-top: 6px;
-  z-index: 70;
-}
-.hand-zone .orb b {
-  font-size: 26px;
-}
-.hand-zone .end {
-  position: absolute;
-  right: 0;
-  top: 0;
-  min-height: 0;
-  width: 56px;
-  height: 50px;
-  padding: 0;
-  font-size: 10px;
-  line-height: 1.2;
-  z-index: 70;
-  background: var(--night);
-}
-.hand-zone .end.ready {
-  background: var(--on-night);
-  color: var(--night);
-}
-/* No block: a faint empty shield, no number */
-.vitals .shield-mark.empty {
-  opacity: 0.35;
-}
-.vitals .shield-mark.empty b {
-  visibility: hidden;
 }
