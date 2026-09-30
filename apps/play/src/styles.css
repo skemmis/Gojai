@@ -675,6 +675,8 @@ footer {
   place-items: center;
   /* Centre the capitals themselves, not the font's ascender/descender box */
   text-box: trim-both cap alphabetic;
+  /* IM Fell's cap-height metric runs a little short, so the trimmed capitals sit 2px high (measured by npm run ui:check) */
+  padding-top: 4px;
   font-family: var(--display);
   color: var(--ink);
   line-height: 1;
@@ -808,6 +810,14 @@ footer {
   height: 96px;
   color: var(--paper);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+/* Numbers and words printed on a shape are centred by their capitals, not the font's line box */
+.threat > b,
+.shield-mark b,
+.gcard .seal b,
+.pile b,
+.end span {
+  text-box: trim-both cap alphabetic;
 }
 /* The blow sits dead centre on the blot */
 .threat.atk > b {
