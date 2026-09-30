@@ -107,7 +107,37 @@ export function drawImage(t: Theme, name: string): { width: number; height: numb
   return null;
 }
 
-export function buildStyle(t: Theme, active: { spots: string[] }): StyleSpecification {
+/** The hand-drawn map as XYZ tiles (tools/map/drawn_tiles.py): URL template and the area it covers. */
+export interface DrawnMap {
+  tiles: string;
+  bounds: [number, number, number, number];
+  minzoom: number;
+  maxzoom: number;
+  tileSize: number;
+}
+
+/** Vector sheets the drawn map replaces (it already has the streets, buildings, creeks, parks and trail). */
+const KNOCK = { type: "circle", source: "spots", paint: { "circle-color": "#ECE3CF", "circle-opacity": 0.85, "circle-blur": 0.5 } } as const;
+const DRAWN_REPLACES = ["parks", "schools", "schools-line", "contours", "water-fill", "water-line", "buildings", "trails", "roads-minor", "roads-casing", "roads-core", "ojai-line"];
+
+export function buildStyle(t: Theme, active: { spots: string[] }, drawn?: DrawnMap): StyleSpecification {
+  const style = inkStyle(t, active);
+  if (!drawn) return style;
+  style.sources.drawn = { type: "raster", tiles: [drawn.tiles], tileSize: drawn.tileSize, bounds: drawn.bounds, minzoom: drawn.minzoom, maxzoom: drawn.maxzoom };
+  style.layers = style.layers.flatMap((l) => {
+    if (l.id === "paper") return [l, { id: "drawn", type: "raster", source: "drawn", paint: { "raster-fade-duration": 0, "raster-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0.4, 15, 0.9] } } as const];
+    if (DRAWN_REPLACES.includes(l.id)) return [];
+    // on the busy drawing, spots stand on a soft paper knockout so they lift off the buildings
+    if (l.id === "spots" || l.id === "spot-dots") return [{ ...KNOCK, id: `${l.id}-knock`, minzoom: l.id === "spots" ? CARD_ZOOM : 0, maxzoom: l.id === "spots" ? 24 : CARD_ZOOM, paint: { ...KNOCK.paint, "circle-radius": l.id === "spots" ? ["interpolate", ["linear"], ["zoom"], CARD_ZOOM, 13, 17, 19] : ["interpolate", ["linear"], ["zoom"], 12, 3.5, CARD_ZOOM, 6] } } as const, l];
+    if (l.id === "near-cards") return [{ ...KNOCK, id: "near-knock", source: "near", paint: { ...KNOCK.paint, "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 9, 14, 12, 17, 19] } } as const, l];
+    // the trail is drawn on the sheet; only a selected neighbourhood still gets its faint ink wash
+    if (l.id === "hood-fill" && l.type === "fill") return [{ ...l, paint: { ...l.paint, "fill-color": t.ink, "fill-opacity": ["case", ["boolean", ["feature-state", "selected"], false], 0.07, 0] } }];
+    return [l];
+  });
+  return style;
+}
+
+function inkStyle(t: Theme, active: { spots: string[] }): StyleSpecification {
   const isLive: ExpressionSpecification = ["in", ["get", "id"], ["literal", active.spots]];
   return {
     version: 8,
@@ -280,9 +310,9 @@ export function buildStyle(t: Theme, active: { spots: string[] }): StyleSpecific
         maxzoom: CARD_ZOOM,
         paint: {
           "circle-color": ["case", isLive, t.live, t.ink],
-          "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 1.4, CARD_ZOOM, 3.2],
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 1.8, CARD_ZOOM, 3.6],
           "circle-stroke-color": t.paper,
-          "circle-stroke-width": 0.8,
+          "circle-stroke-width": 1.2,
         },
       },
       {

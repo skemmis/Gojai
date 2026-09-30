@@ -108,6 +108,15 @@
 }
 .map-screen .map.labels .hood-name { opacity: .5; }
 .map-screen .you { width: 16px; height: 16px; border-radius: 50%; background: var(--ink); border: 3px solid var(--paper); outline: 2px solid var(--ink); }
+.map-screen .you.figure { width: auto; height: auto; border: 0; outline: 0; border-radius: 0; background: none; pointer-events: none; }
+.map-screen .you.figure img { display: block; position: relative; height: 62px; }
+.map-screen .far .you.figure img { height: 40px; } /* zoomed out: smaller, so it doesn't cover the spots around it */
+.map-screen .far .you.figure::before { width: 70px; height: 22px; bottom: -8px; }
+/* a pool of blue light at the figure's feet */
+.map-screen .you.figure::before {
+  content: ""; position: absolute; left: 50%; bottom: -12px; width: 110px; height: 34px; transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(31, 78, 121, 0.38), rgba(31, 78, 121, 0));
+}
 .map-screen .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .map-screen .find { margin: 10px 0 6px; }
 .map-screen .odds { display: grid; gap: 4px; margin: 4px 0 8px; font-size: 13px; }

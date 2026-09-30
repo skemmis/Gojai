@@ -53,6 +53,7 @@ mkdirSync(OUT, { recursive: true });
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".webp": "image/webp", ".png": "image/png", ".svg": "image/svg+xml", ".json": "application/json" };
 const server = createServer((req, res) => {
   let p = join(DIST, decodeURIComponent(new URL(req.url, "http://x").pathname));
+  if (!existsSync(p) && extname(p)) return void res.writeHead(404).end(); // e.g. a map tile outside the drawn area
   if (!existsSync(p) || statSync(p).isDirectory()) p = join(DIST, "index.html");
   res.setHeader("content-type", TYPES[extname(p)] ?? "application/octet-stream");
   createReadStream(p).pipe(res);
@@ -163,10 +164,12 @@ await click(page.getByRole("button", { name: "Begin" }), 2000);
 await checkState("map");
 // Close in, spots are cards with what each holds this roll stood on top (fight, elite, shop…); floor 3 so elites can show
 await steer("r.floor = 3", 400);
-const camera = (zoom) => page.evaluate((z) => { const m = window.__map; m.jumpTo({ zoom: z, center: [-119.2465, 34.4478] }); }, zoom);
+const camera = (zoom) => page.evaluate((z) => { const m = window.__map; m.jumpTo({ zoom: z, center: [-119.2452, 34.4479] }); }, zoom);
 await camera(16.2);
 await pause(1500);
 await checkState("map-close");
+// You stand on the map as your own figure
+if (!(await page.locator(".map-screen .you.figure img").count())) failures.push("map-close: the player's figure is missing");
 await camera(13.6);
 await steer("r.floor = 1", 800);
 

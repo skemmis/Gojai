@@ -22,6 +22,7 @@
     "vite": "^6.0.0"
   },
   "exports": {
-    "./MapScreen": "./src/MapScreen.tsx"
+    "./MapScreen": "./src/MapScreen.tsx",
+    "./mapStyle": "./src/mapStyle.ts"
   }
 }
