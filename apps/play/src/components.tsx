@@ -47,6 +47,7 @@ export function rankLabel(c: Card): string {
 
 /** What a card of this suit and value does: damage, block, or cards drawn/recalled. */
 export function powerAmount(suit: Suit, value: number): number {
+  if (CONFIG.powerByValue) return value;
   if (suit === "diamonds") return 1 + Math.floor(value / CONFIG.diamondsPer);
   if (suit === "clubs") return 1 + Math.floor(value / CONFIG.clubsPer);
   return value;

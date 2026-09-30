@@ -101,13 +101,15 @@ export function drawCards(run: Run, n: number): number {
  */
 export function recall(run: Run, n: number): Card[] {
   const toHand = CONFIG.clubsTo === "hand";
-  const best = run.discard
-    .filter((c) => !isJunk(c))
-    .sort((a, b) => b.value - a.value)
-    .slice(0, Math.max(0, toHand ? Math.min(n, CONFIG.maxHand - run.hand.length) : n));
+  const pool = run.discard.filter((c) => !isJunk(c));
+  // To your hand: your best cards. Back into the deck: any n of them, like shuffling a handful back in
+  const best = (toHand ? pool.sort((a, b) => b.value - a.value) : shuffle(run.rng, pool)).slice(
+    0,
+    Math.max(0, toHand ? Math.min(n, CONFIG.maxHand - run.hand.length) : n),
+  );
   for (const c of best) run.discard.splice(run.discard.indexOf(c), 1);
   if (toHand) run.hand.push(...best);
-  else run.draw.push(...shuffle(run.rng, best));
+  else run.draw = shuffle(run.rng, [...run.draw, ...best]);
   return best;
 }
 
@@ -211,6 +213,13 @@ function startTurn(run: Run) {
   run.stats.turns++;
   f.actions = CONFIG.actionsPerTurn + (f.turn === 1 && hasGuide(run, "ojai_day") ? 1 : 0);
   drawCards(run, (f.turn === 1 ? CONFIG.startHand : CONFIG.drawPerTurn) + (hasGuide(run, "oak_grove") ? 1 : 0));
+  // Out of cards entirely (nothing playable, nothing to draw): the discard pile is shuffled back and you draw a fresh hand
+  if (!CONFIG.reshuffle && run.draw.length === 0 && !run.hand.some((c) => !isJunk(c)) && run.discard.length) {
+    run.draw = shuffle(run.rng, run.discard.splice(0));
+    log(run, "Out of cards: your discard pile is shuffled back in.");
+    drawCards(run, CONFIG.startHand);
+    run.stats.deckOuts++;
+  }
   if (!run.hand.some((c) => !isJunk(c))) run.stats.deadHands++;
 }
 
@@ -318,8 +327,8 @@ function playNumbers(run: Run, c: Card): PlayPreview {
     if (!suits.includes(s)) continue;
     const immune = blocked(s);
     let amount = 0;
-    if (s === "clubs") amount = 1 + Math.floor(total / CONFIG.clubsPer) + (hasGuide(run, "farmers_market") ? 1 : 0);
-    if (s === "diamonds") amount = 1 + Math.floor(total / CONFIG.diamondsPer) + (hasGuide(run, "libbey") ? 1 : 0);
+    if (s === "clubs") amount = (CONFIG.powerByValue ? total : 1 + Math.floor(total / CONFIG.clubsPer)) + (hasGuide(run, "farmers_market") ? 1 : 0);
+    if (s === "diamonds") amount = (CONFIG.powerByValue ? total : 1 + Math.floor(total / CONFIG.diamondsPer)) + (hasGuide(run, "libbey") ? 1 : 0);
     if (s === "hearts") amount = total + (hasGuide(run, "crystal_shop") ? 2 : 0);
     if (s === "spades") amount = (CONFIG.allDamage ? 2 * total : total) + (mult > 1 && hasGuide(run, "besant") ? 4 : 0);
     powers.push({ suit: s, amount, immune });

@@ -26,11 +26,12 @@ export const NEW_RULES: Partial<Config> = {
 
 const tiers = (hp: number, atk: number, mult: number): Partial<Config> => ({ ...NEW_RULES, enemyHpMult: mult, tierEvery: 10, tierHp: hp, tierAtk: atk });
 
+const t = (hp: number, atk: number, mult: number): Partial<Config> => ({ enemyHpMult: mult, tierHp: hp, tierAtk: atk });
 const VARIANTS: [string, Partial<Config>][] = [
-  ["HP ×1.5, tiers +50% HP / +35% hit", tiers(0.5, 0.35, 1.5)],
-  ["HP ×1.5, tiers +80% HP / +50% hit", tiers(0.8, 0.5, 1.5)],
-  ["HP ×1.5, tiers +100% HP / +70% hit", tiers(1.0, 0.7, 1.5)],
-  ["HP ×2, tiers +50% HP / +35% hit", tiers(0.5, 0.35, 2)],
+  ["defaults (full deck, draw/return N, HP ×1.25, tiers +80% / +50%)", {}],
+  ["HP ×1.5, tiers +60% / +40%", t(0.6, 0.4, 1.5)],
+  ["HP ×2, tiers +80% / +50%", t(0.8, 0.5, 2)],
+  ["HP ×1.25, tiers +60% / +40%", t(0.6, 0.4, 1.25)],
 ];
 
 const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
@@ -42,10 +43,10 @@ function batch(policy: Policy, route: boolean): RunRecord[] {
   return rs;
 }
 
-console.log("| rules | fights won: greedy, picks route | greedy, random walk | never improves deck | turns per fight | HP lost per fight | where greedy runs end (tier: share) |");
-console.log("|---|---|---|---|---|---|---|");
+console.log("| rules | fights won: greedy, picks route | greedy, random walk | never improves deck | turns per fight | HP lost per fight | out of cards per fight | where greedy runs end (tier: share) |");
+console.log("|---|---|---|---|---|---|---|---|");
 if (process.argv.includes("--killers")) {
-  setConfig(tiers(0.8, 0.5, 1.5));
+  setConfig({});
   const k = new Map<string, number>();
   for (let i = 0; i < RUNS; i++) {
     const r = playRun(1 + i, "greedy", { route: true });
@@ -72,6 +73,6 @@ for (const [name, patch] of VARIANTS) {
   for (const r of route) ends.set(Math.floor(r.wins / every), (ends.get(Math.floor(r.wins / every)) ?? 0) + 1);
   const endStr = [...ends.entries()].sort((a, b) => a[0] - b[0]).slice(0, 6).map(([t, n]) => `${t + 1}: ${Math.round((100 * n) / RUNS)}%`).join(", ");
   console.log(
-    `| ${name} | ${w(route)} | ${w(walk)} | ${w(stat)} | ${(sum(route, (r) => r.stats.turns) / fights).toFixed(1)} | ${(sum(route, (r) => r.stats.hpLost) / fights).toFixed(1)} | ${endStr} |`,
+    `| ${name} | ${w(route)} | ${w(walk)} | ${w(stat)} | ${(sum(route, (r) => r.stats.turns) / fights).toFixed(1)} | ${(sum(route, (r) => r.stats.hpLost) / fights).toFixed(1)} | ${(sum(route, (r) => r.stats.deckOuts) / fights).toFixed(2)} | ${endStr} |`,
   );
 }

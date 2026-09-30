@@ -175,6 +175,8 @@ export interface RunStats {
   immuneHits: number;
   /** Cards discarded to draw one. */
   cycles: number;
+  /** Times you ran out of cards and the discard pile was shuffled back. */
+  deckOuts: number;
   /** Turns ended without playing anything. */
   idleTurns: number;
   /** Turns that started with no playable card in hand. */

@@ -21,6 +21,7 @@
     "ui:check": "node tools/ui-check/check.mjs"
   },
   "devDependencies": {
+    "@iconify-json/game-icons": "^1.2.4",
     "@types/d3-contour": "^3.0.6",
     "@types/node": "^22.10.5",
     "@types/pngjs": "^6.0.5",

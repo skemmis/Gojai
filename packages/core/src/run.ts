@@ -46,6 +46,7 @@ export function newRun(seed: number): Run {
       powerTotal: { hearts: 0, diamonds: 0, spades: 0, clubs: 0 },
       immuneHits: 0,
       cycles: 0,
+      deckOuts: 0,
       idleTurns: 0,
       deadHands: 0,
       catches: 0,

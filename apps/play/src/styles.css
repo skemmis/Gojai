@@ -1233,7 +1233,7 @@ footer {
   white-space: nowrap;
   overflow: hidden;
 }
-.gcard .pw .ico {
+.gcard .pw .act {
   width: 15px;
   height: 15px;
 }
@@ -1249,7 +1249,7 @@ footer {
 .gcard.s-clubs { --suit: var(--suit-clubs); }
 .gcard .rk,
 .gcard .pip,
-.gcard .pw .ico,
+.gcard .pw .act,
 .gcard .pw b {
   color: var(--suit, var(--ink));
 }
@@ -1315,10 +1315,9 @@ footer {
   align-items: center;
   gap: 1px;
 }
-.gcard .seal .stamp .ico {
-  width: calc(var(--card-w, 84px) * 0.13);
-  height: calc(var(--card-w, 84px) * 0.13);
-  fill: currentColor;
+.gcard .seal .stamp .act {
+  width: calc(var(--card-w, 84px) * 0.17);
+  height: calc(var(--card-w, 84px) * 0.17);
 }
 .gcard .seal b {
   position: relative;

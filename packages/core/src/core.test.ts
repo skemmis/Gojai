@@ -9,9 +9,9 @@ function withHand(run: Run, cards: [number, Suit][]) {
   return run.hand.map((c) => c.uid);
 }
 
-test("a run starts with Ace to 10 in hearts and spades, a few diamonds and clubs, and full HP", () => {
+test("a run starts with a full deck, Ace to 10 in every suit, and full HP", () => {
   const run = newRun(1);
-  assert.equal(allCards(run).length, 26);
+  assert.equal(allCards(run).length, 40);
   assert.deepEqual([...new Set(allCards(run).map((c) => c.suit))].sort(), ["clubs", "diamonds", "hearts", "spades"]);
   assert.equal(run.hp, CONFIG.playerHp);
   assert.equal(run.phase, "map");
@@ -33,7 +33,7 @@ test("you keep your hand between turns and only draw by playing diamonds", () =>
   assert.equal(run.hand.length, 2);
   const [d] = withHand(run, [[8, "diamonds"]]);
   play(run, d);
-  assert.equal(run.hand.length, 3); // 8♦ draws 1 + 8/4
+  assert.equal(run.hand.length, 8); // 8♦ draws 8, but a hand holds 8
 });
 
 test("a card matching one already played this turn, in another suit, counts double", () => {
@@ -103,23 +103,35 @@ test("the enemy's intents cycle and are visible ahead of time", () => {
   assert.equal(intent(run)[0].k, "hex");
 });
 
-test("clubs recall your best cards from the discard pile", () => {
+test("clubs shuffle as many discards as their value back into your deck", () => {
   const run = newRun(11);
   startFight(run, "short_term_rental");
-  withHand(run, [[9, "spades"], [2, "hearts"]]);
+  run.draw = [];
+  withHand(run, [[9, "spades"], [2, "hearts"], [5, "hearts"]]);
   run.discard = [];
-  const [c] = withHand(run, [[4, "clubs"]]); // 9♠ and 2♥ are now the discard pile
+  const [c] = withHand(run, [[2, "clubs"]]); // the discard pile is now just those three
   play(run, c);
-  assert.ok(run.hand.some((x) => x.value === 9 && x.suit === "spades"));
+  assert.equal(run.draw.length, 2);
+  assert.equal(run.discard.length, 2); // one left behind, plus the club itself
 });
 
-test("diamonds draw 1 + 1 per 4 value", () => {
+test("diamonds draw as many cards as their value", () => {
   const run = newRun(13);
-  startFight(run, "ebike_teen"); // immune to diamonds
-  run.fight!.enemy.suits = [];
-  const [d] = withHand(run, [[8, "diamonds"]]);
+  startFight(run, "ebike_teen");
+  const [d] = withHand(run, [[3, "diamonds"]]);
   play(run, d);
   assert.equal(run.hand.length, 3);
+});
+
+test("the discard pile only comes back when you're completely out of cards", () => {
+  const run = newRun(16);
+  startFight(run, "short_term_rental");
+  const [s] = withHand(run, [[4, "hearts"]]);
+  run.draw = [];
+  play(run, s);
+  assert.equal(run.draw.length, 0, "no reshuffle while you still hold cards");
+  endTurn(run);
+  assert.ok(run.hand.length > 0, "out of cards: the discard pile came back and you drew");
 });
 
 test("an exact kill catches the enemy as a face card", () => {

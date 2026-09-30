@@ -9,12 +9,9 @@ export const DEFAULT_CONFIG = {
   maxHand: 8,
   maxGuides: 5,
   startGold: 50,
-  startSuits: ["hearts", "spades"] as ("hearts" | "diamonds" | "spades" | "clubs")[],
+  startSuits: ["hearts", "spades", "diamonds", "clubs"] as ("hearts" | "diamonds" | "spades" | "clubs")[],
   /** Extra starting cards beyond the full suits above, e.g. a few diamonds and clubs. */
-  startExtra: [
-    { suit: "diamonds", values: [2, 4, 6, 8] },
-    { suit: "clubs", values: [3, 6] },
-  ] as { suit: "hearts" | "diamonds" | "spades" | "clubs"; values: number[] }[],
+  startExtra: [] as { suit: "hearts" | "diamonds" | "spades" | "clubs"; values: number[] }[],
 
   // Hand rules (Sam, 2026-09-30: trying Regicide's "keep your hand")
   /** Keep unplayed cards between turns instead of discarding them. */
@@ -24,9 +21,9 @@ export const DEFAULT_CONFIG = {
   /** Discard a card to draw one, for this many actions. null = not allowed. */
   cycleCost: null as number | null,
   /** An empty draw pile reshuffles the discard pile. Off = only clubs bring cards back. */
-  reshuffle: true,
+  reshuffle: false,
   /** Where clubs send recalled cards: your hand, or the bottom of the draw pile. */
-  clubsTo: "hand" as "hand" | "deck",
+  clubsTo: "deck" as "hand" | "deck",
   /**
    * Every card hits for its value, Regicide style, and its suit power comes
    * on top: spades hit double, hearts also block, diamonds also draw, clubs
@@ -39,6 +36,8 @@ export const DEFAULT_CONFIG = {
   rewardSuitWeights: { hearts: 1, spades: 1, diamonds: 2, clubs: 2 },
 
   // Suit powers
+  /** Diamonds draw N and clubs return N (Sam, 2026-09-30). Off = the per-4 / per-5 steps below. */
+  powerByValue: true,
   /** Diamonds draw 1 + floor(N / this). */
   diamondsPer: 4,
   /** Clubs recall 1 + floor(N / this) cards from discard to hand. */
@@ -63,7 +62,7 @@ export const DEFAULT_CONFIG = {
   tierHp: 0.8,
   tierAtk: 0.5,
   /** Every enemy's HP times this (all-cards-hit fights need more). */
-  enemyHpMult: 1.5,
+  enemyHpMult: 1.25,
 
   // Enemy scaling per floor (floor 1 = ×1)
   hpGrowth: 0.04,

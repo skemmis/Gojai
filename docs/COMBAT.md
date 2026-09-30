@@ -9,11 +9,11 @@ Every number lives in `packages/core/src/config.ts` or `content.ts`. The balance
 ## You
 
 - **40 HP.** HP carries between fights. Rest heals 30%, beating a boss heals 30%. The run ends at 0.
-- **Your deck** starts as **Ace to 10 in hearts and spades, plus 2, 4, 6, 8 of diamonds and 3, 6 of clubs** (26 cards). More diamonds and clubs come as rewards.
+- **Your deck** starts as a **full deck, Ace to 10 in every suit** (40 cards; face cards are earned by catching).
 
 ## A turn
 
-1. **Keep your hand.** A fight opens with a hand of **8** (at most 8 held). You don't draw each turn: unplayed cards stay, and **diamonds are how you get more**. When your draw pile runs out, your discard pile is shuffled back in.
+1. **Keep your hand.** A fight opens with a hand of **8** (at most 8 held). You don't draw each turn: unplayed cards stay, and **diamonds are how you get more**. The discard pile does **not** shuffle back by itself: **clubs** put cards back into your deck. Only if you're completely out (nothing playable in hand, nothing to draw) is the discard pile shuffled back and a fresh hand dealt.
 2. **You have 3 actions: play any 3 cards.** One card per action, in any order.
 3. **Every card hits for its value** (N), and its suit adds a power:
 
@@ -21,8 +21,10 @@ Every number lives in `packages/core/src/config.ts` or `content.ts`. The balance
    |---|---|
    | ♠ Spades | **Hit double**: 2N damage. |
    | ♥ Hearts | Also **block** N damage this turn. |
-   | ♦ Diamonds | Also **draw** 1 card, +1 per 4 value (A-3: 1, 4-7: 2, 8-10: 3). |
-   | ♣ Clubs | Also **recall** your best card from the discard pile to your hand, +1 per 5 value. |
+   | ♦ Diamonds | Also **draw** N cards (up to a hand of 8). |
+   | ♣ Clubs | Also **replenish**: shuffle N cards from your discard pile back into your deck. |
+
+   Each card's seal shows its value with an icon for its job: a sword (spades), a shield (hearts), drawing a card (diamonds), recycling (clubs). Icons from game-icons.net, CC BY 3.0.
 
    Why every card hits: with a kept hand and no draw each turn, a hand without diamonds used to leave you stuck (the balance lab found over half of all turns were dead). Once every card hits, no hand is dead.
 
@@ -31,7 +33,7 @@ Every number lives in `packages/core/src/config.ts` or `content.ts`. The balance
 
 ## Difficulty steps up
 
-Every **10 fights won** the enemies jump a tier: +80% of their base HP and +50% of their base attack, and within a tier they don't grow. The **10th fight of each tier is its boss**, whichever fight spot you take it at; shops and rests don't count toward the 10. **Elites unlock after the first boss.** A deck that doesn't improve falls behind: in the lab a bot that never takes a card, Guide or shop wins a median of about 14 fights; one that builds its deck wins about 35 (`npx tsx packages/sim/src/tiers.ts`).
+Every **10 fights won** the enemies jump a tier: +80% of their base HP and +50% of their base attack (all enemy HP is ×1.25 to start with), and within a tier they don't grow. The **10th fight of each tier is its boss**, whichever fight spot you take it at; shops and rests don't count toward the 10. **Elites unlock after the first boss.** A deck that doesn't improve falls behind: in the lab a bot that never takes a card, Guide or shop wins a median of about 19 fights; one that builds its deck wins about 29 (with the 40-card deck, each new card is a smaller share, so removing cards should matter more) (`npx tsx packages/sim/src/tiers.ts`).
 
 ## Intents
 
