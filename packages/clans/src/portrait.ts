@@ -66,8 +66,8 @@ export const HAIR = [
 /** Facial hair only for men; everyone else rolls from the rest. */
 const HAIR_NO_FACIAL = HAIR.slice(0, -2);
 export const POSES = [
-  "looking straight at the viewer", "in three-quarter view, eyes lowered", "in profile, gazing off to one side",
-  "looking up, as if at the bluffs", "half turned away, glancing back",
+  "standing still, looking straight at the viewer", "standing in three-quarter view, eyes lowered",
+  "mid-stride, walking", "standing looking up, as if at the bluffs", "paused mid-step, glancing back over the shoulder",
 ] as const;
 
 /** A small, quiet touch of the player's faction, so portraits read as one side or the other. */
@@ -116,18 +116,29 @@ export function rollCharacter(seed: number, faction: FactionId): Character {
 
 export const characterName = (c: Character) => `The ${c.archetype.name}`;
 
-/** House style, as the illustration thread locked it (sepia ink on paper, From Hell grit, Doré restraint). */
-export const PORTRAIT_STYLE =
-  "A rough, gritty ink drawing in the manner of Eddie Campbell's artwork for From Hell: nervous, broken, scratchy dip-pen lines, dry-brush blacks, uneven cross-hatching, visible nib drag, deep shadow on one side of the face. " +
-  "Composed like a portrait card from a 1910s occult tarot deck in the tradition of Pamela Colman Smith: flat, symbolic, stage-like, the figure front and centre, heavy outlines. " +
-  "Tone: restrained and solemn, in the spirit of Gustave Doré: character carried by shadow, stillness and posture. Human, a little weathered, quietly odd, never grotesque, never a caricature. " +
-  "Colour: sepia only, dark warm sepia-brown ink (#2A1E14) on warm cream paper (#ECE3CF). No other colours. Hand-drawn, not digital, not pixel art, no grey wash, no gradients.";
+/**
+ * The enemy sprite prompt (gojai-art/sprites/raw/gen2.mjs), block for block,
+ * so players and enemies read as one cast: same ink, same sprite framing on a
+ * green key, keyed out and shown on the same backdrops. Only the tone line
+ * changes: enemies are quietly wrong, players are just quietly odd.
+ */
+export const SPRITE_STYLE =
+  "A rough, gritty black ink drawing in the manner of Eddie Campbell's artwork for From Hell: nervous, broken, scratchy dip-pen lines, dry-brush blacks, uneven frantic cross-hatching, visible nib drag, heavy shadow on one side. Off-white paper tones inside the figure. Hand-drawn, not digital, not pixel art, no grey wash, no gradients.";
+export const PLAYER_TONE =
+  "Tone: restrained and solemn, in the spirit of Gustave Doré: character carried by shadow, stillness, scale and posture, never by expression. No fangs, no snarl, no glowing eyes, nothing cartoonish or heavy-metal. Human, a little weathered, quietly odd rather than wrong. Deadpan.";
+export const SPRITE_FRAME =
+  "A single full-body game sprite for a card-battle game like Slay the Spire, shown whole from head to feet with nothing cropped. The figure stands on a perfectly flat, solid pure green (#00FF00) chroma-key background that fills the entire frame and every gap, including between the legs and arms: no ground, no cast shadow, no spatter, no border, no paper texture on the background.";
+export const SPRITE_INK = "Black ink and off-white paper only, no other colour.";
 
+/** Players face right, across the table from the enemies (who face left). */
 export function portraitPrompt(c: Character): string {
+  const a = /^[aeiou]/.test(c.age) ? "an" : "a";
   return [
-    PORTRAIT_STYLE,
-    "A tight head-and-shoulders portrait for a player's profile card, portrait 3:4: cropped from just above the head to mid-chest, never the whole body. The face is large and fills the upper half of the frame, readable when the card is only 96 pixels wide; props are cropped by the frame edges. FULL-BLEED: the drawing runs off every edge, no border, no frame line, no inset box, no title panel. A dark, heavily inked, low-detail background (night oaks, hills or sky) so the lit face stands out.",
-    `Subject: ${/^[aeiou]/.test(c.age) ? "an" : "a"} ${c.age} ${c.who}, ${c.build}, with ${c.hair}, ${c.pose}. They are a ${c.archetype.name.toLowerCase()} of the Ojai valley: ${c.archetype.look}. Also: ${c.touch}.`,
-    "No letters, no numbers, no text, no signature, no watermark.",
+    SPRITE_STYLE,
+    PLAYER_TONE,
+    SPRITE_FRAME,
+    SPRITE_INK,
+    `Subject: A player character called ${characterName(c)}, one of the walkers of the Ojai valley: ${a} ${c.age} ${c.who}, ${c.build}, with ${c.hair}, ${c.pose}, ${c.archetype.look}. Also: ${c.touch}. Drawn full length, from the top of the head down to both feet. Shown FACING RIGHT or toward the viewer, turned toward the right edge of the frame.`,
+    "No signature, no watermark.",
   ].join("\n\n");
 }

@@ -96,7 +96,7 @@ test("characters are rolled from a seed, in the house style, with the faction's 
   assert.deepEqual(rollCharacter(7, "order"), a);
   assert.ok(FACTION_TOUCH.order.includes(a.touch));
   const prompt = portraitPrompt(a);
-  assert.ok(prompt.includes("#2A1E14") && prompt.includes(a.archetype.look) && prompt.includes(a.touch));
+  assert.ok(prompt.includes("#00FF00") && prompt.includes("FACING RIGHT") && prompt.includes(a.archetype.look) && prompt.includes(a.touch));
   const looks = new Set(Array.from({ length: 200 }, (_, i) => rollCharacter(i, "pathless")).map((c) => `${c.archetype.id}|${c.age}|${c.who}|${c.hair}`));
   assert.ok(looks.size > 180, `${looks.size} distinct of 200`);
   for (let i = 0; i < 300; i++) {
