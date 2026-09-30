@@ -9,6 +9,7 @@ import {
 } from "@gojai/map";
 import { buildStyle, drawImage, type DrawnMap } from "./mapStyle.ts";
 import { FIND_GLYPH, FIND_LABEL, THEME as theme } from "./theme.ts";
+import auraUrl from "./assets/aura.webp"; // the painted aura (gojai-ui/pieces/raw/halo: gen-aura.mjs, aura-1.png)
 
 type Selection =
   | { kind: "spot"; id: string }
@@ -96,7 +97,7 @@ export interface MapScreenProps {
   spotGlyph?: (spot: Spot, find: Find) => string | undefined;
   /** The hand-drawn map to use as the base sheet instead of the ink vector map (see tools/map/drawn_tiles.py). */
   drawn?: DrawnMap;
-  /** The player's figure (their portrait cut out with a blue edge) to stand on the map instead of the ink dot. */
+  /** The player's figure (their portrait cut out on a hand-painted blue halo) to stand on the map instead of the ink dot. */
   youFigure?: string;
 }
 
@@ -104,6 +105,29 @@ export interface MapScreenProps {
  * The whole map screen: MapLibre map, top bar, "Happening now" band and the
  * bottom sheet. Drop it into any React app (it fills its positioned parent).
  */
+/** Serve drawn:// tiles out of the drawn map's pack files: each pack is fetched once, on the first tile it holds. */
+const packCache = new Map<string, Promise<ArrayBuffer>>();
+let served: DrawnMap | undefined;
+function servePacks(drawn: DrawnMap) {
+  if (!drawn.index || served === drawn) return;
+  if (served) maplibregl.removeProtocol("drawn");
+  served = drawn;
+  const { index, packs = [] } = drawn;
+  maplibregl.addProtocol("drawn", async ({ url }) => {
+    const at = index[url.slice("drawn://".length)];
+    if (!at) throw new Error(`no drawn tile ${url}`);
+    const [p, off, len] = at;
+    const src = packs[p];
+    if (!packCache.has(src)) {
+      const load = fetch(src).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(`${src}: ${r.status}`))));
+      load.catch(() => packCache.delete(src)); // a failed pack is fetched again on the next tile
+      packCache.set(src, load);
+    }
+    const buf = await packCache.get(src)!;
+    return { data: buf.slice(off, off + len) };
+  });
+}
+
 export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, onOpen, autoLocate = false, tools, bare = false, onSelect, onSelectHood, hoodBadge, spotGlyph, drawn, youFigure }: MapScreenProps) {
   const mapEl = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
@@ -129,6 +153,7 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
 
   // Map setup (once).
   useEffect(() => {
+    if (drawn) servePacks(drawn);
     const phone = window.innerWidth < 760;
     const m = new maplibregl.Map({
       container: mapEl.current!,
@@ -190,6 +215,7 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
   useEffect(() => {
     if (styled.current === active) return; // the map was built with this style
     styled.current = active;
+    if (drawn) servePacks(drawn);
     map.current?.setStyle(buildStyle(theme, active, drawn));
   }, [active]);
 
@@ -275,15 +301,19 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
     const el = document.createElement("div");
     el.className = youFigure ? "you figure" : "you";
     if (youFigure) {
-      // The player's own character standing where they are, in a pool of blue (the colour of "within your reach")
+      // The player's own character standing where they are, on a hand-painted blue aura (blue = you and what you
+      // can reach). One painted aura for every character: CSS sizes it around whatever figure stands on it.
+      const aura = document.createElement("span");
+      aura.className = "aura";
+      aura.style.backgroundImage = `url(${auraUrl})`;
       const img = document.createElement("img");
       img.src = youFigure;
       img.alt = "";
       img.draggable = false;
-      el.appendChild(img);
+      el.append(aura, img);
     }
-    // feet on the spot: the figure image has a 5 px outline margin under the feet
-    const opts: maplibregl.MarkerOptions = youFigure ? { element: el, anchor: "bottom", offset: [0, 5] } : { element: el };
+    // feet on the spot
+    const opts: maplibregl.MarkerOptions = youFigure ? { element: el, anchor: "bottom", offset: [0, 2] } : { element: el };
     youMarker.current = new maplibregl.Marker(opts).setLngLat(at).addTo(m);
   }, [you, youFigure, anywhere]);
 
