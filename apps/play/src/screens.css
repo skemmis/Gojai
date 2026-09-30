@@ -132,6 +132,19 @@
   font-size: var(--t-name);
   line-height: 1.15;
 }
+.waits .holds,
+.waits .walk {
+  display: block;
+}
+.waits .walk {
+  font-family: var(--body);
+  font-size: var(--t-small, 0.85rem);
+  opacity: 0.75;
+}
+.waits .kind {
+  height: 1.15em;
+  vertical-align: -0.3em;
+}
 .hourglass {
   height: 1em;
   vertical-align: -0.12em;
@@ -468,6 +481,10 @@
 }
 .picker-layer .k-screen-head {
   max-width: 420px;
+}
+/* A long deck scrolls the layer; nothing in it may be squeezed to fit (a squeezed ribbon lifts its title off centre) */
+.picker-layer > * {
+  flex-shrink: 0;
 }
 .picker-layer > p {
   margin: 0;
