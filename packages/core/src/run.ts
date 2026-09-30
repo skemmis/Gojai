@@ -137,13 +137,18 @@ export function visitSpot(run: Run): void {
  * its pacing: the first spot is a fight, elites wait a few floors, and every
  * Nth floor is a boss whatever the spot rolled.
  */
+/** What a spot's roll becomes on this floor: the run's own pacing sits on top of what the spot rolled. */
+export function encounterFor(run: Run, encounter: EncounterKind): NodeKind {
+  const kind: NodeKind = encounter === "mystery" ? "event" : encounter;
+  if (isBossFloor(run.floor)) return "boss";
+  if (run.floor === 1) return "fight";
+  if (kind === "elite" && run.floor < CONFIG.eliteFromFloor) return "fight";
+  return kind;
+}
+
 export function enterEncounter(run: Run, encounter: EncounterKind, spot: SpotContext | null = null): void {
   if (run.phase !== "map") throw new Error("Not on the map.");
-  let kind: NodeKind = encounter === "mystery" ? "event" : encounter;
-  // The run's own pacing sits on top of what the spot rolled
-  if (isBossFloor(run.floor)) kind = "boss";
-  else if (run.floor === 1) kind = "fight";
-  else if (kind === "elite" && run.floor < CONFIG.eliteFromFloor) kind = "fight";
+  const kind = encounterFor(run, encounter);
   run.node = kind;
   run.spot = spot;
   if (kind === "fight") startFight(run, enemyFor(run, "normal"));

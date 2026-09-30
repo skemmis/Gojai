@@ -1,5 +1,6 @@
 /**
- * UI check: renders the play page at phone size, walks into a fight, saves
+ * UI check: renders the play page at phone size, joins, visits every screen
+ * it can reach from the map, walks into a fight, saves
  * screenshots for review, and measures alignment in numbers instead of by eye.
  *
  *   npm run ui:check            (builds apps/play first)
@@ -34,6 +35,12 @@ const CENTRED = [
   ["card value on seal", ".gcard .seal b", ".gcard .seal", "xy"],
   ["End turn on scroll", ".end span", ".end", "xy"],
   ["pile counts", ".pile b", ".pile b", "xy"],
+  ["title on ribbon", ".k-screen-head .ribbon span", ".k-screen-head .ribbon span", "xy"],
+  ["label on scroll button", ".k-scroll span", ".k-scroll", "xy"],
+  ["word on nav seal", ".k-seal span", ".k-seal", "xy"],
+  ["price on gilt tag", ".k-price b", ".k-price b", "xy"],
+  ["name on arch banner", ".k-arch .banner", ".k-arch .banner", "xy"],
+  ["rank on laurel", ".rank .n b", ".n", "xy"],
 ];
 
 const args = process.argv.slice(2);
@@ -97,7 +104,7 @@ async function checkState(state) {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   if (overflow > 0) failures.push(`${state}: page scrolls sideways by ${overflow}px`);
   const spill = await page.evaluate(() =>
-    [...document.querySelectorAll(".table button, .ribbon, .threat, .drops, .pile, .moons")]
+    [...document.querySelectorAll(".table button, .ribbon, .threat, .drops, .pile, .moons, .k-screen button, .k-sheet, .k-choice, .map-nav, .map-top, .spot-sheet, .picker-layer button")]
       .map((el) => [el.className, el.getBoundingClientRect()])
       .filter(([, r]) => r.width && (r.left < -1 || r.right > window.innerWidth + 1))
       .map(([c]) => String(c)),
@@ -105,7 +112,7 @@ async function checkState(state) {
   for (const c of spill) failures.push(`${state}: "${c}" runs off the screen`);
   // Words cut off by the box they're printed in (text wider or taller than its container)
   const clipped = await page.evaluate(() =>
-    [...document.querySelectorAll(".table b, .table span, .table button, .table small")]
+    [...document.querySelectorAll(".table b, .table span, .table button, .table small, .k-screen b, .k-screen span, .k-screen button, .map-top span, .map-top b, .spot-sheet b, .spot-sheet span")]
       .filter((el) => el.childElementCount === 0 && el.textContent.trim() && el.getBoundingClientRect().width)
       .filter((el) => el.scrollWidth > el.clientWidth + 1 || el.getBoundingClientRect().right > el.parentElement.getBoundingClientRect().right + 1 && getComputedStyle(el.parentElement).overflow !== "visible")
       .map((el) => `"${el.textContent.trim()}"`),
@@ -117,6 +124,13 @@ async function checkState(state) {
     for (let i = 0; i < n; i++) {
       const t = texts.nth(i);
       if (!(await t.isVisible())) continue;
+      // Skip text under an overlay (a picker or sheet on top): it isn't what anyone sees
+      const onTop = await t.evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+        return !!hit && (el.contains(hit) || hit.contains(el) || el.parentElement.contains(hit));
+      });
+      if (!onTop) continue;
       const frame = textSel === frameSel ? t : t.locator(`xpath=ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' ${frameSel.split(".").pop().split(" ")[0]} ')][1]`);
       const off = await inkOffset(t, frame);
       if (!off) continue;
@@ -128,25 +142,98 @@ async function checkState(state) {
   }
 }
 
-await page.goto(url);
-await page.waitForTimeout(2500);
-await page.getByRole("button", { name: "Spots", exact: true }).click();
-await page.locator(".open-btn").first().click();
-await page.waitForTimeout(1200);
+const pause = (ms) => page.waitForTimeout(ms);
+const click = async (loc, ms = 500) => {
+  await loc.click();
+  await pause(ms);
+};
+/** Steer the run through the page's check hook (?uicheck): `fn` gets the run and the rules engine. */
+const steer = async (fn, ms = 900) => {
+  await page.evaluate((src) => window.__act((r) => new Function("r", "core", src)(r, window.__core)), fn);
+  await pause(ms);
+};
+
+await page.goto(url + "?uicheck");
+await pause(2500);
+// First time: dealt faces, faction, name
+await checkState("join");
+await page.locator("#join-name").fill("Tester");
+await click(page.getByRole("button", { name: "Begin" }), 2000);
+await checkState("map");
+
+// The screens behind the map's seals, then back to the map
+for (const [seal, state] of [["Deck", "deck"], ["Clan", "clan"], ["Boards", "boards"], ["You", "profile"]]) {
+  await click(page.locator(".map-nav .k-seal", { hasText: seal }), 700);
+  await checkState(state);
+  await click(page.getByRole("button", { name: "Back" }), 400);
+}
+
+// A spot opened on the map
+await page.locator(".map-screen .spot.event").first().evaluate((el) => el.click());
+await pause(500);
+await checkState("spot");
+await click(page.getByRole("button", { name: "Walk on" }), 300);
+
+// Between-fight places, entered straight from the rules engine
+await steer("r.floor = 2; r.hp = 28; core.enterEncounter(r, 'rest')");
+await checkState("rest");
+await click(page.locator(".k-choice", { hasText: "Upgrade" }));
+await checkState("rest-picker");
+await click(page.getByRole("button", { name: "Cancel" }), 300);
+await click(page.locator(".k-choice", { hasText: "Heal" }));
+await steer("r.gold = 120; core.enterEncounter(r, 'shop')");
+await checkState("shop");
+await click(page.getByRole("button", { name: "Leave" }));
+await steer("core.enterEncounter(r, 'mystery')");
+await checkState("event");
+await click(page.locator(".k-choice").first(), 700);
+if (await page.locator(".picker-layer").count()) await click(page.locator(".picker-layer .card-pick").first(), 700);
+await steer("r.floor = 1; r.phase = 'map'");
+
+// Into a fight from the spot sheet
+await page.locator(".map-screen .spot.event").first().evaluate((el) => el.click());
+await pause(500);
+await click(page.getByRole("button", { name: "Enter" }), 1200);
 await checkState("fight-start");
 
 const heart = page.locator(".gcard.s-hearts").first();
 if (await heart.count()) {
   await heart.click();
-  await page.waitForTimeout(300);
+  await pause(300);
   await checkState("fight-holding-heart");
   await heart.click();
-  await page.waitForTimeout(600);
+  await pause(600);
   await checkState("fight-after-heart");
 }
 await page.getByRole("button", { name: /End turn/ }).click();
-await page.waitForTimeout(1500);
+await pause(1500);
 await checkState("fight-next-turn");
+
+// Win it: one hit left, then a spade
+await steer("r.fight.enemy.hp = 1; r.fight.enemy.block = 0", 400);
+const spade = page.locator(".gcard.s-spades").first();
+if (await spade.count()) {
+  await click(spade, 300);
+  await click(spade, 1800);
+}
+if (await page.locator(".k-screen.reward").count()) await checkState("reward");
+else failures.push("winning the fight didn't reach the reward screen");
+
+// And lose a run, for the offering
+await steer("r.phase = 'map'; r.reward = null", 400);
+await page.locator(".map-screen .spot.event").nth(1).evaluate((el) => el.click());
+await pause(400);
+await click(page.getByRole("button", { name: "Enter" }), 1200);
+// End turns at 1 HP until a blow lands (the foe may block or buff first)
+for (let i = 0; i < 6 && !(await page.locator(".k-screen.over").count()); i++) {
+  await steer("r.hp = 1", 200);
+  const end = page.getByRole("button", { name: /End turn/ });
+  if (!(await end.count())) break;
+  await end.click();
+  await pause(1800);
+}
+if (await page.locator(".k-screen.over").count()) await checkState("over");
+else failures.push("losing didn't reach the run-over screen");
 
 await browser.close();
 server.close();

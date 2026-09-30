@@ -1,18 +1,10 @@
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { MapScreen as WorldMap } from "@gojai/map-app/MapScreen";
-import { visit, type SpotOpened, type Visits } from "@gojai/map";
+import { visit, spotOpened, type Spot, type SpotState, type Visits } from "@gojai/map";
 import {
   newRun,
   enterEncounter,
   isBossFloor,
-  play,
-  playError,
-  previewPlay,
-  endTurn,
-  intent,
-  incoming,
-  hitSize,
-  multiplier,
   takeRewardCard,
   takeRewardGuide,
   leaveReward,
@@ -25,7 +17,6 @@ import {
   chooseEvent,
   allCards,
   cardName,
-  cardDef,
   isJunk,
   restHeal,
   score,
@@ -34,12 +25,36 @@ import {
   GUIDE_BY_ID,
   CONFIG,
 } from "@gojai/core";
-import type { Run, Suit, EnemyAction } from "@gojai/core";
+import * as core from "@gojai/core";
+import type { Card, Run, Suit } from "@gojai/core";
 import { FightScreen } from "./fight";
-import { CardView, CardPicker, GuideChip, Icon, PowerLine, SuitMark, POWER, sortCards, type IconName } from "./components";
+import "./screens.css";
+import { sortCards } from "./components";
+import {
+  Choice,
+  Emblem,
+  GameCard,
+  Gold,
+  GuideCard,
+  InkLink,
+  Line,
+  Price,
+  RunStatus,
+  SCENES,
+  Screen,
+  ScrollButton,
+  Sheet,
+  Switch,
+  Title,
+  UI,
+  sceneFor,
+} from "./kit";
+import { BoardsScreen, ClanScreen, JoinScreen, LiveScreen, MapChrome, ProfileScreen, SpotSheet, type View } from "./clan/screens";
+import { ME, catchUp, cleared, groundName, holders, join, loadTown, newTown, runOver, saveTown, walked, type Town } from "./clan/town";
 
 type Act = (fn: (r: Run) => void) => boolean;
 
+const UI_CHECK = new URLSearchParams(location.search).has("uicheck");
 const randomSeed = () => Math.floor(Math.random() * 1e9);
 
 /** Per-viewer conveniences kept in this browser only; the page works without them. */
@@ -62,7 +77,14 @@ function store(key: string, value: unknown) {
 export function App() {
   const [run, setRun] = useState<Run>(() => newRun(randomSeed()));
   const [error, setError] = useState<string | null>(null);
-  const [seedText, setSeedText] = useState("");
+  const [town, setTown] = useState<Town>(() => {
+    const t = loadTown() ?? newTown(randomSeed());
+    catchUp(t);
+    return t;
+  });
+  const [view, setView] = useState<View>("map");
+  const [picked, setPicked] = useState<{ spot: Spot; state: SpotState; now: Date } | null>(null);
+  const [now, setNow] = useState(() => new Date());
   // Who you are to the map (finds differ per player), which spots you've opened, and test mode
   const [playerId] = useState(() => {
     const id = stored("player", "") || `p${randomSeed()}`;
@@ -72,16 +94,26 @@ export function App() {
   const [visits, setVisits] = useState<Visits>(() => stored("visits", {}));
   const [anywhere, setAnywhere] = useState<boolean>(() => stored("anywhere", true));
 
-  const openSpot = (o: SpotOpened) => {
-    const ok = act((r) =>
-      enterEncounter(r, o.find, { spotId: o.spot.id, name: o.spot.gameName ?? o.spot.name, place: o.place, live: o.liveEvents }),
-    );
-    if (!ok) return;
-    const v = visit(visits, o.spot, o.at);
-    setVisits(v);
-    store("visits", v);
-  };
+  useEffect(() => saveTown(town), [town]);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setNow(new Date());
+      setTown((t) => {
+        const c = structuredClone(t);
+        return catchUp(c) ? c : t;
+      });
+    }, 30_000);
+    return () => clearInterval(id);
+  }, []);
 
+  const changeTown = (fn: (t: Town) => void) =>
+    setTown((t) => {
+      const c = structuredClone(t);
+      fn(c);
+      return c;
+    });
+
+  /** Apply a rules change to the run, and tell the clan layer what it meant: a floor passed, a catch, a run's end. */
   const act: Act = (fn) => {
     const r = structuredClone(run);
     try {
@@ -91,186 +123,236 @@ export function App() {
       return false;
     }
     setError(null);
+    const was = run.phase;
+    if (was !== r.phase) {
+      changeTown((t) => {
+        if (r.phase === "reward" && r.reward?.caught && r.fight && t.me && !t.me.caught.includes(r.fight.enemy.id)) t.me.caught.push(r.fight.enemy.id);
+        if (r.phase === "map" && was !== "over") cleared(t);
+        if (r.phase === "over") runOver(t, r.stats.catches);
+      });
+    }
     setRun(r);
     return true;
   };
 
-  const startNew = (seed?: number) => {
-    const s = seed ?? (seedText.trim() ? Number(seedText.trim()) : randomSeed());
-    if (!Number.isFinite(s)) return setError("Seed must be a number.");
-    setRun(newRun(Math.floor(s)));
-    setError(null);
+  // The UI check (tools/ui-check) steers the run straight to screens it can't reach by play
+  if (UI_CHECK) Object.assign(window, { __act: act, __core: core });
+
+  const enter = () => {
+    if (!picked || picked.state.kind !== "open") return;
+    const o = spotOpened(picked.spot, picked.state.find, new Date());
+    const boss = isBossFloor(run.floor);
+    const ok = act((r) => enterEncounter(r, o.find, { spotId: o.spot.id, name: o.spot.gameName ?? o.spot.name, place: o.place, live: o.liveEvents }));
+    if (!ok) return;
+    changeTown((t) => void walked(t, o.spot.id, o.find, boss));
+    const v = visit(visits, o.spot, o.at);
+    setVisits(v);
+    store("visits", v);
+    setPicked(null);
   };
 
-  // Fights happen on the night table; the map is the home screen; everything else is ink on paper.
-  const night = run.phase === "fight";
+  const startNew = (seed = randomSeed()) => {
+    setRun(newRun(seed));
+    setError(null);
+    setView("map");
+  };
+
+  const heldBy = useMemo(() => holders(town), [town.territory]);
+  const hoodBadge = useCallback((id: string) => (heldBy[id] ? UI[heldBy[id] === "order" ? "star" : "acorn"] : undefined), [heldBy]);
+
   const onMap = run.phase === "map";
+  const back = () => setView("map");
   return (
-    <div className={`app ${night ? "night" : "paper"} ${onMap ? "on-map" : ""}`}>
-      {!onMap && <StatusBar run={run} />}
+    <div className={`app ${run.phase === "fight" ? "night" : "screens"} ${onMap && view === "map" ? "on-map" : ""}`}>
       {error && (
         <div className="error" role="alert">
           {error}
         </div>
       )}
-      <main>
-          {/* The map stays mounted under every other screen, so it keeps its place and loads once */}
-          <div className="world" hidden={!onMap}>
-            <WorldMap
-              playerId={playerId}
-              visits={visits}
-              anywhere={anywhere}
-              autoLocate={!anywhere}
-              onOpen={openSpot}
-              tools={
-                <>
-                <span className="run-chip" title={isBossFloor(run.floor) ? "A boss waits at the next spot" : `Floor ${run.floor}`}>
-                  <b>{isBossFloor(run.floor) ? "Boss" : `F${run.floor}`}</b> {run.hp}/{run.maxHp} <i className="chip-coin" />
-                  {run.gold}
-                </span>
-                <button
-                  className={`test ${anywhere ? "on" : ""}`}
-                  onClick={() => {
-                    setAnywhere(!anywhere);
-                    store("anywhere", !anywhere);
-                  }}
-                  title="Test mode: open any spot from anywhere"
-                >
-                  {anywhere ? "Test mode" : "On foot"}
-                </button>
-                </>
-              }
-            />
-          </div>
-        {run.phase === "fight" && <FightScreen run={run} act={act} />}
-        {run.phase === "reward" && <RewardScreen run={run} act={act} />}
-        {run.phase === "rest" && <RestScreen run={run} act={act} />}
-        {run.phase === "shop" && <ShopScreen run={run} act={act} />}
-        {run.phase === "event" && <EventScreen run={run} act={act} />}
-        {run.phase === "over" && <OverScreen run={run} onNew={() => startNew(randomSeed())} />}
-      </main>
-      {!night && !onMap && (
-      <footer className="row wrap">
-        <span className="soft">Seed {run.seed}</span>
-        <input className="seed" inputMode="numeric" placeholder="random" value={seedText} onChange={(e) => setSeedText(e.target.value)} />
-        <button className="btn ghost" onClick={() => startNew()}>
-          New run
-        </button>
-      </footer>
+      {/* The map stays mounted under every other screen, so it keeps its place and loads once */}
+      <div className="world" hidden={!onMap || view !== "map"}>
+        <WorldMap
+          bare
+          playerId={playerId}
+          visits={visits}
+          anywhere={anywhere}
+          autoLocate={!anywhere}
+          hoodBadge={hoodBadge}
+          onSelect={(spot, state, at) => setPicked({ spot, state, now: at })}
+        />
+        {town.me && (
+          <MapChrome
+            run={run}
+            town={town}
+            now={now}
+            go={setView}
+            anywhere={anywhere}
+            toggleAnywhere={() => {
+              setAnywhere(!anywhere);
+              store("anywhere", !anywhere);
+            }}
+          />
+        )}
+        {picked && <SpotSheet {...picked} town={town} run={run} onEnter={enter} onClose={() => setPicked(null)} />}
+      </div>
+      {!town.me && <JoinScreen town={town} seed={Number(playerId.slice(1)) || 1} onJoin={(name, p, dealt) => changeTown((t) => join(t, name, p, dealt))} />}
+      {town.me && onMap && view === "deck" && <DeckScreen run={run} back={back} />}
+      {town.me && onMap && view === "clan" && <ClanScreen town={town} now={now} back={back} />}
+      {town.me && onMap && view === "boards" && <BoardsScreen town={town} back={back} />}
+      {town.me && onMap && view === "live" && <LiveScreen town={town} now={now} back={back} />}
+      {town.me && onMap && view === "you" && (
+        <ProfileScreen town={town} back={back} seed={run.seed} onNewRun={() => startNew()} setPortrait={(s) => changeTown((t) => ((t.portraits[ME] = s), t.me && (t.me.portrait = `gen:${s}`)))} />
       )}
+      {run.phase === "fight" && (
+        <main>
+          <FightScreen run={run} act={act} />
+        </main>
+      )}
+      {run.phase === "reward" && <RewardScreen run={run} act={act} town={town} />}
+      {run.phase === "rest" && <RestScreen run={run} act={act} />}
+      {run.phase === "shop" && <ShopScreen run={run} act={act} />}
+      {run.phase === "event" && <EventScreen run={run} act={act} />}
+      {run.phase === "over" && <OverScreen run={run} town={town} onNew={() => startNew()} />}
     </div>
   );
 }
 
-// ─── Status bar and Guides ───────────────────────────────────────────────────
+// ─── Shared run pieces ───────────────────────────────────────────────────────
 
-function StatusBar({ run }: { run: Run }) {
+/** Pick a card from a set, laid out in the deck grid, on a sheet over the current screen. */
+function CardPicker({ title, cards, onPick, onCancel }: { title: string; cards: Card[]; onPick: (uid: number) => void; onCancel: () => void }) {
   return (
-    <header className="status">
-      <div className="row between">
-        <span className="label">
-          Floor {run.floor}
-        </span>
-        <span className="row gap">
-          {run.phase !== "fight" && (
-            <span className="label">
-              HP <b className="num">{run.hp}</b>/{run.maxHp}
-            </span>
-          )}
-          <span className="gold">
-            <i />
-            <b className="num">{run.gold}</b>
-          </span>
-        </span>
+    <div className="picker-layer">
+      <Title>{title}</Title>
+      <div className="card-grid">
+        {sortCards(cards).map((c) => (
+          <button key={c.uid} className="card-pick" onClick={() => onPick(c.uid)}>
+            <GameCard card={c} />
+          </button>
+        ))}
       </div>
-      {run.guides.length > 0 && run.phase !== "fight" && (
-        <div className="guides">
-          {run.guides.map((g, i) => (
-            <GuideChip key={g + i} id={g} />
-          ))}
-        </div>
+      <InkLink onClick={onCancel}>Cancel</InkLink>
+    </div>
+  );
+}
+
+function GuideReplace({ run, onPick, onCancel }: { run: Run; onPick: (i: number) => void; onCancel: () => void }) {
+  return (
+    <div className="picker-layer">
+      <Title>Your Guides are full</Title>
+      <p className="k-label">Let one go for the new one</p>
+      <div className="guide-row">
+        {run.guides.map((g, i) => (
+          <GuideCard key={g + i} {...GUIDE_BY_ID[g]} rare={GUIDE_BY_ID[g].rarity === "rare"} onClick={() => onPick(i)} />
+        ))}
+      </div>
+      <InkLink onClick={onCancel}>Cancel</InkLink>
+    </div>
+  );
+}
+
+// ─── Deck ────────────────────────────────────────────────────────────────────
+
+const SUIT_TABS: { id: "all" | Suit; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "spades", label: "♠ Spades" },
+  { id: "hearts", label: "♥ Hearts" },
+  { id: "diamonds", label: "♦ Diamonds" },
+  { id: "clubs", label: "♣ Clubs" },
+];
+
+function DeckScreen({ run, back }: { run: Run; back: () => void }) {
+  const [suit, setSuit] = useState<"all" | Suit>("all");
+  const cards = allCards(run);
+  const shown = sortCards(cards.filter((c) => suit === "all" || c.suit === suit));
+  const count = (s: Suit) => cards.filter((c) => c.suit === s).length;
+  return (
+    <Screen className="deck" title={`Your deck · ${cards.length}`} backdrop={SCENES[sceneFor(run)]} dim={0.6} onBack={back}>
+      <Switch options={SUIT_TABS.filter((t) => t.id === "all" || count(t.id) > 0)} value={suit} onChange={setSuit} />
+      <div className="card-grid">
+        {shown.map((c) => (
+          <GameCard key={c.uid} card={c} />
+        ))}
+      </div>
+      {run.guides.length > 0 && (
+        <>
+          <p className="k-label">Guides</p>
+          <div className="guide-row">
+            {run.guides.map((g, i) => (
+              <GuideCard key={g + i} {...GUIDE_BY_ID[g]} rare={GUIDE_BY_ID[g].rarity === "rare"} />
+            ))}
+          </div>
+        </>
       )}
-    </header>
+    </Screen>
   );
 }
 
 // ─── Reward ──────────────────────────────────────────────────────────────────
 
-function GuideReplace({ run, onPick, onCancel }: { run: Run; onPick: (i: number) => void; onCancel: () => void }) {
-  return (
-    <div className="panel picker">
-      <div className="row between">
-        <h3>Guides full: replace which?</h3>
-        <button className="btn ghost" onClick={onCancel}>
-          Cancel
-        </button>
-      </div>
-      <div className="guides">
-        {run.guides.map((g, i) => (
-          <GuideChip key={g + i} id={g} onClick={() => onPick(i)} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function RewardScreen({ run, act }: { run: Run; act: Act }) {
+function RewardScreen({ run, act, town }: { run: Run; act: Act; town: Town }) {
   const r = run.reward!;
   const [pending, setPending] = useState<number | null>(null);
   const takeGuide = (i: number) => {
     if (guidesFull(run)) setPending(i);
     else act((x) => takeRewardGuide(x, i));
   };
+  const floor = town.floors[town.floors.length - 1];
   return (
-    <section className="sheet reward">
-      <h2 className="title">{run.fight?.exact ? "Caught" : "Victory"}</h2>
-      {r.perfect && <span className="band gilt">Perfect · no damage taken</span>}
-      <p className="soft">
-        Gold <b className="gilt-text num big-num">+{r.gold}</b>
-      </p>
+    <Screen
+      className="reward"
+      title={run.fight?.exact ? "Caught" : "Victory"}
+      backdrop={SCENES[sceneFor(run)]}
+      dim={0.55}
+      action={<ScrollButton onClick={() => act(leaveReward)}>{r.cardTaken ? "Continue" : "Skip"}</ScrollButton>}
+    >
+      <div className="spoils">
+        <Gold n={r.gold} big />
+        {r.perfect && <span className="k-label gilt">Perfect · no damage taken</span>}
+      </div>
       {r.caught && (
         <div className="caught">
-          <CardView card={r.caught} />
+          <GameCard card={r.caught} />
           <p>
             <b>{cardName(r.caught)}</b> joins your deck.
           </p>
         </div>
       )}
-      <h3 className="label center">{r.cardTaken ? "Card taken" : "Pick a card"}</h3>
-      <div className="cards center">
+      <p className="k-label">{r.cardTaken ? "Card taken" : "Pick a card"}</p>
+      <div className="card-row">
         {r.cards.map((c, i) => (
-          <CardView key={c.uid} card={c} disabled={r.cardTaken} off={r.cardTaken} onClick={() => act((x) => takeRewardCard(x, i))} />
+          <button key={c.uid} className="card-pick" disabled={r.cardTaken} onClick={() => act((x) => takeRewardCard(x, i))}>
+            <GameCard card={c} off={r.cardTaken} />
+          </button>
         ))}
       </div>
-      {r.guides.length > 0 && (
+      {r.guides.length > 0 && !r.guideTaken && (
         <>
-          <h3 className="label center">{r.guideTaken ? "Guide taken" : "Pick a Guide"}</h3>
-          {!r.guideTaken && (
-            <div className="guides center">
-              {r.guides.map((g, i) => (
-                <GuideChip key={g} id={g} onClick={() => takeGuide(i)} />
-              ))}
-            </div>
-          )}
-          {pending !== null && (
-            <GuideReplace
-              run={run}
-              onCancel={() => setPending(null)}
-              onPick={(ri) => {
-                act((x) => takeRewardGuide(x, pending, ri));
-                setPending(null);
-              }}
-            />
-          )}
+          <p className="k-label">Pick a Guide</p>
+          <div className="guide-row">
+            {r.guides.map((g, i) => (
+              <GuideCard key={g} {...GUIDE_BY_ID[g]} rare={GUIDE_BY_ID[g].rarity === "rare"} onClick={() => takeGuide(i)} />
+            ))}
+          </div>
         </>
       )}
-      <div className="foot row between">
-        <span className="soft small">HP {run.hp}/{run.maxHp}</span>
-        <button className="btn" onClick={() => act(leaveReward)}>
-          {r.cardTaken ? "Continue" : "Skip and continue"}
-        </button>
-      </div>
-    </section>
+      {town.me && floor && (
+        <p className="influence">
+          <Emblem faction={town.me.faction} /> Walking here gave {town.me.faction === "order" ? "the Order" : "the Pathless"} ground in {groundName(floor.ground)}
+        </p>
+      )}
+      <RunStatus hp={run.hp} max={run.maxHp} gold={run.gold} />
+      {pending !== null && (
+        <GuideReplace
+          run={run}
+          onCancel={() => setPending(null)}
+          onPick={(ri) => {
+            act((x) => takeRewardGuide(x, pending, ri));
+            setPending(null);
+          }}
+        />
+      )}
+    </Screen>
   );
 }
 
@@ -279,25 +361,15 @@ function RewardScreen({ run, act }: { run: Run; act: Act }) {
 function RestScreen({ run, act }: { run: Run; act: Act }) {
   const [mode, setMode] = useState<null | "upgrade" | "letgo">(null);
   const cards = allCards(run).filter((c) => !isJunk(c) && (mode !== "upgrade" || c.value < 10));
+  const heal = Math.min(restHeal(run), run.maxHp - run.hp);
   return (
-    <section className="sheet">
-      <h2>A quiet bench under the oaks</h2>
-      <p className="soft">Choose one.</p>
+    <Screen className="rest" title="A bench under the oaks" backdrop={SCENES.rest} dim={0.1}>
+      <div className="grow" />
+      <RunStatus hp={run.hp} max={run.maxHp} gold={run.gold} />
       <div className="choices">
-        <button className="choice" onClick={() => act((r) => rest(r, "heal"))}>
-          <b>Heal</b>
-          <span>
-            +{Math.min(restHeal(run), run.maxHp - run.hp)} HP ({run.hp}/{run.maxHp})
-          </span>
-        </button>
-        <button className="choice" onClick={() => setMode("upgrade")}>
-          <b>Upgrade</b>
-          <span>A card gains +{CONFIG.restUpgrade} value</span>
-        </button>
-        <button className="choice" onClick={() => setMode("letgo")}>
-          <b>Let go</b>
-          <span>Remove a card for good</span>
-        </button>
+        <Choice title="Heal" detail={`+${heal} HP`} off={heal <= 0} onClick={() => act((r) => rest(r, "heal"))} />
+        <Choice title="Upgrade" detail={`A card gains +${CONFIG.restUpgrade}`} onClick={() => setMode("upgrade")} />
+        <Choice title="Let go" detail="Remove a card for good" onClick={() => setMode("letgo")} />
       </div>
       {mode && (
         <CardPicker
@@ -307,7 +379,7 @@ function RestScreen({ run, act }: { run: Run; act: Act }) {
           onPick={(uid) => act((r) => rest(r, mode, uid))}
         />
       )}
-    </section>
+    </Screen>
   );
 }
 
@@ -318,33 +390,37 @@ function ShopScreen({ run, act }: { run: Run; act: Act }) {
   const [removing, setRemoving] = useState(false);
   const [pending, setPending] = useState<number | null>(null);
   return (
-    <section className="sheet">
-      <h2>The shop</h2>
-      <h3 className="label">Cards</h3>
-      <div className="cards">
+    <Screen className="shop" title="The Crystal Shop" backdrop={SCENES.shop} dim={0.1} action={<ScrollButton onClick={() => act(leaveShop)}>Leave</ScrollButton>}>
+      <div className="grow" />
+      <RunStatus hp={run.hp} max={run.maxHp} gold={run.gold} />
+      <div className="wares">
         {s.cards.map((it, i) => (
           <div key={it.card.uid} className="ware">
-            <CardView card={it.card} disabled={it.sold} off={it.sold || run.gold < it.price} onClick={() => act((r) => buyCard(r, i))} />
-            <Price sold={it.sold} price={it.price} gold={run.gold} />
+            <button className="card-pick" disabled={it.sold || run.gold < it.price} onClick={() => act((r) => buyCard(r, i))}>
+              <GameCard card={it.card} off={it.sold || run.gold < it.price} />
+            </button>
+            <Price n={it.price} sold={it.sold} short={!it.sold && run.gold < it.price} />
           </div>
         ))}
       </div>
-      <h3 className="label">Guides</h3>
-      <div className="guides">
+      <div className="wares">
         {s.guides.map((g, i) => (
           <div key={g.id} className="ware">
-            <GuideChip
-              id={g.id}
+            <GuideCard
+              {...GUIDE_BY_ID[g.id]}
+              rare={GUIDE_BY_ID[g.id].rarity === "rare"}
+              off={g.sold || run.gold < g.price}
               onClick={() => {
                 if (g.sold) return;
                 if (guidesFull(run)) setPending(i);
                 else act((r) => buyGuide(r, i));
               }}
             />
-            <Price sold={g.sold} price={g.price} gold={run.gold} />
+            <Price n={g.price} sold={g.sold} short={!g.sold && run.gold < g.price} />
           </div>
         ))}
       </div>
+      <Choice title="Remove a card" detail={s.removed ? "Done for this visit" : `${s.removePrice} gold`} off={s.removed || run.gold < s.removePrice} onClick={() => setRemoving(true)} />
       {pending !== null && (
         <GuideReplace
           run={run}
@@ -355,14 +431,6 @@ function ShopScreen({ run, act }: { run: Run; act: Act }) {
           }}
         />
       )}
-      <div className="foot row between wrap">
-        <button className="btn ghost" disabled={s.removed} onClick={() => setRemoving(true)}>
-          {s.removed ? "Removed" : `Remove a card · ${s.removePrice}`}
-        </button>
-        <button className="btn" onClick={() => act(leaveShop)}>
-          Leave
-        </button>
-      </div>
       {removing && (
         <CardPicker
           title={`Remove which card? (${s.removePrice} gold)`}
@@ -373,17 +441,7 @@ function ShopScreen({ run, act }: { run: Run; act: Act }) {
           }}
         />
       )}
-    </section>
-  );
-}
-
-function Price({ sold, price, gold }: { sold: boolean; price: number; gold: number }) {
-  if (sold) return <span className="soft small">Sold</span>;
-  return (
-    <span className={`gold small ${gold < price ? "short" : ""}`}>
-      <i />
-      <b className="num">{price}</b>
-    </span>
+    </Screen>
   );
 }
 
@@ -393,71 +451,54 @@ function EventScreen({ run, act }: { run: Run; act: Act }) {
   const ev = EVENT_BY_ID[run.event!];
   const [picking, setPicking] = useState<number | null>(null);
   return (
-    <section className="sheet">
-      <h2>{ev.title}</h2>
-      <p>{ev.text}</p>
-      <div className="options">
-        {ev.options.map((o, i) => (
-          <button key={i} className="choice" onClick={() => (o.needsCard ? setPicking(i) : act((r) => chooseEvent(r, i)))}>
-            <b>{o.label}</b>
-          </button>
-        ))}
+    <Screen className="event" title={ev.title} backdrop={SCENES[ev.id] ?? SCENES.honor_shelf} dim={0.1}>
+      <Sheet nail className="story">
+        <p>{ev.text}</p>
+      </Sheet>
+      <div className="grow" />
+      <RunStatus hp={run.hp} max={run.maxHp} gold={run.gold} />
+      <div className="choices">
+        {ev.options.map((o, i) => {
+          const [title, ...rest] = o.label.split(": ");
+          return <Choice key={i} title={title} detail={rest.join(": ") || undefined} onClick={() => (o.needsCard ? setPicking(i) : act((r) => chooseEvent(r, i)))} />;
+        })}
       </div>
       {picking !== null && (
-        <CardPicker
-          title="Choose a card"
-          cards={allCards(run).filter((c) => !isJunk(c))}
-          onCancel={() => setPicking(null)}
-          onPick={(uid) => act((r) => chooseEvent(r, picking, uid))}
-        />
+        <CardPicker title="Choose a card" cards={allCards(run).filter((c) => !isJunk(c))} onCancel={() => setPicking(null)} onPick={(uid) => act((r) => chooseEvent(r, picking, uid))} />
       )}
-    </section>
+    </Screen>
   );
 }
 
 // ─── Game over ───────────────────────────────────────────────────────────────
 
-function OverScreen({ run, onNew }: { run: Run; onNew: () => void }) {
+function OverScreen({ run, town, onNew }: { run: Run; town: Town; onNew: () => void }) {
   const st = run.stats;
   const killer = st.diedTo ? (ENEMY_BY_ID[st.diedTo]?.name ?? st.diedTo) : "unknown";
-  const rows: [string, string | number][] = [
-    ["Floors cleared", score(run)],
-    ["Fell to", killer],
-    ["Fights", st.fights],
-    ["Perfect fights", st.perfects],
-    ["Catches", st.catches],
-    ["Plays / matched", `${st.plays} / ${st.matches}`],
-    ["Biggest hit", st.maxHit ? `${st.maxHit} (floor ${st.maxHitFloor})` : "0"],
-    ["HP lost", st.hpLost],
-    ["Guides", run.guides.map((g) => GUIDE_BY_ID[g].name).join(", ") || "none"],
-  ];
+  const gift = town.lastOffering ?? [];
+  const total = Math.round(gift.reduce((s, g) => s + g.amount, 0) * 10) / 10;
+  const me = town.me;
   return (
-    <section className="sheet over">
-      <h2 className="title">The path ends</h2>
-      {run.fight && <p className="soft">{run.fight.log[run.fight.log.length - 1]}</p>}
-      <table className="stats-table">
-        <tbody>
-          {rows.map(([k, v]) => (
-            <tr key={k}>
-              <td className="soft">{k}</td>
-              <td className="num">{v}</td>
-            </tr>
-          ))}
-          <tr>
-            <td className="soft">Powers used</td>
-            <td className="num">
-              {(Object.keys(st.powerUses) as Suit[]).map((s) => (
-                <span key={s} className="pw-used">
-                  <Icon name={s} /> {st.powerUses[s]}
-                </span>
-              ))}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <button className="btn big" onClick={onNew}>
-        New run
-      </button>
-    </section>
+    <Screen className="over" title="The path ends" backdrop={SCENES[sceneFor(run)]} dim={0.65} action={<ScrollButton onClick={onNew}>Walk again</ScrollButton>}>
+      <p className="fell">Fell to {killer}</p>
+      <Sheet nail>
+        <Line k="Floors cleared" v={score(run)} />
+        <Line k="Perfect fights" v={st.perfects} />
+        <Line k="Caught" v={st.catches} />
+        <Line k="Biggest hit" v={st.maxHit} />
+        <Line k="Guides" v={run.guides.map((g) => GUIDE_BY_ID[g].name).join(", ") || "none"} />
+      </Sheet>
+      {me && gift.length > 0 && (
+        <>
+          <p className="k-label">Your offering</p>
+          <Sheet>
+            {gift.map((g) => (
+              <Line key={g.ground} k={<><Emblem faction={me.faction} /> {groundName(g.ground)}</>} v={`+${g.amount}`} />
+            ))}
+            <Line className="total" k={`To ${me.faction === "order" ? "the Order" : "the Pathless"}`} v={`+${total}`} />
+          </Sheet>
+        </>
+      )}
+    </Screen>
   );
 }

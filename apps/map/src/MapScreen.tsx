@@ -140,6 +140,8 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
       if (img && !m.hasImage(e.id)) m.addImage(e.id, img, { pixelRatio: 2 });
     });
     if (!bare) m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+    // In the game the credit stays behind its (i) button, clear of the navigation seals
+    if (bare) m.once("load", () => mapEl.current?.querySelector(".maplibregl-ctrl-attrib")?.classList.remove("maplibregl-compact-show"));
     const zoomClass = () => {
       mapEl.current?.classList.toggle("labels", m.getZoom() >= 15.5);
       mapEl.current?.classList.toggle("far", m.getZoom() < FAR_ZOOM);
