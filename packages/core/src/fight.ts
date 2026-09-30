@@ -2,13 +2,14 @@
  * The fight, played with a standard deck.
  *
  * A fight opens with a hand of 8 and you KEEP your hand between turns
- * (Regicide style): the only way to get more cards is to play diamonds, or
- * clubs to get discards back. Each turn you get 3 ACTIONS; each card you
+ * (Regicide style): the only way to get more cards is to play diamonds.
+ * An empty draw pile reshuffles the discard pile (Slay the Spire style). Each turn you get 3 ACTIONS; each card you
  * play costs 1. Every card hits the enemy for its value, and its suit adds
  * a power, with N = the card's value:
  *
- *   ♣ clubs    also recall: your best card(s) come back from the discard pile
- *   ♦ diamonds also draw 1 + floor(N / 4)
+ *   ♣ clubs    also discard: pick up to N cards in your hand to discard
+ *              (firing their discard effects), to dig toward better ones
+ *   ♦ diamonds also draw N
  *   ♥ hearts   also N block against this turn's attacks
  *   ♠ spades   hit double
  *
@@ -195,6 +196,7 @@ export function startFight(run: Run, enemyId: string): void {
     plays: 0,
     turnPlays: [],
     hpLost: 0,
+    discarding: 0,
     phase: "play",
     exact: false,
     perfect: false,
@@ -233,6 +235,7 @@ export function actionCost(c: Card): number {
 export function playError(run: Run, uid: number): string | null {
   const f = run.fight;
   if (!f || f.phase !== "play") return "Not your move.";
+  if (f.discarding > 0) return "Pick the cards to discard first.";
   const c = run.hand.find((x) => x.uid === uid);
   if (!c) return "That card isn't in your hand.";
   if (isJunk(c)) return "Junk can't be played.";
@@ -380,7 +383,10 @@ export function play(run: Run, uid: number): void {
     run.stats.powerTotal[pw.suit] += pw.amount;
   }
   f.turnPlays.push(c);
-  if (p.recall) {
+  if (p.recall && CONFIG.clubsPower === "discard") {
+    // You pick which ones next (see discardCards), after the rest of this play resolves
+    f.discarding = Math.min(p.recall, run.hand.length);
+  } else if (p.recall) {
     const back = recall(run, p.recall);
     if (back.length) log(run, `Clubs: ${back.map(cardName).join(", ")} back to your ${CONFIG.clubsTo === "hand" ? "hand" : "deck"}.`);
   }
@@ -407,6 +413,35 @@ export function play(run: Run, uid: number): void {
   if (p.damage) hitEnemy(run, p.damage);
 }
 
+/**
+ * Clubs: discard the cards you picked (up to the club's value; none is fine).
+ * Each fires its discard effect: damage now, or block now.
+ */
+export function discardCards(run: Run, uids: number[]): void {
+  const f = run.fight;
+  if (!f || f.phase !== "play" || f.discarding <= 0) throw new Error("Nothing to discard.");
+  if (uids.length > f.discarding) throw new Error(`Discard at most ${f.discarding}.`);
+  const picked = uids.map((uid) => {
+    const c = run.hand.find((x) => x.uid === uid);
+    if (!c) throw new Error("That card isn't in your hand.");
+    return c;
+  });
+  f.discarding = 0;
+  for (const c of picked) {
+    run.hand.splice(run.hand.indexOf(c), 1);
+    if (!isJunk(c)) run.discard.push(c);
+    run.stats.discards++;
+    f.block += sumEffect(c, "onDiscardBlock") + (hasGuide(run, "sound_bath") && !isJunk(c) ? 1 : 0);
+    const dmg = sumEffect(c, "onDiscardDamage");
+    if (dmg) {
+      log(run, `Discarding ${cardName(c)} deals ${dmg}.`);
+      hitEnemy(run, dmg);
+      if (f.phase !== "play") return;
+    }
+  }
+  if (picked.length) log(run, `You discard ${picked.map(cardName).join(", ")}.`);
+}
+
 function hitEnemy(run: Run, damage: number) {
   const f = run.fight!;
   const e = f.enemy;
@@ -423,6 +458,7 @@ export function endTurn(run: Run): void {
   if (!f || f.phase !== "play") throw new Error("Not your move.");
   run.stats.endTurns++;
   if (f.turnPlays.length === 0) run.stats.idleTurns++;
+  f.discarding = 0; // a club's discard you never picked is just skipped
 
   // Unplayed cards: discard (with their "let go" effects), except retained ones
   let nextBlock = 0;

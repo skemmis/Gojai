@@ -119,6 +119,8 @@ export interface Fight {
   /** Cards played this turn, for matching. */
   turnPlays: Card[];
   hpLost: number;
+  /** Clubs: how many cards you may still pick to discard. Nothing else can happen until you pick (or pick none). */
+  discarding: number;
   phase: "play" | "won" | "lost";
   exact: boolean;
   perfect: boolean;
@@ -175,6 +177,8 @@ export interface RunStats {
   immuneHits: number;
   /** Cards discarded to draw one. */
   cycles: number;
+  /** Cards discarded with clubs. */
+  discards: number;
   /** Times you ran out of cards and the discard pile was shuffled back. */
   deckOuts: number;
   /** Turns ended without playing anything. */

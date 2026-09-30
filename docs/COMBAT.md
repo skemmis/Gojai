@@ -13,7 +13,7 @@ Every number lives in `packages/core/src/config.ts` or `content.ts`. The balance
 
 ## A turn
 
-1. **Keep your hand.** A fight opens with a hand of **8** (at most 8 held). You don't draw each turn: unplayed cards stay, and **diamonds are how you get more**. The discard pile does **not** shuffle back by itself: **clubs** put cards back into your deck. Only if you're completely out (nothing playable in hand, nothing to draw) is the discard pile shuffled back and a fresh hand dealt.
+1. **Keep your hand.** A fight opens with a hand of **8** (at most 8 held). You don't draw each turn: unplayed cards stay, and **diamonds are how you get more**. When your draw pile runs out, your discard pile is shuffled back in (Slay the Spire style).
 2. **You have 3 actions: play any 3 cards.** One card per action, in any order.
 3. **Every card hits for its value** (N), and its suit adds a power:
 
@@ -22,9 +22,9 @@ Every number lives in `packages/core/src/config.ts` or `content.ts`. The balance
    | ♠ Spades | **Hit double**: 2N damage. |
    | ♥ Hearts | Also **block** N damage this turn. |
    | ♦ Diamonds | Also **draw** N cards (up to a hand of 8). |
-   | ♣ Clubs | Also **replenish**: shuffle N cards from your discard pile back into your deck. |
+   | ♣ Clubs | Also **discard**: pick up to N cards in your hand to discard, to dig toward your good cards. Cards with a discard effect fire it (Let Go deals 8, Sage Bundle blocks 6). |
 
-   Each card's seal shows its value with an icon for its job: a sword (spades), a shield (hearts), drawing a card (diamonds), recycling (clubs). Icons from game-icons.net, CC BY 3.0.
+   Each card's seal shows its value with an icon for its job: a sword (spades), a shield (hearts), drawing a card (diamonds), recycling (clubs; the icon may change now clubs discard). Icons from game-icons.net, CC BY 3.0.
 
    Why every card hits: with a kept hand and no draw each turn, a hand without diamonds used to leave you stuck (the balance lab found over half of all turns were dead). Once every card hits, no hand is dead.
 

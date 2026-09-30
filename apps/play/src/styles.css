@@ -1441,3 +1441,20 @@ footer {
   font-size: 10px;
   line-height: 1.05;
 }
+
+/* Clubs: picking cards to discard. Picked cards rise and darken, as if already let go */
+.slot.picking {
+  cursor: pointer;
+}
+.slot.picked .gcard {
+  filter: brightness(0.55) sepia(0.3);
+}
+.discard-hint {
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 700;
+  color: var(--on-night);
+  text-shadow: 0 1px 3px var(--night), 0 0 8px var(--night);
+  white-space: nowrap;
+}

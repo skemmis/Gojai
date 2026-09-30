@@ -219,6 +219,22 @@ await page.getByRole("button", { name: /End turn/ }).click();
 await pause(1500);
 await checkState("fight-next-turn");
 
+// Clubs: play one, pick two cards to discard, confirm on the scroll
+await steer("r.fight.enemy.hp = 99; r.fight.actions = 3; r.hand = r.hand.slice(0, 5); r.hand.push(core.plainCard(r, 3, 'clubs'))", 500);
+{
+  // Played through the engine (dragging is the page's own business); picking uses the page's taps
+  await steer("core.play(r, r.hand[r.hand.length - 1].uid)", 600);
+  const slots = page.locator(".slot.picking");
+  if (await slots.count()) {
+    await slots.nth(0).dispatchEvent("pointerdown");
+    await slots.nth(1).dispatchEvent("pointerdown");
+    await pause(400);
+    await checkState("fight-discarding");
+    await click(page.getByRole("button", { name: /Discard 2/ }), 600);
+    if (await page.locator(".slot.picking").count()) failures.push("discarding didn't finish after confirming");
+  } else failures.push("playing a club didn't ask which cards to discard");
+}
+
 // A foe whose next move isn't an attack: its glyph and number sit together on a paper blot
 // Every kind of move that isn't an attack: its glyph and number sit together, centred on a paper blot
 for (const [id, name, idx, state] of [

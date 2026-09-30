@@ -47,6 +47,7 @@ export function newRun(seed: number): Run {
       immuneHits: 0,
       cycles: 0,
       deckOuts: 0,
+      discards: 0,
       idleTurns: 0,
       deadHands: 0,
       catches: 0,

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { newRun, startFight, play, endTurn, playError, previewPlay, plainCard, allCards, visitSpot, enterEncounter, takeRewardCard, leaveReward, intent, incoming, CONFIG, ENEMY_BY_ID, takeRewardUpgrade } from "./index";
+import { newRun, startFight, play, endTurn, playError, previewPlay, plainCard, allCards, visitSpot, enterEncounter, takeRewardCard, leaveReward, intent, incoming, CONFIG, ENEMY_BY_ID, takeRewardUpgrade, discardCards, makeCard } from "./index";
 import type { Run, Suit } from "./index";
 
 function withHand(run: Run, cards: [number, Suit][]) {
@@ -103,16 +103,24 @@ test("the enemy's intents cycle and are visible ahead of time", () => {
   assert.equal(intent(run)[0].k, "hex");
 });
 
-test("clubs shuffle as many discards as their value back into your deck", () => {
+test("clubs let you discard up to their value, and discarding fires discard effects", () => {
   const run = newRun(11);
   startFight(run, "short_term_rental");
-  run.draw = [];
-  withHand(run, [[9, "spades"], [2, "hearts"], [5, "hearts"]]);
-  run.discard = [];
-  const [c] = withHand(run, [[2, "clubs"]]); // the discard pile is now just those three
+  const [c, x, y, z] = withHand(run, [[2, "clubs"], [3, "hearts"], [4, "hearts"], [5, "hearts"]]);
   play(run, c);
-  assert.equal(run.draw.length, 2);
-  assert.equal(run.discard.length, 2); // one left behind, plus the club itself
+  assert.equal(run.fight!.discarding, 2);
+  assert.notEqual(playError(run, x), null, "pick the discards before playing on");
+  assert.throws(() => discardCards(run, [x, y, z]), "at most the club's value");
+  discardCards(run, [x, y]);
+  assert.deepEqual(run.hand.map((h) => h.uid), [z]);
+  assert.equal(playError(run, z), null);
+  const hp = run.fight!.enemy.hp;
+  const letGo = makeCard(run, "let_go");
+  const [c2] = withHand(run, [[1, "clubs"]]);
+  run.hand.push(letGo);
+  play(run, c2);
+  discardCards(run, [letGo.uid]);
+  assert.ok(run.fight!.enemy.hp <= hp - 1 - 8, "Let Go deals 8 when discarded");
 });
 
 test("diamonds draw as many cards as their value", () => {
@@ -123,15 +131,13 @@ test("diamonds draw as many cards as their value", () => {
   assert.equal(run.hand.length, 3);
 });
 
-test("the discard pile only comes back when you're completely out of cards", () => {
+test("an empty draw pile reshuffles the discard pile", () => {
   const run = newRun(16);
   startFight(run, "short_term_rental");
-  const [s] = withHand(run, [[4, "hearts"]]);
   run.draw = [];
-  play(run, s);
-  assert.equal(run.draw.length, 0, "no reshuffle while you still hold cards");
-  endTurn(run);
-  assert.ok(run.hand.length > 0, "out of cards: the discard pile came back and you drew");
+  const [d] = withHand(run, [[2, "diamonds"]]);
+  play(run, d);
+  assert.equal(run.hand.length, 2, "drew from the reshuffled discard pile");
 });
 
 test("an exact kill catches the enemy as a face card", () => {

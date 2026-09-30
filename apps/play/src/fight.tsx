@@ -7,7 +7,7 @@
  * scroll), no boxes.
  */
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { cardDef, CONFIG, endTurn, hitSize, incoming, intent, isJunk, multiplier, play, playError, previewPlay } from "@gojai/core";
+import { cardDef, CONFIG, discardCards, endTurn, hitSize, incoming, intent, isJunk, multiplier, play, playError, previewPlay } from "@gojai/core";
 import type { Card, EnemyAction, Run, Suit } from "@gojai/core";
 import { Icon, rankLabel, powerAmount, sortCards, type IconName } from "./components";
 import vignette from "./assets/scene-vignette.webp";
@@ -151,6 +151,18 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
     if (act((r) => play(r, uid))) setSel(null);
   };
 
+  // A club asks which cards to discard: tap to pick up to its value, then the scroll confirms
+  const discarding = f.discarding;
+  const [picked, setPicked] = useState<number[]>([]);
+  useEffect(() => {
+    if (!discarding) setPicked([]);
+  }, [discarding]);
+  const togglePick = (uid: number) =>
+    setPicked((p) => (p.includes(uid) ? p.filter((x) => x !== uid) : p.length < discarding ? [...p, uid] : p));
+  const confirmDiscard = () => {
+    if (act((r) => discardCards(r, picked))) setPicked([]);
+  };
+
   // ─── Drag to play ─────────────────────────────────────────────────────────
   const start = useRef({ x: 0, y: 0, moved: false });
   const playLine = () => {
@@ -158,6 +170,7 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
     return h ? h.top - 30 : window.innerHeight * 0.6;
   };
   const onDown = (c: Card) => (ev: React.PointerEvent) => {
+    if (discarding) return togglePick(c.uid);
     if (isJunk(c)) return;
     (ev.currentTarget as HTMLElement).setPointerCapture(ev.pointerId);
     start.current = { x: ev.clientX, y: ev.clientY, moved: false };
@@ -265,10 +278,24 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
       {/* ─── You: your blood, mirroring its own, and End turn ─── */}
       <div className="you-zone">
         <Drops who="you" hp={run.hp} max={run.maxHp} loss={through} />
-        <button className={`end ${f.actions === 0 ? "ready" : ""}`} onClick={() => act(endTurn) && setSel(null)}>
-          <Scroll />
-          <span>End turn</span>
-        </button>
+        {discarding > 0 && (
+          <span className="discard-hint">
+            Pick up to {discarding}
+            <br />
+            to discard
+          </span>
+        )}
+        {discarding ? (
+          <button className="end ready" onClick={confirmDiscard}>
+            <Scroll />
+            <span>{picked.length ? `Discard ${picked.length}` : "Keep all"}</span>
+          </button>
+        ) : (
+          <button className={`end ${f.actions === 0 ? "ready" : ""}`} onClick={() => act(endTurn) && setSel(null)}>
+            <Scroll />
+            <span>End turn</span>
+          </button>
+        )}
         {floaters
           .filter((x) => x.where === "you")
           .map((x) => (
@@ -284,14 +311,15 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
           {cards.map((c, i) => {
             const off = i - mid;
             const isDrag = drag?.uid === c.uid;
-            const lifted = valid === c.uid && !isDrag;
+            const isPicked = picked.includes(c.uid);
+            const lifted = (valid === c.uid && !isDrag && !discarding) || isPicked;
             const m = isJunk(c) ? 1 : multiplier(run, c);
             const style: React.CSSProperties = isDrag
               ? { transform: `translate(${drag.dx}px, ${drag.dy}px) scale(1.08)`, zIndex: 50 }
               : { transform: `translateY(${lifted ? -28 : dropAt(off)}px) rotate(${lifted ? 0 : off * tilt}deg)`, zIndex: lifted ? 40 : i };
             return (
-              <div key={c.uid} className="slot" style={{ marginLeft: i ? -overlap : 0, ...style }} onPointerDown={onDown(c)}>
-                <GameCard card={c} mult={m} off={!!playError(run, c.uid)} dud={isDud(run, c)} armed={isDrag && drag.armed} />
+              <div key={c.uid} className={`slot ${isPicked ? "picked" : ""} ${discarding ? "picking" : ""}`} style={{ marginLeft: i ? -overlap : 0, ...style }} onPointerDown={onDown(c)}>
+                <GameCard card={c} mult={m} off={!discarding && !!playError(run, c.uid)} dud={isDud(run, c)} armed={isDrag && drag.armed} />
               </div>
             );
           })}
@@ -308,7 +336,7 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
         </div>
         <Pile n={run.discard.length} side="right" />
       </div>
-      {pv && (
+      {pv && !discarding && (
         <div className="play-hint">
           {pv.mult > 1 && <span className="mult">×{pv.mult}</span>}
           {pv.exact && <span className="catch">Exact · catch</span>}

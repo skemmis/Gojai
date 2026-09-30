@@ -21,9 +21,15 @@ export const DEFAULT_CONFIG = {
   /** Discard a card to draw one, for this many actions. null = not allowed. */
   cycleCost: null as number | null,
   /** An empty draw pile reshuffles the discard pile. Off = only clubs bring cards back. */
-  reshuffle: false,
+  reshuffle: true,
   /** Where clubs send recalled cards: your hand, or the bottom of the draw pile. */
   clubsTo: "deck" as "hand" | "deck",
+  /**
+   * What clubs do: "discard" = you pick up to N cards from your hand to
+   * discard, firing their discard effects (Sam, 2026-09-30); "recall" = bring
+   * N back from the discard pile (clubsTo says where).
+   */
+  clubsPower: "discard" as "discard" | "recall",
   /**
    * Every card hits for its value, Regicide style, and its suit power comes
    * on top: spades hit double, hearts also block, diamonds also draw, clubs

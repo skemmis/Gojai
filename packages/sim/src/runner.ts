@@ -15,6 +15,7 @@ import {
   cardDef,
   chooseEvent,
   cycle,
+  discardCards,
   visitSpot,
   bossNext,
   enterEncounter,
@@ -109,6 +110,7 @@ function fightLoop(run: Run, margins: number[]) {
     margins.push(d.margin);
     if (d.move.k === "play") play(run, d.move.uid);
     else if (d.move.k === "cycle") cycle(run, d.move.uid);
+    else if (d.move.k === "discard") discardCards(run, d.move.uids);
     else endTurn(run);
   }
 }

@@ -9,7 +9,7 @@
  */
 import { CONFIG, cycleError, incoming, isJunk, playError, previewPlay, sumEffect, type Card, type Run } from "@gojai/core";
 
-export type Move = { k: "play"; uid: number } | { k: "cycle"; uid: number } | { k: "end" };
+export type Move = { k: "play"; uid: number } | { k: "cycle"; uid: number } | { k: "discard"; uids: number[] } | { k: "end" };
 
 export interface Decision {
   move: Move;
@@ -64,6 +64,16 @@ function scoreSequence(run: Run, seq: Card[]): number {
 
 export function chooseMove(run: Run): Decision {
   const f = run.fight!;
+  // A club asked which cards to discard: junk and discard-effect cards first, then small cards
+  if (f.discarding > 0) {
+    const worth = (c: Card) => (isJunk(c) ? -100 : -(sumEffect(c, "onDiscardDamage") + sumEffect(c, "onDiscardBlock")) * 3 + c.value);
+    const uids = run.hand
+      .filter((c) => worth(c) <= 4)
+      .sort((a, b) => worth(a) - worth(b))
+      .slice(0, f.discarding)
+      .map((c) => c.uid);
+    return { move: { k: "discard", uids }, margin: 1 };
+  }
   const cards = legalPlays(run);
   const depth = Math.min(f.actions, cards.length, 3);
   // Best sequence starting with each card

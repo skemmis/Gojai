@@ -11,8 +11,8 @@ import type { CardDef, EnemyDef, GuideDef } from "./types";
 
 export const CARDS: CardDef[] = [
   // Letting go: cards that pay off when you DON'T play them
-  { id: "let_go", name: "Let Go", value: 3, suit: "spades", rarity: "common", effects: [{ k: "onDiscardDamage", n: 8 }], text: "Unplayed at end of turn: deal 8 damage.", flavor: "Freedom from the known." },
-  { id: "sage_bundle", name: "Sage Bundle", value: 4, suit: "hearts", rarity: "common", effects: [{ k: "onDiscardBlock", n: 6 }], text: "Unplayed at end of turn: 6 block next turn." },
+  { id: "let_go", name: "Let Go", value: 3, suit: "spades", rarity: "common", effects: [{ k: "onDiscardDamage", n: 8 }], text: "When discarded: deal 8 damage.", flavor: "Freedom from the known." },
+  { id: "sage_bundle", name: "Sage Bundle", value: 4, suit: "hearts", rarity: "common", effects: [{ k: "onDiscardBlock", n: 6 }], text: "When discarded: 6 block." },
   { id: "oak_tree", name: "The Oak", value: 8, suit: "hearts", rarity: "common", effects: [{ k: "retain" }], text: "Stays in your hand between turns." },
   { id: "trust_fund", name: "Trust Fund", value: 5, suit: "diamonds", rarity: "rare", effects: [{ k: "free" }], text: "Costs no action.", flavor: "Never touched the principal." },
   { id: "cold_plunge", name: "Cold Plunge", value: 3, suit: "spades", rarity: "common", effects: [{ k: "free" }], text: "Costs no action." },
@@ -47,11 +47,11 @@ export const GUIDES: GuideDef[] = [
   { id: "leadbeater", name: "Leadbeater", title: "The Clairvoyant", rarity: "common", text: "Start each fight with 6 block." },
   { id: "besant", name: "Besant", title: "The Orator", rarity: "common", text: "Matched spades deal +4 damage." },
   { id: "libbey", name: "Libbey", title: "The Glassmaker", rarity: "common", text: "Diamonds draw 1 extra card.", flavor: "He rebuilt the town in his image. Mission Revival, naturally." },
-  { id: "sound_bath", name: "The Sound Bath", title: "Gong Practitioner", rarity: "common", text: "Each card you discard unplayed: +1 block next turn." },
+  { id: "sound_bath", name: "The Sound Bath", title: "Gong Practitioner", rarity: "common", text: "Each card you discard: +1 block." },
   { id: "life_coach", name: "The Life Coach", title: "Certified", rarity: "common", text: "Your first play each fight deals double." },
   { id: "crystal_shop", name: "The Crystal Shop", title: "Downtown", rarity: "common", text: "Hearts block +2." },
   { id: "realtor", name: "The Realtor", title: "Top Producer", rarity: "common", text: "+6 gold per fight. Catches pay 20." },
-  { id: "farmers_market", name: "The Farmers Market", title: "Sundays", rarity: "common", text: "Clubs recall 1 extra card." },
+  { id: "farmers_market", name: "The Farmers Market", title: "Sundays", rarity: "common", text: "Clubs discard 1 extra card." },
   { id: "peoples_market", name: "The People's Market", title: "Thursdays", rarity: "rare", text: "Aces count as every suit." },
   { id: "pink_moment_g", name: "Pink Moment", title: "Sunset, Daily", rarity: "common", text: "Perfect fights also heal 6." },
   { id: "oak_grove", name: "The Oak Grove", title: "Besant Road", rarity: "rare", text: "Draw 1 more card each turn." },
@@ -87,7 +87,7 @@ export const ENEMIES: EnemyDef[] = [
   { id: "short_term_rental", name: "The Short-Term Rental", tier: "normal", hp: 30, suits: ["diamonds"], passive: none, intents: [[atk(4)], [buff(2)], [atk(4)]], text: "Raises the rent.",
     catch: { value: 10, suit: "diamonds", effects: [], text: "A plain 10 of diamonds." } },
   { id: "parking_enforcer", name: "Parking Enforcement", tier: "normal", hp: 30, suits: ["clubs"], passive: none, intents: [[atk(5), hex("junk_ticket")], [atk(7)]], text: "Tickets. Each one makes attacks heavier.",
-    catch: { value: 10, suit: "clubs", effects: [{ k: "onDiscardDamage", n: 6 }], text: "Unplayed at end of turn: deal 6 damage." } },
+    catch: { value: 10, suit: "clubs", effects: [{ k: "onDiscardDamage", n: 6 }], text: "When discarded: deal 6 damage." } },
   { id: "manifestor", name: "The Manifestor", tier: "normal", hp: 28, suits: ["hearts"], passive: none, intents: [[heal(4)], [atk(6)], [atk(6)]], text: "Believes it will heal. Does.",
     catch: { value: 10, suit: "hearts", effects: [{ k: "retain" }], text: "Stays in your hand between turns." } },
 
@@ -97,7 +97,7 @@ export const ENEMIES: EnemyDef[] = [
   { id: "developer", name: "The Developer", tier: "elite", hp: 64, suits: ["diamonds"], passive: none, intents: [[hex("junk_permit", 2)], [atk(9)], [buff(3)], [atk(9)]], text: "Permit delays pile up. Stakes rise.",
     catch: { value: 15, suit: "diamonds", effects: [{ k: "draw", n: 2 }], text: "Also draw 2." } },
   { id: "sound_healer", name: "The Sound Healer", tier: "elite", hp: 48, suits: ["hearts"], passive: none, intents: [[atk(8)], [heal(6)], [atk(8)]], text: "Heals on the off-beat.",
-    catch: { value: 15, suit: "hearts", effects: [{ k: "onDiscardBlock", n: 6 }], text: "Unplayed at end of turn: 6 block next turn." } },
+    catch: { value: 15, suit: "hearts", effects: [{ k: "onDiscardBlock", n: 6 }], text: "When discarded: 6 block." } },
 
   // Boss
   { id: "order_of_star", name: "The Order of the Star", tier: "boss", hp: 52, suits: ["hearts"], passive: none, intents: [[atk(8)], [buff(2)], [atk(5, 2)], [hex("junk_permit"), blk(10)]], text: "The organization he dissolved in 1929. It did not take the hint.",
