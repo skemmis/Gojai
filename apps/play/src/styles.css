@@ -237,12 +237,12 @@ button:focus-visible {
   gap: 5px;
   font-weight: 700;
 }
-.gold i {
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: var(--gilt);
-  box-shadow: 1px -1px 0 color-mix(in srgb, var(--gilt) 50%, transparent);
+/* Gold: the inked gilt coin from the art thread */
+.gold i,
+.run-chip .chip-coin {
+  width: 14px;
+  height: 14px;
+  background: url("./assets/ui-coin.webp") center / contain no-repeat;
 }
 .gold.short {
   opacity: 0.5;
@@ -929,10 +929,6 @@ footer {
   height: 100%;
   object-fit: contain;
 }
-/* The inked drops are dark; lift them so they read on the night table */
-.drops .drop .full {
-  filter: brightness(1.9) saturate(1.15);
-}
 /* Drops the next blow would drain go pale and breathe */
 .drops .risk .full {
   opacity: 0.35;
@@ -952,16 +948,22 @@ footer {
   font-weight: 800;
   color: var(--on-night);
 }
+.drops .num {
+  position: relative;
+}
+/* The coming loss hangs over the number, so the row doesn't grow */
 .drops .num .loss {
-  margin-left: 6px;
+  position: absolute;
+  right: -4px;
+  top: -14px;
   font-style: normal;
   font-size: 15px;
   font-weight: 800;
   color: var(--suit-spades-night);
 }
 .drops.you .drop {
-  width: 15px;
-  height: 24px;
+  width: 14px;
+  height: 23px;
 }
 .drops.you .num b {
   font-size: 26px;
@@ -991,12 +993,8 @@ footer {
 .immune .no::after {
   content: "";
   position: absolute;
-  left: -3px;
-  right: -3px;
-  top: 50%;
-  border-top: 3px solid var(--paper);
-  box-shadow: 0 0 0 1px var(--night);
-  transform: rotate(-35deg);
+  inset: -3px;
+  background: url("./assets/ui-immune.webp") center / contain no-repeat;
 }
 .gcard.dud .face {
   opacity: 0.55;
@@ -1004,11 +1002,9 @@ footer {
 .gcard.dud::after {
   content: "";
   position: absolute;
-  left: 8%;
-  right: 8%;
-  top: 50%;
-  border-top: 4px solid var(--ink);
-  transform: rotate(-55deg);
+  inset: 12% 4%;
+  background: url("./assets/ui-immune.webp") center / contain no-repeat;
+  filter: brightness(0.25);
   z-index: 2;
   pointer-events: none;
 }
@@ -1107,10 +1103,9 @@ footer {
   font-variant-numeric: tabular-nums;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
-/* An empty pile is only a ghost of itself */
+/* An empty pile is just its slot */
 .pile.empty img {
-  opacity: 0.22;
-  filter: grayscale(1);
+  opacity: 0.6;
 }
 .pile small {
   position: absolute;
@@ -1142,14 +1137,15 @@ footer {
 }
 .end {
   position: relative;
-  width: 124px;
-  height: 58px;
+  flex: none;
+  width: 114px;
+  height: 54px;
   padding: 0;
   border: 0;
   background: none;
   color: var(--ink);
   font-family: var(--display);
-  font-size: 15px;
+  font-size: 14px;
   cursor: pointer;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
 }
@@ -1343,12 +1339,17 @@ footer {
   top: -12px;
   right: -8px;
   z-index: 3;
-  background: var(--ink);
-  color: var(--paper);
-  border: 2px solid var(--paper);
+  width: 42px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  padding-left: 8px;
+  background: url("./assets/ui-tag-mult.webp") center / contain no-repeat;
+  color: var(--ink);
   font-size: 13px;
   font-weight: 800;
-  padding: 1px 7px;
+  text-box: trim-both cap alphabetic;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
 }
 .play-hint {
   position: absolute;
@@ -1419,8 +1420,4 @@ footer {
 }
 .run-chip .chip-coin {
   display: inline-block;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--gilt);
 }

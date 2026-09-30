@@ -444,8 +444,8 @@ function Drops({ hp, max, loss, who }: { hp: number; max: number; loss: number; 
           const risk = loss > 0 && hp > lo && after < lo + per;
           return (
             <span key={i} className={`drop ${risk ? "risk" : ""}`} aria-hidden="true">
-              <img src={UI["blood-drop-empty"]} alt="" draggable={false} />
-              {fill > 0 && <img className="full" src={UI["blood-drop"]} style={{ clipPath: `inset(${(1 - fill) * 100}% 0 0 0)` }} alt="" draggable={false} />}
+              <img src={UI["blood-drop-flat-empty"]} alt="" draggable={false} />
+              {fill > 0 && <img className="full" src={UI["blood-drop-flat"]} style={{ clipPath: `inset(${(1 - fill) * 100}% 0 0 0)` }} alt="" draggable={false} />}
             </span>
           );
         })}
@@ -471,7 +471,7 @@ function Scroll() {
 function Pile({ n, side }: { n: number; side: "left" | "right" }) {
   return (
     <div className={`pile ${side} ${n === 0 ? "empty" : ""}`} title={side === "left" ? "Draw pile" : "Discard pile"}>
-      <img src={UI[side === "left" ? "pile-draw" : "pile-discard"]} alt="" draggable={false} />
+      <img src={UI[n === 0 ? "pile-empty" : side === "left" ? "pile-draw" : "pile-discard"]} alt="" draggable={false} />
       <b>{n}</b>
       <small>{side === "left" ? "Draw" : "Discard"}</small>
     </div>

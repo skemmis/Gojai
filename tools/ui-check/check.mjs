@@ -13,7 +13,7 @@
  * agent (.claude/agents/design-critic.md) before showing anyone.
  */
 import { execSync } from "node:child_process";
-import { createReadStream, existsSync, mkdirSync, statSync, writeFileSync } from "node:fs";
+import { createReadStream, existsSync, mkdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, resolve } from "node:path";
 import { chromium } from "playwright";
@@ -38,6 +38,7 @@ const CENTRED = [
 
 const args = process.argv.slice(2);
 if (!args.includes("--no-build")) execSync("npm run build:play", { cwd: ROOT, stdio: "inherit" });
+rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT, { recursive: true });
 
 // A tiny static server for the built page (module scripts don't load over file://)
@@ -102,6 +103,14 @@ async function checkState(state) {
       .map(([c]) => String(c)),
   );
   for (const c of spill) failures.push(`${state}: "${c}" runs off the screen`);
+  // Words cut off by the box they're printed in (text wider or taller than its container)
+  const clipped = await page.evaluate(() =>
+    [...document.querySelectorAll(".table b, .table span, .table button, .table small")]
+      .filter((el) => el.childElementCount === 0 && el.textContent.trim() && el.getBoundingClientRect().width)
+      .filter((el) => el.scrollWidth > el.clientWidth + 1 || el.getBoundingClientRect().right > el.parentElement.getBoundingClientRect().right + 1 && getComputedStyle(el.parentElement).overflow !== "visible")
+      .map((el) => `"${el.textContent.trim()}"`),
+  );
+  for (const t of clipped) failures.push(`${state}: text ${t} is cut off by its box`);
   for (const [label, textSel, frameSel, axes] of CENTRED) {
     const texts = page.locator(textSel);
     const n = await texts.count();
