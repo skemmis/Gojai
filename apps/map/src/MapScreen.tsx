@@ -9,7 +9,6 @@ import {
 } from "@gojai/map";
 import { buildStyle, drawImage, type DrawnMap } from "./mapStyle.ts";
 import { FIND_GLYPH, FIND_LABEL, THEME as theme } from "./theme.ts";
-import auraUrl from "./assets/aura.webp"; // the painted aura (gojai-ui/pieces/raw/halo: gen-aura.mjs, aura-1.png)
 
 type Selection =
   | { kind: "spot"; id: string }
@@ -97,7 +96,7 @@ export interface MapScreenProps {
   spotGlyph?: (spot: Spot, find: Find) => string | undefined;
   /** The hand-drawn map to use as the base sheet instead of the ink vector map (see tools/map/drawn_tiles.py). */
   drawn?: DrawnMap;
-  /** The player's figure (their portrait cut out on a hand-painted blue halo) to stand on the map instead of the ink dot. */
+  /** The player's figure (their portrait cut out, in a blue glow) to stand on the map instead of the ink dot. */
   youFigure?: string;
 }
 
@@ -166,7 +165,7 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
       container: mapEl.current!,
       style: buildStyle(theme, active, drawn),
       center: CENTER,
-      zoom: phone ? 13.6 : 14.2,
+      zoom: phone ? 15.6 : 15.8, // start close enough to read the drawn streets and the spots around you (Sam)
       minZoom: 12,
       maxZoom: 18.5,
       maxBounds: [
@@ -308,28 +307,27 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
     const el = document.createElement("div");
     el.className = youFigure ? "you figure" : "you";
     if (youFigure) {
-      // The player's own character standing where they are, on a hand-painted blue aura (blue = you and what you
-      // can reach). One painted aura for every character: CSS sizes it around whatever figure stands on it.
-      const aura = document.createElement("span");
-      aura.className = "aura";
-      aura.style.backgroundImage = `url(${auraUrl})`;
+      // The player's own character standing where they are, in a soft pulsing blue glow like a phone map's
+      // location dot (blue = you and what you can reach). Pure CSS, so it fits any character.
+      const glow = document.createElement("span");
+      glow.className = "glow";
       const img = document.createElement("img");
       img.src = youFigure;
       img.alt = "";
       img.draggable = false;
-      el.append(aura, img);
+      el.append(glow, img);
     }
     // feet on the spot
     const opts: maplibregl.MarkerOptions = youFigure ? { element: el, anchor: "bottom", offset: [0, 2] } : { element: el };
     youMarker.current = new maplibregl.Marker(opts).setLngLat(at).addTo(m);
   }, [you, youFigure, anywhere]);
 
-  // Spots within walking reach of you show as blue cards at every zoom.
+  // Spots within walking reach of you show as blue dots at every zoom.
   const near = useMemo(
     () => (you ? SPOTS.filter((s) => s.kind === "spot" && distanceM(you, s.at) <= NEAR_M) : []),
     [you],
   );
-  // Opened spots stay plain cards until they reroll.
+  // Opened spots turn plain ink until they reroll.
   const spentKey = near.filter((s) => visits[s.id] !== undefined && nextReroll(new Date(visits[s.id])) > now).map((s) => s.id).join();
   useEffect(() => {
     const m = map.current!;
@@ -369,7 +367,7 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
         geometry: { type: "Point" as const, coordinates: g.at },
       })),
     };
-    // Glyphs are 128 px inked pieces; shown at about 24 px (size 1, with their paper knockout) over 14 px cards.
+    // Glyphs are 128 px inked pieces; shown at about 24 px (size 1, with their paper knockout) over the spot dots.
     const load = (url: string) =>
       m.hasImage(url) ? Promise.resolve() : m.loadImage(url).then((r) => void (!m.hasImage(url) && m.addImage(url, r.data, { pixelRatio: 6 })));
     const apply = () => {

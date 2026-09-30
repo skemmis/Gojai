@@ -109,14 +109,21 @@
 .map-screen .map.labels .hood-name { opacity: .5; }
 .map-screen .you { width: 16px; height: 16px; border-radius: 50%; background: var(--ink); border: 3px solid var(--paper); outline: 2px solid var(--ink); }
 .map-screen .you.figure { width: auto; height: auto; border: 0; outline: 0; border-radius: 0; background: none; pointer-events: none; z-index: 3; }
-.map-screen .you.figure img { display: block; position: relative; height: 54px; }
-/* the painted aura hugs any figure: a fixed margin around the image, nudged off-register like spot colour */
-.map-screen .you.figure .aura {
-  position: absolute; inset: -12px -15px -7px -15px; transform: translate(2px, 1px);
-  background: center / 100% 100% no-repeat;
+.map-screen .you.figure img { display: block; position: relative; height: 54px; filter: drop-shadow(0 0 1.5px rgba(31, 78, 121, 0.9)); }
+/* you glow like a phone map's location dot: blue light rising from your feet, and a ring pulsing out on the ground */
+.map-screen .you.figure .glow {
+  position: absolute; inset: -26px -40px -34px -40px; pointer-events: none;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(31, 78, 121, 0.75), rgba(31, 78, 121, 0.45) 40%, rgba(31, 78, 121, 0.15) 75%, rgba(31, 78, 121, 0) 100%);
 }
+.map-screen .you.figure .glow::after {
+  content: ""; position: absolute; left: 50%; bottom: 26px; width: 72px; height: 24px; margin-left: -36px; border-radius: 50%;
+  border: 2px solid rgba(31, 78, 121, 0.85); animation: you-pulse 2.2s ease-out infinite;
+}
+@keyframes you-pulse { from { transform: scale(0.35); opacity: 0.95; } to { transform: scale(1.5); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .map-screen .you.figure .glow::after { animation: none; opacity: 0.6; } }
 .map-screen .far .you.figure img { height: 38px; } /* zoomed out: smaller, so it doesn't cover the spots around it */
-.map-screen .far .you.figure .aura { inset: -8px -10px -5px -10px; }
+.map-screen .far .you.figure .glow { inset: -18px -28px -24px -28px; }
+.map-screen .far .you.figure .glow::after { width: 50px; height: 17px; margin-left: -25px; bottom: 18px; }
 .map-screen .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .map-screen .find { margin: 10px 0 6px; }
 .map-screen .odds { display: grid; gap: 4px; margin: 4px 0 8px; font-size: 13px; }

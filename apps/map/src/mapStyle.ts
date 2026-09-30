@@ -40,18 +40,18 @@ const SPOT_POINTS: FC = {
 const GLYPH: SymbolLayerSpecification["layout"] = {
   "icon-image": ["get", "glyph"],
   "icon-anchor": "bottom",
-  "icon-offset": [0, -10], // glyph stands on the card, its paper knockout keeping a small gap (the card is 20 px tall at size 1)
+  "icon-offset": [0, -10], // glyph stands just above the spot dot (7 px radius at size 1), its paper knockout keeping a small gap
   "icon-allow-overlap": true,
   "icon-ignore-placement": true,
 };
 
-/** Zoom at which plain spots turn from dots into cards. */
+/** Zoom from which spots grow and carry their kind glyph (they are dots at every zoom). */
 export const CARD_ZOOM = 15.3;
 
 const byTier = (v: [number, number, number, number]): ExpressionSpecification =>
   ["interpolate", ["linear"], ["zoom"], 12, ["match", ["get", "t"], 3, v[3] * 0.6, 2, v[2] * 0.5, 1, v[1] * 0.4, v[0] * 0.3], 17, ["match", ["get", "t"], 3, v[3] * 2, 2, v[2] * 2, 1, v[1] * 2, v[0] * 2]];
 
-/** Map images drawn on the fly: engraver's hatching and stipple, and the tarot-card spot pin. */
+/** Map images drawn on the fly: engraver's hatching and stipple. */
 export function drawImage(t: Theme, name: string): { width: number; height: number; data: Uint8ClampedArray } | null {
   const make = (w: number, h: number, draw: (c: CanvasRenderingContext2D) => void) => {
     const cv = document.createElement("canvas");
@@ -80,30 +80,6 @@ export function drawImage(t: Theme, name: string): { width: number; height: numb
       c.fillRect(2, 2, 1, 1);
       c.fillRect(7, 7, 1, 1);
     });
-  if (name === "card" || name === "card-near" || name === "card-live") {
-    // A little tarot card: outer rule, inner rule, a diamond pip. Drawn at 2x.
-    // Plain cards are ink on paper; a spot near you is blue; a live one pink.
-    const fill = name === "card-live" ? t.live : name === "card-near" ? t.spot : t.paper;
-    const fg = name === "card-near" ? t.paper : t.ink;
-    return make(28, 40, (c) => {
-      c.fillStyle = fill;
-      c.fillRect(1, 1, 26, 38);
-      c.strokeStyle = t.ink;
-      c.lineWidth = 3;
-      c.strokeRect(1.5, 1.5, 25, 37);
-      c.strokeStyle = fg;
-      c.lineWidth = 1;
-      c.strokeRect(5.5, 5.5, 17, 29);
-      c.fillStyle = fg;
-      c.beginPath();
-      c.moveTo(14, 13);
-      c.lineTo(19, 20);
-      c.lineTo(14, 27);
-      c.lineTo(9, 20);
-      c.closePath();
-      c.fill();
-    });
-  }
   return null;
 }
 
@@ -134,8 +110,8 @@ export function buildStyle(t: Theme, active: { spots: string[] }, drawn?: DrawnM
     if (l.id === "paper") return [l, { id: "drawn", type: "raster", source: "drawn", paint: { "raster-fade-duration": 350, "raster-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0.4, 15, 0.9] } } as const];
     if (DRAWN_REPLACES.includes(l.id)) return [];
     // on the busy drawing, spots stand on a soft paper knockout so they lift off the buildings
-    if (l.id === "spots" || l.id === "spot-dots") return [{ ...KNOCK, id: `${l.id}-knock`, minzoom: l.id === "spots" ? CARD_ZOOM : 0, maxzoom: l.id === "spots" ? 24 : CARD_ZOOM, paint: { ...KNOCK.paint, "circle-radius": l.id === "spots" ? ["interpolate", ["linear"], ["zoom"], CARD_ZOOM, 13, 17, 19] : ["interpolate", ["linear"], ["zoom"], 12, 3.5, CARD_ZOOM, 6] } } as const, l];
-    if (l.id === "near-cards") return [{ ...KNOCK, id: "near-knock", source: "near", paint: { ...KNOCK.paint, "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 9, 14, 12, 17, 19] } } as const, l];
+    if (l.id === "spots" || l.id === "spot-dots") return [{ ...KNOCK, id: `${l.id}-knock`, minzoom: l.id === "spots" ? CARD_ZOOM : 0, maxzoom: l.id === "spots" ? 24 : CARD_ZOOM, paint: { ...KNOCK.paint, "circle-radius": l.id === "spots" ? ["interpolate", ["linear"], ["zoom"], CARD_ZOOM, 6.5, 17, 11.5] : ["interpolate", ["linear"], ["zoom"], 12, 3.5, CARD_ZOOM, 6.5] } } as const, l];
+    if (l.id === "near-cards") return [{ ...KNOCK, id: "near-knock", source: "near", paint: { ...KNOCK.paint, "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 6, 14, 8, 17, 12.5] } } as const, l];
     // the trail is drawn on the sheet; only a selected neighbourhood still gets its faint ink wash
     if (l.id === "hood-fill" && l.type === "fill") return [{ ...l, paint: { ...l.paint, "fill-color": t.ink, "fill-opacity": ["case", ["boolean", ["feature-state", "selected"], false], 0.07, 0] } }];
     return [l];
@@ -309,7 +285,9 @@ function inkStyle(t: Theme, active: { spots: string[] }): StyleSpecification {
         },
       },
       {
-        // Zoomed out, a spot is a small ink dot so the map stays readable.
+        // A spot is a solid ink dot at every zoom (Sam: the dots read far better on the drawn sheet than cards did),
+        // growing as you zoom in; up close its kind stands on top of it. Two layers only so the paper knockout under
+        // it can grow too.
         id: "spot-dots",
         type: "circle",
         source: "spots",
@@ -323,26 +301,26 @@ function inkStyle(t: Theme, active: { spots: string[] }): StyleSpecification {
       },
       {
         id: "spots",
-        type: "symbol",
+        type: "circle",
         source: "spots",
         minzoom: CARD_ZOOM,
-        layout: {
-          "icon-image": ["case", isLive, "card-live", "card"],
-          "icon-size": ["interpolate", ["linear"], ["zoom"], CARD_ZOOM, 0.7, 17, 1],
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
+        paint: {
+          "circle-color": ["case", isLive, t.live, t.ink],
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], CARD_ZOOM, 3.6, 17, 7],
+          "circle-stroke-color": t.paper,
+          "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], CARD_ZOOM, 1.2, 17, 2],
         },
       },
       {
-        // Spots within walking reach of you are always cards, in blue.
+        // Spots within walking reach of you are blue dots at every zoom (plain ink once opened, until they reroll).
         id: "near-cards",
-        type: "symbol",
+        type: "circle",
         source: "near",
-        layout: {
-          "icon-image": ["case", ["get", "spent"], "card", "card-near"],
-          "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.42, 14, 0.58, 17, 1.05],
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
+        paint: {
+          "circle-color": ["case", ["get", "spent"], t.ink, t.spot],
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 3.2, 14, 4.5, 17, 8],
+          "circle-stroke-color": t.paper,
+          "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 12, 1.2, 17, 2],
         },
       },
       // What each spot holds this roll (fight, elite, shop…), stood on top of its card, so you can pick where to walk.
