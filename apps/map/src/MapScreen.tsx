@@ -7,7 +7,7 @@ import {
   neighborhoodOf, nextReroll, spotById, spotOdds, spotState, spotsInRange, upcomingEvents, zoned,
   type EventWindow, type Find, type LngLat, type Neighborhood, type Spot, type SpotOpened, type SpotState, type Visits, spotOpened,
 } from "@gojai/map";
-import { buildStyle, drawImage } from "./mapStyle.ts";
+import { buildStyle, drawImage, type DrawnMap } from "./mapStyle.ts";
 import { FIND_GLYPH, FIND_LABEL, THEME as theme } from "./theme.ts";
 
 type Selection =
@@ -94,13 +94,17 @@ export interface MapScreenProps {
    * no elites early). Opened spots show none until they reroll.
    */
   spotGlyph?: (spot: Spot, find: Find) => string | undefined;
+  /** The hand-drawn map to use as the base sheet instead of the ink vector map (see tools/map/drawn_tiles.py). */
+  drawn?: DrawnMap;
+  /** The player's figure (their portrait cut out with a blue edge) to stand on the map instead of the ink dot. */
+  youFigure?: string;
 }
 
 /**
  * The whole map screen: MapLibre map, top bar, "Happening now" band and the
  * bottom sheet. Drop it into any React app (it fills its positioned parent).
  */
-export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, onOpen, autoLocate = false, tools, bare = false, onSelect, onSelectHood, hoodBadge, spotGlyph }: MapScreenProps) {
+export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, onOpen, autoLocate = false, tools, bare = false, onSelect, onSelectHood, hoodBadge, spotGlyph, drawn, youFigure }: MapScreenProps) {
   const mapEl = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const removed = useRef(false);
@@ -128,7 +132,7 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
     const phone = window.innerWidth < 760;
     const m = new maplibregl.Map({
       container: mapEl.current!,
-      style: buildStyle(theme, active),
+      style: buildStyle(theme, active, drawn),
       center: CENTER,
       zoom: phone ? 13.6 : 14.2,
       minZoom: 12,
@@ -186,7 +190,7 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
   useEffect(() => {
     if (styled.current === active) return; // the map was built with this style
     styled.current = active;
-    map.current?.setStyle(buildStyle(theme, active));
+    map.current?.setStyle(buildStyle(theme, active, drawn));
   }, [active]);
 
   // Bare mode: the game handles taps.
@@ -265,11 +269,23 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
   useEffect(() => {
     const m = map.current!;
     youMarker.current?.remove();
-    if (!you) return;
+    // test mode with no location: the figure still stands somewhere (on Ojai Ave by the Arcade, clear of its name)
+    const at = you ?? (anywhere && youFigure ? ([-119.2449, 34.4474] as LngLat) : null);
+    if (!at) return;
     const el = document.createElement("div");
-    el.className = "you";
-    youMarker.current = new maplibregl.Marker({ element: el }).setLngLat(you).addTo(m);
-  }, [you]);
+    el.className = youFigure ? "you figure" : "you";
+    if (youFigure) {
+      // The player's own character standing where they are, in a pool of blue (the colour of "within your reach")
+      const img = document.createElement("img");
+      img.src = youFigure;
+      img.alt = "";
+      img.draggable = false;
+      el.appendChild(img);
+    }
+    // feet on the spot: the figure image has a 5 px outline margin under the feet
+    const opts: maplibregl.MarkerOptions = youFigure ? { element: el, anchor: "bottom", offset: [0, 5] } : { element: el };
+    youMarker.current = new maplibregl.Marker(opts).setLngLat(at).addTo(m);
+  }, [you, youFigure, anywhere]);
 
   // Spots within walking reach of you show as blue cards at every zoom.
   const near = useMemo(

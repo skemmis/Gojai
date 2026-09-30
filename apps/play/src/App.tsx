@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { MapScreen as WorldMap } from "@gojai/map-app/MapScreen";
+import type { DrawnMap } from "@gojai/map-app/mapStyle";
+import drawnMeta from "../../map/drawn-tiles/drawn/tiles.json";
 import { visit, spotOpened, type Find, type Spot, type SpotState, type Visits } from "@gojai/map";
 import {
   newRun,
@@ -76,6 +78,13 @@ function store(key: string, value: unknown) {
     /* private window or blocked storage: keep going without it */
   }
 }
+
+/** The hand-drawn valley map, served as tiles next to the page (apps/map/drawn-tiles, from tools/map/drawn_tiles.py). */
+/** Each portrait cut out for the map with a paper edge and a blue outline (gojai-ui/pieces/raw/build-figures.py). */
+const FIGURES: Record<string, string> = Object.fromEntries(
+  Object.entries(import.meta.glob<string>("./assets/figure-*.webp", { eager: true, import: "default" })).map(([p, u]) => [p.replace(/^.*figure-(.*)\.webp$/, "$1"), u]),
+);
+const DRAWN = { ...drawnMeta, tiles: new URL("drawn/", document.baseURI).href + "{z}/{x}/{y}.webp" } as DrawnMap;
 
 export function App() {
   const [run, setRun] = useState<Run>(() => newRun(randomSeed()));
@@ -185,6 +194,8 @@ export function App() {
           hoodBadge={hoodBadge}
           onSelect={(spot, state, at) => setPicked({ spot, state, now: at })}
           spotGlyph={spotGlyph}
+          drawn={DRAWN}
+          youFigure={town.me ? FIGURES[String(town.portraits[town.me.id])] : undefined}
         />
         {town.me && (
           <MapChrome
