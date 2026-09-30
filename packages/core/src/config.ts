@@ -35,7 +35,7 @@ export const DEFAULT_CONFIG = {
    * on top: spades hit double, hearts also block, diamonds also draw, clubs
    * also recall. Off = only spades hit.
    */
-  allDamage: true,
+  allDamage: false,
   /** Enemies shrug off one suit's power. */
   immunity: false,
   /** Plain reward cards lean toward the suits you don't start with. */
@@ -68,7 +68,7 @@ export const DEFAULT_CONFIG = {
   tierHp: 0.8,
   tierAtk: 0.5,
   /** Every enemy's HP times this (all-cards-hit fights need more). */
-  enemyHpMult: 1.25,
+  enemyHpMult: 0.6,
 
   // Enemy scaling per floor (floor 1 = ×1)
   hpGrowth: 0.04,

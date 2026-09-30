@@ -247,10 +247,16 @@ for (const [id, name, idx, state] of [
   await checkState(state);
 }
 
-// Win it: one hit left, then any card
-await steer("r.fight.enemy.hp = 1; r.fight.enemy.block = 0", 400);
-// Every card hits, so any playable one finishes it (a hand can hold no spades)
-const spade = page.locator(".gcard:not(.off)").first();
+// Guides on the table: growing ones show their count; tapping one shows what it does
+await steer("r.guides = ['farmers_market', 'arcade', 'krishnamurti', 'crystal_shop', 'sound_bath']; r.grow = { crystal_shop: 3, sound_bath: 5 }; r.fight.grow = { farmers_market: 2, arcade: 1 }", 600);
+await checkState("fight-guides");
+await click(page.locator(".guide-tag").first(), 400);
+await checkState("fight-guide-open");
+await click(page.locator(".guide-open"), 300);
+
+// Win it: one hit left, then a spade (only spades hit)
+await steer("r.fight.enemy.hp = 1; r.fight.enemy.block = 0; r.fight.actions = 3; r.fight.discarding = 0; r.hand.push(core.plainCard(r, 5, 'spades'))", 400);
+const spade = page.locator(".gcard.s-spades:not(.off)").last();
 if (await spade.count()) {
   await spade.click({ position: { x: 8, y: 30 } });
   await pause(300);

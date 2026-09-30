@@ -27,6 +27,7 @@ export function newRun(seed: number): Run {
     hand: [],
     discard: [],
     guides: [],
+    grow: {},
     nextUid: 1,
     removals: 0,
     phase: "map",

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { newRun, startFight, play, endTurn, playError, previewPlay, plainCard, allCards, visitSpot, enterEncounter, takeRewardCard, leaveReward, intent, incoming, CONFIG, ENEMY_BY_ID, takeRewardUpgrade, discardCards, makeCard } from "./index";
+import { newRun, startFight, play, endTurn, playError, previewPlay, plainCard, allCards, visitSpot, enterEncounter, takeRewardCard, leaveReward, intent, incoming, CONFIG, ENEMY_BY_ID, takeRewardUpgrade, discardCards, makeCard, guideCounter } from "./index";
 import type { Run, Suit } from "./index";
 
 function withHand(run: Run, cards: [number, Suit][]) {
@@ -40,10 +40,10 @@ test("a card matching one already played this turn, in another suit, counts doub
   const run = newRun(2);
   startFight(run, "ebike_teen");
   const [h, sp, sp2, c] = withHand(run, [[5, "hearts"], [5, "spades"], [5, "spades"], [5, "clubs"]]);
-  assert.equal(previewPlay(run, sp)!.damage, 10); // spades hit double
+  assert.equal(previewPlay(run, sp)!.damage, 5);
   play(run, h);
   assert.equal(previewPlay(run, sp)!.mult, 2);
-  assert.equal(previewPlay(run, sp)!.damage, 20);
+  assert.equal(previewPlay(run, sp)!.damage, 10);
   play(run, sp);
   assert.equal(previewPlay(run, sp2)!.mult, 2); // same suit as the spade: no extra step
   assert.equal(previewPlay(run, c)!.mult, 3); // third suit: three of a kind
@@ -70,13 +70,13 @@ test("each play costs an action; with none left you must end your turn", () => {
   assert.notEqual(playError(run, d), null);
 });
 
-test("every card hits for its value, spades double; no enemy is immune", () => {
+test("only spades hit, for their value; no enemy is immune", () => {
   const run = newRun(3);
   startFight(run, "crystal_vendor"); // armor 1
   const [sp, he, di] = withHand(run, [[7, "spades"], [7, "hearts"], [5, "diamonds"], [10, "spades"]]);
-  assert.equal(previewPlay(run, sp)!.damage, 13); // 2 × 7 − armor 1
-  assert.equal(previewPlay(run, he)!.damage, 6); // hearts hit too
-  assert.equal(previewPlay(run, he)!.block, 7); // and block
+  assert.equal(previewPlay(run, sp)!.damage, 6); // 7 − armor 1
+  assert.equal(previewPlay(run, he)!.damage, 0); // hearts only block
+  assert.equal(previewPlay(run, he)!.block, 7);
   const p = previewPlay(run, di)!;
   assert.deepEqual(p.powers.map((x) => [x.suit, x.immune]), [["diamonds", false]]);
 });
@@ -120,7 +120,7 @@ test("clubs let you discard up to their value, and discarding fires discard effe
   run.hand.push(letGo);
   play(run, c2);
   discardCards(run, [letGo.uid]);
-  assert.ok(run.fight!.enemy.hp <= hp - 1 - 8, "Let Go deals 8 when discarded");
+  assert.ok(run.fight!.enemy.hp <= hp - 8, "Let Go deals 8 when discarded");
 });
 
 test("diamonds draw as many cards as their value", () => {
@@ -144,8 +144,8 @@ test("an exact kill catches the enemy as a face card", () => {
   const run = newRun(5);
   startFight(run, "manifestor"); // hearts
   run.fight!.enemy.hp = 4;
-  const [a] = withHand(run, [[2, "spades"], [9, "hearts"]]);
-  play(run, a); // 2♠ hits double: exactly 4
+  const [a] = withHand(run, [[4, "spades"], [9, "hearts"]]);
+  play(run, a); // exactly 4
   assert.equal(run.fight!.phase, "won");
   assert.equal(run.fight!.exact, true);
   assert.ok(allCards(run).some((c) => c.def === "catch_manifestor" && c.value === 10));
@@ -264,4 +264,30 @@ test("a fight reward can upgrade one of your cards instead of adding one", () =>
   assert.equal(target.value, 4 + CONFIG.rewardUpgrade);
   assert.equal(allCards(run).length, size, "no card added");
   assert.throws(() => takeRewardCard(run, 0), "it takes the card choice");
+});
+
+test("Guides grow: Farmers Market adds to spades for the fight, Crystal Shop to hearts for the run", () => {
+  const run = newRun(21);
+  run.guides.push("farmers_market", "crystal_shop");
+  startFight(run, "ebike_teen");
+  const [c, d, sp, h] = withHand(run, [[1, "clubs"], [1, "diamonds"], [5, "spades"], [5, "hearts"]]);
+  play(run, c);
+  discardCards(run, []);
+  play(run, d);
+  assert.equal(previewPlay(run, sp)!.damage, 6, "5♠ +1 from the club");
+  assert.equal(previewPlay(run, h)!.block, 6, "5♥ +1 from the diamond");
+  assert.equal(guideCounter(run, "crystal_shop")!.n, 1);
+});
+
+test("the Arcade strikes on every 4th card played", () => {
+  const run = newRun(22);
+  run.guides.push("arcade");
+  startFight(run, "short_term_rental");
+  const hp = run.fight!.enemy.hp;
+  const [a, b, c] = withHand(run, [[2, "hearts"], [3, "hearts"], [4, "hearts"]]);
+  play(run, a); play(run, b); play(run, c);
+  endTurn(run);
+  const [d] = withHand(run, [[5, "hearts"]]);
+  play(run, d);
+  assert.equal(run.fight!.enemy.hp, hp - 6);
 });

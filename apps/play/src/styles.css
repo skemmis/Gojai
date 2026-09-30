@@ -1458,3 +1458,84 @@ footer {
   text-shadow: 0 1px 3px var(--night), 0 0 8px var(--night);
   white-space: nowrap;
 }
+
+/* ─── Guides pinned down the right edge ─── */
+.table > .guide-tags {
+  position: absolute;
+  top: 106px;
+  right: 14px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.guide-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 6px;
+  border: 0;
+  border-style: solid;
+  border-width: 6px 10px;
+  border-image: url("./assets/ui-sheet-wide.webp") 60 90 fill / 6px 10px stretch;
+  background: none;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 13px;
+  line-height: 1.1;
+  filter: var(--lift) brightness(0.85);
+  cursor: pointer;
+}
+.guide-tag .nm {
+  white-space: nowrap;
+}
+.guide-tag .count {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  font-family: var(--ui);
+  font-size: 13px;
+  font-weight: 800;
+  font-variant-numeric: proportional-nums;
+}
+.guide-tag .count svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+}
+.guide-tag .count .s-spades { color: var(--suit-spades); }
+.guide-tag .count .s-hearts { color: var(--suit-hearts); }
+.guide-open {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 220px;
+  padding: 6px 8px;
+  border: 0;
+  border-style: solid;
+  border-width: 12px 12px;
+  border-image: url("./assets/ui-sheet-tall.webp") 90 80 fill / 12px 12px stretch;
+  color: var(--ink);
+  filter: var(--lift);
+}
+.guide-open .name {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 400;
+}
+.guide-open .text,
+.guide-open .now {
+  font-size: var(--t-small);
+  line-height: 1.3;
+}
+.guide-open .now {
+  font-weight: 700;
+}
+.guide-open .close {
+  font-size: 12px;
+  color: var(--ink-soft);
+}

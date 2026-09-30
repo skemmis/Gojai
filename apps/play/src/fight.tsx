@@ -11,7 +11,7 @@ import { cardDef, CONFIG, discardCards, endTurn, hitSize, incoming, intent, isJu
 import type { Card, EnemyAction, Run, Suit } from "@gojai/core";
 import { Icon, rankLabel, powerAmount, sortCards, type IconName } from "./components";
 import vignette from "./assets/scene-vignette.webp";
-import { GameCard, Drops, Moon, Ribbon, ShieldMark, SCENES, SPRITES, UI, globById, sceneFor } from "./kit/pieces";
+import { GameCard, GuideTags, Drops, Moon, Ribbon, ShieldMark, SCENES, SPRITES, UI, globById, sceneFor } from "./kit/pieces";
 export { GameCard, Drops, Moon, Ribbon, ShieldMark, SCENES, SPRITES, UI, sceneFor };
 
 type Act = (fn: (r: Run) => void) => boolean;
@@ -274,6 +274,8 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
           {!intent(run).some((a) => a.k === "attack") && <Guard block={f.block} adding={pv?.block ?? 0} />}
         </div>
       </div>
+
+      <GuideTags run={run} />
 
       {/* ─── You: your blood, mirroring its own, and End turn ─── */}
       <div className="you-zone">

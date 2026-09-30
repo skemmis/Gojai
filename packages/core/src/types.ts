@@ -121,6 +121,8 @@ export interface Fight {
   hpLost: number;
   /** Clubs: how many cards you may still pick to discard. Nothing else can happen until you pick (or pick none). */
   discarding: number;
+  /** Guides that grow within one fight keep their counts here, by guide id. */
+  grow?: Record<string, number>;
   phase: "play" | "won" | "lost";
   exact: boolean;
   perfect: boolean;
@@ -208,6 +210,8 @@ export interface Run {
   hand: Card[];
   discard: Card[];
   guides: string[];
+  /** Guides that grow over the run keep their counts here, by guide id. */
+  grow?: Record<string, number>;
   nextUid: number;
   removals: number;
   phase: Phase;

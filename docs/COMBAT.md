@@ -1,6 +1,6 @@
 # Combat (prototype v0)
 
-A roguelike deckbuilder in the spirit of Slay the Spire, played with a **standard deck of cards**. It borrows three ideas from *Regicide*: you keep your hand, every card hits for its value, and an exact kill catches the enemy. (Suit immunity was tried and dropped on 2026-09-30; it's still a CONFIG switch.) The poker and blackjack drafts are kept in `docs/COMBAT_*_PARKED.md`.
+A roguelike deckbuilder in the spirit of Slay the Spire, played with a **standard deck of cards**. It borrows three ideas from *Regicide*: you keep your hand, the four suits each do one job, and an exact kill catches the enemy. (Suit immunity was tried and dropped on 2026-09-30; it's still a CONFIG switch.) The poker and blackjack drafts are kept in `docs/COMBAT_*_PARKED.md`.
 
 The feel we're after: walk to a spot, find a fight, pay a little attention (like a Pokémon battle). Early fights are easy. Elites and bosses make you think.
 
@@ -15,29 +15,29 @@ Every number lives in `packages/core/src/config.ts` or `content.ts`. The balance
 
 1. **Keep your hand.** A fight opens with a hand of **8** (at most 8 held). You don't draw each turn: unplayed cards stay, and **diamonds are how you get more**. When your draw pile runs out, your discard pile is shuffled back in (Slay the Spire style).
 2. **You have 3 actions: play any 3 cards.** One card per action, in any order.
-3. **Every card hits for its value** (N), and its suit adds a power:
+3. **Each suit does one job** (N = the card's value). Only spades hit:
 
-   | Suit | Power |
+   | Suit | Job |
    |---|---|
-   | ♠ Spades | **Hit double**: 2N damage. |
-   | ♥ Hearts | Also **block** N damage this turn. |
-   | ♦ Diamonds | Also **draw** N cards (up to a hand of 8). |
-   | ♣ Clubs | Also **discard**: pick up to N cards in your hand to discard, to dig toward your good cards. Cards with a discard effect fire it (Let Go deals 8, Sage Bundle blocks 6). |
+   | ♠ Spades | **Hit** for N damage. |
+   | ♥ Hearts | **Block** N damage this turn. |
+   | ♦ Diamonds | **Draw** N cards (up to a hand of 8). |
+   | ♣ Clubs | **Discard**: pick up to N cards in your hand to discard, to dig toward your good cards. Cards with a discard effect fire it (Let Go deals 8, Sage Bundle blocks 6). |
 
    Each card's seal shows its value with an icon for its job: a sword (spades), a shield (hearts), drawing a card (diamonds), recycling (clubs; the icon may change now clubs discard). Icons from game-icons.net, CC BY 3.0.
 
-   Why every card hits: with a kept hand and no draw each turn, a hand without diamonds used to leave you stuck (the balance lab found over half of all turns were dead). Once every card hits, no hand is dead.
+   History: for a while every card also hit for its value (spades double), so no kept hand was ever dead. Sam pared it back to spades-only on 2026-09-30 because the choices were overwhelming from the first turn; enemy HP dropped to ×0.6 to match. It's `CONFIG.allDamage`.
 
-4. **Matching:** play a card with the same value as one you already played this turn, in a **different suit**, and it counts **double** (a pair). A third one in yet another suit counts **triple**. 7♥ then 7♠ blocks 7 and hits 14. Two 7♠ don't match. Matching resets each turn.
+4. **Matching:** play a card with the same value as one you already played this turn, in a **different suit**, and it counts **double** (a pair). A third one in yet another suit counts **triple**. 7♥ then 7♠ blocks 7 and hits 14 (the 7♠ counts as 14). Two 7♠ don't match. Matching resets each turn.
 5. **End your turn.** The enemy does what it said it would. Your block wears off. Your hand stays.
 
 ## Difficulty steps up
 
-Every **10 fights won** the enemies jump a tier: +80% of their base HP and +50% of their base attack (all enemy HP is ×1.25 to start with), and within a tier they don't grow. The **10th fight of each tier is its boss**, whichever fight spot you take it at; shops and rests don't count toward the 10. **Elites unlock after the first boss.** A deck that doesn't improve falls behind: in the lab a bot that never takes a card, Guide or shop wins a median of about 19 fights; one that builds its deck wins about 29 (with the 40-card deck, each new card is a smaller share, so removing cards should matter more) (`npx tsx packages/sim/src/tiers.ts`).
+Every **10 fights won** the enemies jump a tier: +80% of their base HP and +50% of their base attack (all enemy HP is ×0.6 to start with), and within a tier they don't grow. The **10th fight of each tier is its boss**, whichever fight spot you take it at; shops and rests don't count toward the 10. **Elites unlock after the first boss.** A deck that doesn't improve falls behind: in the lab a bot that never takes a card, Guide or shop wins a median of about 19 fights; one that builds its deck wins about 29 (with the 40-card deck, each new card is a smaller share, so removing cards should matter more) (`npx tsx packages/sim/src/tiers.ts`).
 
 ## Intents
 
-You always see what the enemy will do next: attack (and for how much), block, power up, heal, or slip junk into your deck. The screen tells you how much you'd take. **If it's attacking, play some hearts. If it isn't, go all in on spades.** Hearts still hit, so blocking never wastes the turn.
+You always see what the enemy will do next: attack (and for how much), block, power up, heal, or slip junk into your deck. The screen tells you how much you'd take. **If it's attacking, play some hearts. If it isn't, go all in on spades.**
 
 ## Perfect fights and catching
 
@@ -51,11 +51,14 @@ Each enemy has HP, a suit it's immune to, a cycle of intents, and sometimes a tr
 
 ## Guides
 
-You can hold up to 5 Guides. Each one bends a rule. Some examples:
-- **Krishnamurti:** matching counts one step more (a pair ×3).
-- **Leadbeater:** start each fight with 6 block.
-- **Blavatsky:** your block doesn't wear off.
-- **Ojai Day:** +1 action on your first turn.
+You can hold up to 5 Guides, Balatro-joker style: they sit on the table (small paper tags down the right edge, tap one to read it) and several **grow** as you play a certain way:
+- **Farmers Market:** each club you play, spades hit +1 for the rest of the fight.
+- **Crystal Shop:** each diamond you play, hearts block +1 more for the rest of the run.
+- **Sound Bath:** every 4 cards you discard, spades hit +1 for the rest of the run.
+- **Meditation Mount:** each perfect fight adds 2 to the block you start every fight with.
+- **Arcade:** every 4th card you play in a fight deals 6.
+
+Others bend a rule outright: **Krishnamurti** (matching counts one step more), **Life Coach** (first spade each turn hits double), **Libbey** (spades of 7+ hit +3), **The Ceremony** (third card of one suit in a turn does double), **Besant**, **Leadbeater**, **Blavatsky**, **Oak Grove**, **Ojai Day**, **Silent Retreat**, **People's Market**, **Pink Moment**, **Realtor**. Next idea: Guides stronger on their home turf or at their own time of day.
 
 ## The run
 

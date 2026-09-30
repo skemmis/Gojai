@@ -4,18 +4,21 @@
  * A fight opens with a hand of 8 and you KEEP your hand between turns
  * (Regicide style): the only way to get more cards is to play diamonds.
  * An empty draw pile reshuffles the discard pile (Slay the Spire style). Each turn you get 3 ACTIONS; each card you
- * play costs 1. Every card hits the enemy for its value, and its suit adds
- * a power, with N = the card's value:
+ * play costs 1. Each suit does one job, with N = the card's value:
  *
- *   ♣ clubs    also discard: pick up to N cards in your hand to discard
+ *   ♣ clubs    discard: pick up to N cards in your hand to discard
  *              (firing their discard effects), to dig toward better ones
- *   ♦ diamonds also draw N
- *   ♥ hearts   also N block against this turn's attacks
- *   ♠ spades   hit double
+ *   ♦ diamonds draw N
+ *   ♥ hearts   N block against this turn's attacks
+ *   ♠ spades   hit for N (only spades hit)
  *
  * (Every rule here is a CONFIG switch, so the lab can compare them: the old
- * "only spades hit, draw 5 a turn, enemies immune to a suit" is still one
- * setConfig away.)
+ * "every card hits, spades double" (allDamage) and "draw 5 a turn, enemies
+ * immune to a suit" are still one setConfig away.)
+ *
+ * GUIDES are Balatro-joker style: several grow as you play (Farmers Market,
+ * Crystal Shop, Sound Bath, Meditation Mount, Arcade), counted in run.grow
+ * and fight.grow and shown on the fight screen.
  *
  * MATCHING: play a card of the same value as one you already played this
  * turn, in a different suit, and it counts double (a pair). A third of
@@ -72,6 +75,44 @@ export function cardName(c: Card): string {
 
 export function hasGuide(run: Run, id: string): boolean {
   return run.guides.includes(id);
+}
+
+/** A growing Guide's count: for the run, or for this fight (Farmers Market, Arcade). */
+export function growth(run: Run, id: string): number {
+  const fightOnly = id === "farmers_market" || id === "arcade";
+  const store = fightOnly ? run.fight?.grow : run.grow;
+  return store?.[id] ?? 0;
+}
+
+function grow(run: Run, id: string, by = 1) {
+  if (!hasGuide(run, id)) return;
+  const fightOnly = id === "farmers_market" || id === "arcade";
+  const store = fightOnly ? (run.fight!.grow ??= {}) : (run.grow ??= {});
+  store[id] = (store[id] ?? 0) + by;
+}
+
+/** Spades' bonus from growing Guides. */
+function spadeBonus(run: Run): number {
+  return growth(run, "farmers_market") + Math.floor(growth(run, "sound_bath") / 4);
+}
+
+/** The small number a Guide shows on the fight screen, or null when it doesn't count anything. */
+export function guideCounter(run: Run, id: string): { n: number; label: string } | null {
+  const n = (x: number, one: string, many: string) => ({ n: x, label: x === 1 ? one : many });
+  switch (id) {
+    case "farmers_market": return n(growth(run, id), "Spades hit +1 this fight.", `Spades hit +${growth(run, id)} this fight.`);
+    case "crystal_shop": return n(growth(run, id), "Hearts block +1.", `Hearts block +${growth(run, id)}.`);
+    case "sound_bath": {
+      const k = Math.floor(growth(run, id) / 4);
+      return { n: k, label: `Spades hit +${k}. ${growth(run, id) % 4} of the next 4 discards done.` };
+    }
+    case "meditation_mount": return { n: 2 * growth(run, id), label: `You start each fight with ${2 * growth(run, id)} block.` };
+    case "arcade": {
+      const k = 4 - (growth(run, id) % 4);
+      return n(k, "Strikes on your next play.", `Strikes in ${k} plays.`);
+    }
+    default: return null;
+  }
 }
 
 export function cardSuits(run: Run, c: Card): Suit[] {
@@ -190,13 +231,14 @@ export function startFight(run: Run, enemyId: string): void {
   run.discard = [];
   run.fight = {
     enemy,
-    block: hasGuide(run, "leadbeater") ? 6 : 0,
+    block: (hasGuide(run, "leadbeater") ? 6 : 0) + (hasGuide(run, "meditation_mount") ? 2 * growth(run, "meditation_mount") : 0),
     actions: 0,
     turn: 0,
     plays: 0,
     turnPlays: [],
     hpLost: 0,
     discarding: 0,
+    grow: {},
     phase: "play",
     exact: false,
     perfect: false,
@@ -315,25 +357,33 @@ function playNumbers(run: Run, c: Card): PlayPreview {
   const f = run.fight!;
   const e = f.enemy;
   const mult = multiplier(run, c);
-  const total = c.value * mult;
   const suits = cardSuits(run, c);
-  const pierce = has(c, "pierce") || (f.plays === 0 && hasGuide(run, "ceremony"));
+  // The Ceremony: the third card of one suit in a turn does double
+  const third = hasGuide(run, "ceremony") && suits.some((s) => f.turnPlays.filter((p) => cardSuits(run, p).includes(s)).length >= 2);
+  const total = c.value * mult * (third ? 2 : 1);
+  const pierce = has(c, "pierce");
   const silenced = f.plays === 0 && e.passive.k === "silence";
   const blocked = (s: Suit) => silenced || (!pierce && e.suits.includes(s));
 
   let damage = sumEffect(c, "dmg");
   let block = sumEffect(c, "block");
-  let draw = sumEffect(c, "draw") + (hasGuide(run, "arcade") && c.value >= 10 ? 1 : 0);
+  let draw = sumEffect(c, "draw");
   let recallN = 0;
   const powers: PowerPreview[] = [];
   for (const s of POWER_ORDER) {
     if (!suits.includes(s)) continue;
     const immune = blocked(s);
     let amount = 0;
-    if (s === "clubs") amount = (CONFIG.powerByValue ? total : 1 + Math.floor(total / CONFIG.clubsPer)) + (hasGuide(run, "farmers_market") ? 1 : 0);
-    if (s === "diamonds") amount = (CONFIG.powerByValue ? total : 1 + Math.floor(total / CONFIG.diamondsPer)) + (hasGuide(run, "libbey") ? 1 : 0);
-    if (s === "hearts") amount = total + (hasGuide(run, "crystal_shop") ? 2 : 0);
-    if (s === "spades") amount = (CONFIG.allDamage ? 2 * total : total) + (mult > 1 && hasGuide(run, "besant") ? 4 : 0);
+    if (s === "clubs") amount = CONFIG.powerByValue ? total : 1 + Math.floor(total / CONFIG.clubsPer);
+    if (s === "diamonds") amount = CONFIG.powerByValue ? total : 1 + Math.floor(total / CONFIG.diamondsPer);
+    if (s === "hearts") amount = total + growth(run, "crystal_shop");
+    if (s === "spades") {
+      amount = (CONFIG.allDamage ? 2 * total : total) + spadeBonus(run);
+      if (mult > 1 && hasGuide(run, "besant")) amount += 4;
+      if (c.value >= 7 && hasGuide(run, "libbey")) amount += 3;
+      // The Life Coach: your first spade each turn hits double
+      if (hasGuide(run, "life_coach") && !f.turnPlays.some((p) => cardSuits(run, p).includes("spades"))) amount *= 2;
+    }
     powers.push({ suit: s, amount, immune });
     if (immune) continue;
     if (s === "clubs") recallN += amount;
@@ -343,7 +393,6 @@ function playNumbers(run: Run, c: Card): PlayPreview {
   }
   // Every card hits for its value; spades' power already counts it
   if (CONFIG.allDamage && !suits.includes("spades")) damage += total;
-  if (f.plays === 0 && hasGuide(run, "life_coach")) damage *= 2;
   if (e.passive.k === "armor" && damage > 0) damage = Math.max(0, damage - e.passive.n);
   const through = Math.max(0, damage - e.block);
   return {
@@ -383,6 +432,8 @@ export function play(run: Run, uid: number): void {
     run.stats.powerTotal[pw.suit] += pw.amount;
   }
   f.turnPlays.push(c);
+  if (p.powers.some((x) => x.suit === "clubs" && !x.immune)) grow(run, "farmers_market");
+  if (p.powers.some((x) => x.suit === "diamonds" && !x.immune)) grow(run, "crystal_shop");
   if (p.recall && CONFIG.clubsPower === "discard") {
     // You pick which ones next (see discardCards), after the rest of this play resolves
     f.discarding = Math.min(p.recall, run.hand.length);
@@ -411,6 +462,14 @@ export function play(run: Run, uid: number): void {
   const tag = p.mult === 2 ? " (pair ×2)" : p.mult > 2 ? ` (match ×${p.mult})` : "";
   log(run, `You play ${cardName(c)}${tag}${bits ? `: ${bits}` : ""}.`);
   if (p.damage) hitEnemy(run, p.damage);
+  // The Arcade: every 4th card you play in a fight deals 6
+  if (f.phase === "play" && hasGuide(run, "arcade")) {
+    grow(run, "arcade");
+    if (growth(run, "arcade") % 4 === 0) {
+      log(run, "The Arcade strikes for 6.");
+      hitEnemy(run, 6);
+    }
+  }
 }
 
 /**
@@ -431,7 +490,8 @@ export function discardCards(run: Run, uids: number[]): void {
     run.hand.splice(run.hand.indexOf(c), 1);
     if (!isJunk(c)) run.discard.push(c);
     run.stats.discards++;
-    f.block += sumEffect(c, "onDiscardBlock") + (hasGuide(run, "sound_bath") && !isJunk(c) ? 1 : 0);
+    f.block += sumEffect(c, "onDiscardBlock");
+    grow(run, "sound_bath");
     const dmg = sumEffect(c, "onDiscardDamage");
     if (dmg) {
       log(run, `Discarding ${cardName(c)} deals ${dmg}.`);
@@ -468,7 +528,8 @@ export function endTurn(run: Run): void {
       kept.push(c);
       continue;
     }
-    nextBlock += sumEffect(c, "onDiscardBlock") + (hasGuide(run, "sound_bath") && !isJunk(c) ? 1 : 0);
+    nextBlock += sumEffect(c, "onDiscardBlock");
+    grow(run, "sound_bath");
     const dmg = sumEffect(c, "onDiscardDamage");
     if (dmg) {
       log(run, `Letting go of ${cardName(c)} deals ${dmg}.`);
@@ -548,8 +609,8 @@ function winFight(run: Run, exact: boolean) {
   if (f.perfect) {
     run.stats.perfects++;
     if (hasGuide(run, "pink_moment_g")) heal(run, 6);
+    grow(run, "meditation_mount");
   }
-  if (hasGuide(run, "meditation_mount")) heal(run, 4);
   if (f.enemy.tier === "boss") heal(run, Math.round(run.maxHp * CONFIG.bossHealPct));
   log(run, exact ? `Exact. ${f.enemy.name} is caught.` : `${f.enemy.name} is defeated.`);
   if (f.perfect) log(run, "Perfect fight: you took no damage.");

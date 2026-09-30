@@ -4,7 +4,8 @@
  * CSS for these lives in styles.css under the same class names, which
  * tools/ui-check/check.mjs measures (.ribbon span, .shield-mark b, .gcard .seal b ...).
  */
-import { CONFIG, cardDef, isJunk } from "@gojai/core";
+import { useState } from "react";
+import { CONFIG, GUIDE_BY_ID, cardDef, guideCounter, isJunk } from "@gojai/core";
 import type { Card, Run, Suit } from "@gojai/core";
 import { Icon, rankLabel, powerAmount, type IconName } from "../components";
 import { ActionIcon } from "./actionIcons";
@@ -146,3 +147,52 @@ export function GameCard({ card, mult = 1, off, dud, armed }: { card: Card; mult
   );
 }
 
+
+// ─── Guides on the table ─────────────────────────────────────────────────────
+
+/** What a growing Guide has built up, in a few inked marks: "+2" beside the suit it feeds, or how many plays until it strikes. */
+function GuideCount({ run, id }: { run: Run; id: string }) {
+  const c = guideCounter(run, id);
+  if (!c) return null;
+  const suit: Suit | null = id === "farmers_market" || id === "sound_bath" ? "spades" : id === "crystal_shop" ? "hearts" : null;
+  if (id === "arcade") return <span className="count">in {c.n}</span>;
+  if (id === "meditation_mount")
+    return (
+      <span className="count">
+        <ActionIcon suit="hearts" />
+        {c.n}
+      </span>
+    );
+  return (
+    <span className="count">
+      +{c.n}
+      {suit && <Icon name={suit} className={`s-${suit}`} />}
+    </span>
+  );
+}
+
+/** Your Guides, as small paper scraps pinned down the table's right edge. Tap one to read it. */
+export function GuideTags({ run }: { run: Run }) {
+  const [open, setOpen] = useState<string | null>(null);
+  if (!run.guides.length) return null;
+  const g = open ? GUIDE_BY_ID[open] : null;
+  const c = open ? guideCounter(run, open) : null;
+  return (
+    <div className="guide-tags">
+      {run.guides.map((id) => (
+        <button key={id} className="guide-tag" onClick={() => setOpen(open === id ? null : id)}>
+          <span className="nm">{GUIDE_BY_ID[id].name.replace(/^The /, "")}</span>
+          <GuideCount run={run} id={id} />
+        </button>
+      ))}
+      {g && (
+        <div className="guide-open" onClick={() => setOpen(null)}>
+          <b className="name">{g.name.replace(/^The /, "")}</b>
+          <span className="text">{g.text}</span>
+          {c && <span className="now">{c.label}</span>}
+          <span className="close">Tap to close</span>
+        </div>
+      )}
+    </div>
+  );
+}
