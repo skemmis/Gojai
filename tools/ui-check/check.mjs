@@ -231,9 +231,10 @@ for (const [id, name, idx, state] of [
   await checkState(state);
 }
 
-// Win it: one hit left, then a spade
+// Win it: one hit left, then any card
 await steer("r.fight.enemy.hp = 1; r.fight.enemy.block = 0", 400);
-const spade = page.locator(".gcard.s-spades").first();
+// Every card hits, so any playable one finishes it (a hand can hold no spades)
+const spade = page.locator(".gcard:not(.off)").first();
 if (await spade.count()) {
   await spade.click({ position: { x: 8, y: 30 } });
   await pause(300);
@@ -244,6 +245,14 @@ if (await page.locator(".k-screen.reward").count()) {
   // Show a catch, with the longest foe name, so the named card on the reward screen is measured too
   await steer("const d = __core.cardDef('catch_influencer'); r.reward.caught = { uid: 9999, def: d.id, value: d.value, suit: d.suit }", 500);
   await checkState("reward");
+  // The other half of the choice: upgrade a card you already have
+  const up = page.locator(".k-choice", { hasText: "Upgrade a card" });
+  if (await up.count()) {
+    await click(up);
+    await checkState("reward-upgrade");
+    await click(page.locator(".picker-layer .card-pick").first(), 600);
+    await checkState("reward-upgraded");
+  } else failures.push("the reward screen doesn't offer an upgrade");
 }
 else failures.push("winning the fight didn't reach the reward screen");
 

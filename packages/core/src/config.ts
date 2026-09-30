@@ -80,6 +80,12 @@ export const DEFAULT_CONFIG = {
   // Rest
   restHealPct: 0.3,
   restUpgrade: 2,
+  /** A reward upgrade raises just the card you pick, or every card of its rank (like a Balatro planet levelling a hand). */
+  rewardUpgradeScope: "card" as "card" | "rank",
+  /** No upgrade takes a card past this value. */
+  upgradeCap: 10,
+  /** A fight reward can upgrade one of your cards by this much instead of adding one (Sam, 2026-09-30, per Balatro). 0 = off. */
+  rewardUpgrade: 2,
   bossHealPct: 0.3,
 
   // Shop

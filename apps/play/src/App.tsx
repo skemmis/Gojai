@@ -7,6 +7,7 @@ import {
   enterEncounter,
   bossNext,
   takeRewardCard,
+  takeRewardUpgrade,
   takeRewardGuide,
   leaveReward,
   guidesFull,
@@ -303,6 +304,8 @@ function DeckScreen({ run, back }: { run: Run; back: () => void }) {
 function RewardScreen({ run, act, town }: { run: Run; act: Act; town: Town }) {
   const r = run.reward!;
   const [pending, setPending] = useState<number | null>(null);
+  const [upgrading, setUpgrading] = useState(false);
+  const canUpgrade = CONFIG.rewardUpgrade > 0;
   const takeGuide = (i: number) => {
     if (guidesFull(run)) setPending(i);
     else act((x) => takeRewardGuide(x, i));
@@ -329,7 +332,7 @@ function RewardScreen({ run, act, town }: { run: Run; act: Act; town: Town }) {
           </p>
         </div>
       )}
-      <p className="k-label">{r.cardTaken ? "Card taken" : "Pick a card"}</p>
+      <p className="k-label">{r.cardTaken ? "Card taken" : canUpgrade ? "Pick a card, or upgrade one" : "Pick a card"}</p>
       <div className="card-row">
         {r.cards.map((c, i) => (
           <button key={c.uid} className="card-pick" disabled={r.cardTaken} onClick={() => act((x) => takeRewardCard(x, i))}>
@@ -337,6 +340,23 @@ function RewardScreen({ run, act, town }: { run: Run; act: Act; town: Town }) {
           </button>
         ))}
       </div>
+      {/* Or make a card you already have better (per Balatro) */}
+      {canUpgrade && !r.cardTaken && (
+        <div className="choices">
+          <Choice title="Upgrade a card" detail={`One of yours gains +${CONFIG.rewardUpgrade}`} onClick={() => setUpgrading(true)} />
+        </div>
+      )}
+      {upgrading && (
+        <CardPicker
+          title="Upgrade a Card"
+          cards={allCards(run).filter((c) => !isJunk(c) && c.value < CONFIG.upgradeCap)}
+          onCancel={() => setUpgrading(false)}
+          onPick={(uid) => {
+            act((x) => takeRewardUpgrade(x, uid));
+            setUpgrading(false);
+          }}
+        />
+      )}
       {r.guides.length > 0 && !r.guideTaken && (
         <>
           <p className="k-label">Pick a Guide</p>
@@ -370,7 +390,7 @@ function RewardScreen({ run, act, town }: { run: Run; act: Act; town: Town }) {
 
 function RestScreen({ run, act }: { run: Run; act: Act }) {
   const [mode, setMode] = useState<null | "upgrade" | "letgo">(null);
-  const cards = allCards(run).filter((c) => !isJunk(c) && (mode !== "upgrade" || c.value < 10));
+  const cards = allCards(run).filter((c) => !isJunk(c) && (mode !== "upgrade" || c.value < CONFIG.upgradeCap));
   const heal = Math.min(restHeal(run), run.maxHp - run.hp);
   return (
     <Screen className="rest" title="The Oak Bench" backdrop={SCENES.rest} dim={0.1}>

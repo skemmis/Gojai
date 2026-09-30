@@ -10,7 +10,7 @@
 import { BASE_ODDS } from "@gojai/map";
 import { CONFIG } from "./config";
 import { ENEMIES, EVENTS, GUIDE_BY_ID, cardDef } from "./content";
-import { difficultyTier, fightsWon, heal, startFight } from "./fight";
+import { difficultyTier, fightsWon, heal, isJunk, startFight } from "./fight";
 import { cardKey, plainCard, randomGuides, randomNamed, randomRewardCard } from "./rewards";
 import { makeRng, next, pick, sample } from "./rng";
 import type { Card, EncounterKind, NodeKind, Run, SpotContext, Tier } from "./types";
@@ -191,6 +191,19 @@ export function takeRewardCard(run: Run, i: number): void {
   run.stats.offers.push({ floor: run.floor, kind: "card", offered: r.cards.map(cardKey), picked: cardKey(r.cards[i]) });
 }
 
+/** Instead of taking a new card, upgrade one you already have (up to 10). */
+export function takeRewardUpgrade(run: Run, uid: number): void {
+  const r = run.reward;
+  if (!r || r.cardTaken) throw new Error("No card to take.");
+  if (!CONFIG.rewardUpgrade) throw new Error("Rewards can't upgrade cards.");
+  const c = findCard(run, uid);
+  if (isJunk(c) || c.value >= CONFIG.upgradeCap) throw new Error("That card can't be upgraded.");
+  const targets = CONFIG.rewardUpgradeScope === "rank" ? allCards(run).filter((x) => !isJunk(x) && x.def === c.def && x.value === c.value) : [c];
+  for (const t of targets) t.value = Math.min(CONFIG.upgradeCap, t.value + CONFIG.rewardUpgrade);
+  r.cardTaken = true;
+  run.stats.offers.push({ floor: run.floor, kind: "card", offered: r.cards.map(cardKey), picked: "upgrade" });
+}
+
 export function guidesFull(run: Run): boolean {
   return run.guides.length >= CONFIG.maxGuides;
 }
@@ -240,7 +253,7 @@ export function rest(run: Run, choice: RestChoice, uid?: number): void {
 }
 
 export function upgrade(c: Card): void {
-  c.value = Math.min(10, c.value + CONFIG.restUpgrade);
+  c.value = Math.min(CONFIG.upgradeCap, c.value + CONFIG.restUpgrade);
 }
 
 // ─── Shop ────────────────────────────────────────────────────────────────────
@@ -328,7 +341,7 @@ export function chooseEvent(run: Run, option: number, uid?: number): void {
       hurt(run, 6);
     }
   } else if (id === "krotona_library") {
-    if (option === 0) for (const c of sample(run.rng, allCards(run).filter((c) => c.value < 10), 2)) upgrade(c);
+    if (option === 0) for (const c of sample(run.rng, allCards(run).filter((c) => c.value < CONFIG.upgradeCap), 2)) upgrade(c);
   }
   advance(run);
 }

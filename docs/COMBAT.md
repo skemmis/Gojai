@@ -41,6 +41,7 @@ You always see what the enemy will do next: attack (and for how much), block, po
 
 ## Perfect fights and catching
 
+- **Card reward:** after a win, pick one of three new cards, **or upgrade one card you already have by +2** (up to 10), per Balatro. In the lab the upgrade barely changes how far runs get (one card in 40 comes round rarely); bigger or rank-wide upgrades didn't either (`packages/sim/src/tiers.ts`).
 - **Perfect fight:** win without losing any HP. You get **+50% gold** and **a guaranteed rare** in the card choice.
 - **Catch:** kill an enemy with **exact** damage (HP to exactly 0) and it joins your deck as a face card: a normal enemy becomes a Jack (10), an elite a Queen (15), a boss a King (20). Each keeps its enemy's suit and a small power. Your deck becomes a record of what you've beaten.
 

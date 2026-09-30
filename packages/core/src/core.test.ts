@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { newRun, startFight, play, endTurn, playError, previewPlay, plainCard, allCards, visitSpot, enterEncounter, takeRewardCard, leaveReward, intent, incoming, CONFIG, ENEMY_BY_ID } from "./index";
+import { newRun, startFight, play, endTurn, playError, previewPlay, plainCard, allCards, visitSpot, enterEncounter, takeRewardCard, leaveReward, intent, incoming, CONFIG, ENEMY_BY_ID, takeRewardUpgrade } from "./index";
 import type { Run, Suit } from "./index";
 
 function withHand(run: Run, cards: [number, Suit][]) {
@@ -244,4 +244,18 @@ test("the map can hand the run an encounter it rolled, with its place", () => {
   enterEncounter(other, "mystery");
   assert.equal(other.phase, "event");
   assert.equal(other.node, "event");
+});
+
+test("a fight reward can upgrade one of your cards instead of adding one", () => {
+  const run = newRun(21);
+  startFight(run, "ebike_teen");
+  run.fight!.enemy.hp = 1;
+  const [a] = withHand(run, [[1, "spades"]]);
+  play(run, a);
+  const target = allCards(run).find((c) => c.value === 4)!;
+  const size = allCards(run).length;
+  takeRewardUpgrade(run, target.uid);
+  assert.equal(target.value, 4 + CONFIG.rewardUpgrade);
+  assert.equal(allCards(run).length, size, "no card added");
+  assert.throws(() => takeRewardCard(run, 0), "it takes the card choice");
 });

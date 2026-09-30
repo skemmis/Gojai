@@ -31,6 +31,7 @@ import {
   rest,
   score,
   takeRewardCard,
+  takeRewardUpgrade,
   takeRewardGuide,
   makeRng,
   next,
@@ -77,6 +78,14 @@ const MAX_FLOOR = 400;
 
 function health(run: Run): number {
   return run.hp / run.maxHp;
+}
+
+/** The card an upgrade does most for: the best spade still under the cap (spades hit double), else any card under it. */
+function upgradable(run: Run): Card | undefined {
+  const open = allCards(run)
+    .filter((c) => !isJunk(c) && c.value < CONFIG.upgradeCap)
+    .sort((a, b) => (b.suit === "spades" ? 100 : 0) + b.value - ((a.suit === "spades" ? 100 : 0) + a.value));
+  return open[0];
 }
 
 function worstCard(run: Run): Card | undefined {
@@ -149,8 +158,11 @@ export function playRun(seed: number, policy: Policy, opts: RunOptions = {}): Ru
       if (policy === "static") {
         // takes nothing
       } else if (policy === "explore") {
-        const i = Math.floor(r() * (rw.cards.length + 1));
+        // Any card, the upgrade, or nothing, evenly
+        const i = Math.floor(r() * (rw.cards.length + 2));
+        const w = upgradable(run);
         if (i < rw.cards.length) takeRewardCard(run, i);
+        else if (i === rw.cards.length && w && CONFIG.rewardUpgrade) takeRewardUpgrade(run, w.uid);
         if (rw.guides.length) {
           const g = Math.floor(r() * (rw.guides.length + 1));
           if (g < rw.guides.length) takeRewardGuide(run, g, guidesFull(run) ? Math.floor(r() * run.guides.length) : undefined);
@@ -159,7 +171,11 @@ export function playRun(seed: number, policy: Policy, opts: RunOptions = {}): Ru
         const ranked = rw.cards
           .map((c, i) => ({ i, v: cardDef(c.def).rarity === "rare" ? 20 : c.def !== "plain" ? 12 + c.value : c.value + (c.suit === "diamonds" || c.suit === "clubs" ? 5 : 0) }))
           .sort((a, b) => b.v - a.v);
-        if (ranked[0].v >= 7) takeRewardCard(run, ranked[0].i);
+        const w = upgradable(run);
+        // A strong card beats +2 on your weakest; otherwise the upgrade (a new small card only thins the deck)
+        if (ranked[0].v >= 12 || !CONFIG.rewardUpgrade || !w) {
+          if (ranked[0].v >= 7) takeRewardCard(run, ranked[0].i);
+        } else takeRewardUpgrade(run, w.uid);
         if (rw.guides.length && !guidesFull(run)) takeRewardGuide(run, Math.floor(r() * rw.guides.length));
       }
       leaveReward(run);

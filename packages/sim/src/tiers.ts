@@ -28,10 +28,11 @@ const tiers = (hp: number, atk: number, mult: number): Partial<Config> => ({ ...
 
 const t = (hp: number, atk: number, mult: number): Partial<Config> => ({ enemyHpMult: mult, tierHp: hp, tierAtk: atk });
 const VARIANTS: [string, Partial<Config>][] = [
-  ["defaults (full deck, draw/return N, HP ×1.25, tiers +80% / +50%)", {}],
-  ["HP ×1.5, tiers +60% / +40%", t(0.6, 0.4, 1.5)],
-  ["HP ×2, tiers +80% / +50%", t(0.8, 0.5, 2)],
-  ["HP ×1.25, tiers +60% / +40%", t(0.6, 0.4, 1.25)],
+  ["no upgrade in rewards", { rewardUpgrade: 0 }],
+  ["upgrade one card +2 (cap 10)", {}],
+  ["upgrade one card +3 (cap 20)", { rewardUpgrade: 3, upgradeCap: 20 }],
+  ["upgrade a whole rank +1 (cap 20)", { rewardUpgrade: 1, upgradeCap: 20, rewardUpgradeScope: "rank" }],
+  ["upgrade a whole rank +2 (cap 20)", { rewardUpgrade: 2, upgradeCap: 20, rewardUpgradeScope: "rank" }],
 ];
 
 const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
