@@ -122,7 +122,7 @@ const SUIT_ICON: Record<Suit, IconName> = { spades: "blade", hearts: "shield", d
 interface Floater {
   id: number;
   text: string;
-  kind: "dmg" | "block" | "heal";
+  kind: "dmg" | "block" | "heal" | "immune";
   where: "foe" | "you";
 }
 
@@ -162,6 +162,19 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
     }, 900);
     return () => window.clearTimeout(t);
   }, [e.hp, run.hp, f.block, e.block]);
+
+  // A play the enemy shrugged off (immune to every suit on the card) says so over it
+  const lastPlays = useRef(f.plays);
+  useEffect(() => {
+    if (f.plays === lastPlays.current) return;
+    lastPlays.current = f.plays;
+    const lp = f.lastPlay;
+    if (!lp || lp.powers.length || !lp.immune.length) return;
+    const fl: Floater = { id: nextId.current++, text: "Immune", kind: "immune", where: "foe" };
+    setFloaters((x) => [...x, fl]);
+    const t = window.setTimeout(() => setFloaters((x) => x.filter((y) => y !== fl)), 1100);
+    return () => window.clearTimeout(t);
+  }, [f.plays]);
 
   const cards = sortCards(run.hand);
   const valid = sel !== null && run.hand.some((c) => c.uid === sel) ? sel : null;
@@ -251,9 +264,9 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
           {e.block > 0 && <ShieldMark n={e.block} small />}
           <Drops who="foe" hp={e.hp} max={e.maxHp} loss={pv ? Math.max(0, pv.damage - e.block) : 0} />
           {e.suits.length > 0 && (
-            <div className="immune" title="Immune">
+            <div className="immune" title={`Immune to ${e.suits.join(" and ")}`}>
               {e.suits.map((s) => (
-                <span key={s} className="no">
+                <span key={s} className={`no s-${s}`}>
                   <Icon name={s} />
                 </span>
               ))}
@@ -309,7 +322,7 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
               : { transform: `translateY(${lifted ? -28 : Math.abs(off) * Math.abs(off) * 2.5}px) rotate(${lifted ? 0 : off * 4}deg)`, zIndex: lifted ? 40 : i };
             return (
               <div key={c.uid} className="slot" style={{ marginLeft: i ? -overlap : 0, ...style }} onPointerDown={onDown(c)}>
-                <GameCard card={c} mult={m} off={!!playError(run, c.uid)} armed={isDrag && drag.armed} />
+                <GameCard card={c} mult={m} off={!!playError(run, c.uid)} dud={isDud(run, c)} armed={isDrag && drag.armed} />
               </div>
             );
           })}
@@ -370,7 +383,6 @@ function Threat({ run, a, adding }: { run: Run; a: EnemyAction; adding: number }
     return (
       <div className={`threat atk ${left === 0 ? "stopped" : ""}`} title={`Attack ${hit}`}>
         <img className="blot" src={UI[left === 0 ? "blot-attack-dry" : BLOTS[run.floor % BLOTS.length]]} alt="" draggable={false} />
-        <Glyph name="attack" fallback="blade" />
         <b>{left}</b>
         {guard > 0 && <s className="was">{hit}</s>}
         {a.times && a.times > 1 && (
@@ -464,12 +476,19 @@ function Pile({ n, side }: { n: number; side: "left" | "right" }) {
   );
 }
 
-export function GameCard({ card, mult = 1, off, armed }: { card: Card; mult?: number; off?: boolean; armed?: boolean }) {
+/** A card that would do nothing right now: every suit on it is one the enemy is immune to (or its first play is silenced). */
+function isDud(run: Run, c: Card): boolean {
+  if (isJunk(c) || !run.hand.some((x) => x.uid === c.uid)) return false;
+  const p = previewPlay(run, c.uid);
+  return !!p && p.powers.length > 0 && p.powers.every((x) => x.immune) && !p.damage && !p.block && !p.draw && !p.recall;
+}
+
+export function GameCard({ card, mult = 1, off, dud, armed }: { card: Card; mult?: number; off?: boolean; dud?: boolean; armed?: boolean }) {
   const d = cardDef(card.def);
   const junk = isJunk(card);
   const art = junk ? undefined : artFor(card, !!d.name);
   const value = card.value * mult;
-  const cls = ["gcard", card.suit ? `s-${card.suit}` : "", off || junk ? "off" : "", armed ? "armed" : "", art ? "art" : "", d.face ? "face" : "", d.rarity === "rare" ? "rare" : ""].filter(Boolean).join(" ");
+  const cls = ["gcard", card.suit ? `s-${card.suit}` : "", off || junk ? "off" : "", dud ? "dud" : "", armed ? "armed" : "", art ? "art" : "", d.face ? "face" : "", d.rarity === "rare" ? "rare" : ""].filter(Boolean).join(" ");
   return (
     <div className={cls} title={d.name ? `${d.name}: ${d.text}` : undefined}>
       {mult > 1 && <span className="mult-tag">×{mult}</span>}

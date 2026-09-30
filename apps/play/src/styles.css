@@ -807,7 +807,12 @@ footer {
   color: var(--paper);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
+/* The blow sits dead centre on the blot */
 .threat.atk > b {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   font-size: 40px;
 }
 /* The whole blow, before your block: small on the rim, struck through in blue */
@@ -950,6 +955,7 @@ footer {
   font-size: 26px;
 }
 
+/* Immunity: the suit it shrugs off, in that suit's ink, struck through. Cards of that suit are struck through in your hand too. */
 .immune {
   display: flex;
   gap: 6px;
@@ -957,22 +963,49 @@ footer {
 .immune .no {
   position: relative;
   display: inline-flex;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   align-items: center;
   justify-content: center;
-  color: var(--on-night-soft);
 }
+.immune .no .ico {
+  width: 20px;
+  height: 20px;
+}
+.immune .no.s-spades { color: var(--suit-spades-night); }
+.immune .no.s-hearts { color: var(--suit-hearts-night); }
+.immune .no.s-diamonds { color: var(--suit-diamonds-night); }
+.immune .no.s-clubs { color: var(--suit-clubs-night); }
 .immune .no::after {
   content: "";
   position: absolute;
-  left: -2px;
-  right: -2px;
+  left: -3px;
+  right: -3px;
   top: 50%;
-  border-top: 2px solid var(--on-night);
+  border-top: 3px solid var(--paper);
+  box-shadow: 0 0 0 1px var(--night);
   transform: rotate(-35deg);
 }
-
+.gcard.dud .face {
+  opacity: 0.55;
+}
+.gcard.dud::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 50%;
+  border-top: 4px solid var(--ink);
+  transform: rotate(-55deg);
+  z-index: 2;
+  pointer-events: none;
+}
+.floater.immune {
+  color: var(--paper);
+  font-family: var(--display);
+  font-size: 30px;
+  font-weight: 400;
+}
 
 /* You: your blood, mirroring the enemy's, just above your hand; End turn across from it */
 .you-zone {
