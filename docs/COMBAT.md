@@ -1,6 +1,6 @@
 # Combat (prototype v0)
 
-A roguelike deckbuilder in the spirit of Slay the Spire, played with a **standard deck of cards**. It borrows two ideas from *Regicide*: enemies are immune to a suit, and an exact kill catches the enemy. The poker and blackjack drafts are kept in `docs/COMBAT_*_PARKED.md`.
+A roguelike deckbuilder in the spirit of Slay the Spire, played with a **standard deck of cards**. It borrows three ideas from *Regicide*: you keep your hand, every card hits for its value, and an exact kill catches the enemy. (Suit immunity was tried and dropped on 2026-09-30; it's still a CONFIG switch.) The poker and blackjack drafts are kept in `docs/COMBAT_*_PARKED.md`.
 
 The feel we're after: walk to a spot, find a fight, pay a little attention (like a Pokémon battle). Early fights are easy. Elites and bosses make you think.
 
@@ -9,27 +9,33 @@ Every number lives in `packages/core/src/config.ts` or `content.ts`. The balance
 ## You
 
 - **40 HP.** HP carries between fights. Rest heals 30%, beating a boss heals 30%. The run ends at 0.
-- **Your deck** starts as **Ace to 10 in hearts and spades** (20 cards): enough to attack and block, and enough to win early fights. **Diamonds and clubs come as rewards**, for the longer fights with elites and bosses.
+- **Your deck** starts as **Ace to 10 in hearts and spades, plus 2, 4, 6, 8 of diamonds and 3, 6 of clubs** (26 cards). More diamonds and clubs come as rewards.
 
 ## A turn
 
-1. **Draw 5.** When your draw pile runs out, your discard pile is shuffled back in.
+1. **Keep your hand.** A fight opens with a hand of **8** (at most 8 held). You don't draw each turn: unplayed cards stay, and **diamonds are how you get more**. When your draw pile runs out, your discard pile is shuffled back in.
 2. **You have 3 actions: play any 3 cards.** One card per action, in any order.
-3. **Each suit does one job**, with N = the card's value, unless the enemy is immune to that suit:
+3. **Every card hits for its value** (N), and its suit adds a power:
 
-   | Suit | Job |
+   | Suit | Power |
    |---|---|
-   | ♠ Spades | **Attack**: deal N damage. The only suit that hits. |
-   | ♥ Hearts | **Block** N damage this turn. |
-   | ♦ Diamonds | **Draw** 1 card, +1 per 4 value (A-3: 1, 4-7: 2, 8-10: 3). |
-   | ♣ Clubs | **Recall** your best card from the discard pile to your hand, +1 per 5 value. |
+   | ♠ Spades | **Hit double**: 2N damage. |
+   | ♥ Hearts | Also **block** N damage this turn. |
+   | ♦ Diamonds | Also **draw** 1 card, +1 per 4 value (A-3: 1, 4-7: 2, 8-10: 3). |
+   | ♣ Clubs | Also **recall** your best card from the discard pile to your hand, +1 per 5 value. |
+
+   Why every card hits: with a kept hand and no draw each turn, a hand without diamonds used to leave you stuck (the balance lab found over half of all turns were dead). Once every card hits, no hand is dead.
 
 4. **Matching:** play a card with the same value as one you already played this turn, in a **different suit**, and it counts **double** (a pair). A third one in yet another suit counts **triple**. 7♥ then 7♠ blocks 7 and hits 14. Two 7♠ don't match. Matching resets each turn.
-5. **End your turn.** Unplayed cards are discarded. The enemy does what it said it would. Your block wears off.
+5. **End your turn.** The enemy does what it said it would. Your block wears off. Your hand stays.
+
+## Difficulty steps up
+
+Every **10 fights won** the enemies jump a tier: +80% of their base HP and +50% of their base attack, and within a tier they don't grow. The **10th fight of each tier is its boss**, whichever fight spot you take it at; shops and rests don't count toward the 10. **Elites unlock after the first boss.** A deck that doesn't improve falls behind: in the lab a bot that never takes a card, Guide or shop wins a median of about 14 fights; one that builds its deck wins about 35 (`npx tsx packages/sim/src/tiers.ts`).
 
 ## Intents
 
-You always see what the enemy will do next: attack (and for how much), block, power up, heal, or slip junk into your deck. The screen tells you how much you'd take. **If it's attacking, play some hearts. If it isn't, go all in on spades.**
+You always see what the enemy will do next: attack (and for how much), block, power up, heal, or slip junk into your deck. The screen tells you how much you'd take. **If it's attacking, play some hearts. If it isn't, go all in on spades.** Hearts still hit, so blocking never wastes the turn.
 
 ## Perfect fights and catching
 

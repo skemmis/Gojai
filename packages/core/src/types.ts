@@ -173,6 +173,12 @@ export interface RunStats {
   powerUses: Record<Suit, number>;
   powerTotal: Record<Suit, number>;
   immuneHits: number;
+  /** Cards discarded to draw one. */
+  cycles: number;
+  /** Turns ended without playing anything. */
+  idleTurns: number;
+  /** Turns that started with no playable card in hand. */
+  deadHands: number;
   catches: number;
   perfects: number;
   hpLost: number;

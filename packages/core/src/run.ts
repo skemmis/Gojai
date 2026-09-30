@@ -10,7 +10,7 @@
 import { BASE_ODDS } from "@gojai/map";
 import { CONFIG } from "./config";
 import { ENEMIES, EVENTS, GUIDE_BY_ID, cardDef } from "./content";
-import { heal, startFight } from "./fight";
+import { difficultyTier, fightsWon, heal, startFight } from "./fight";
 import { cardKey, plainCard, randomGuides, randomNamed, randomRewardCard } from "./rewards";
 import { makeRng, next, pick, sample } from "./rng";
 import type { Card, EncounterKind, NodeKind, Run, SpotContext, Tier } from "./types";
@@ -45,6 +45,9 @@ export function newRun(seed: number): Run {
       powerUses: { hearts: 0, diamonds: 0, spades: 0, clubs: 0 },
       powerTotal: { hearts: 0, diamonds: 0, spades: 0, clubs: 0 },
       immuneHits: 0,
+      cycles: 0,
+      idleTurns: 0,
+      deadHands: 0,
       catches: 0,
       perfects: 0,
       hpLost: 0,
@@ -57,6 +60,7 @@ export function newRun(seed: number): Run {
   // Start with Ace to 10 in hearts and spades: enough to attack and defend.
   // Diamonds and clubs come as rewards; face cards are earned by catching.
   for (const suit of CONFIG.startSuits) for (let v = 1; v <= 10; v++) run.draw.push(plainCard(run, v, suit));
+  for (const { suit, values } of CONFIG.startExtra) for (const v of values) run.draw.push(plainCard(run, v, suit));
   return run;
 }
 
@@ -66,7 +70,13 @@ export function score(run: Run): number {
 }
 
 export function isBossFloor(floor: number): boolean {
-  return floor % CONFIG.bossEvery === 0;
+  return CONFIG.tierEvery === 0 && floor % CONFIG.bossEvery === 0;
+}
+
+/** The next fight is a boss: every bossEvery-th floor, or with stepped difficulty the last fight of each tier. */
+export function bossNext(run: Run): boolean {
+  if (CONFIG.tierEvery > 0) return fightsWon(run) % CONFIG.tierEvery === CONFIG.tierEvery - 1;
+  return isBossFloor(run.floor);
 }
 
 /** What you find at a spot, rolled with the map's odds. Used by the lab's walk; the map screen rolls its own. */
@@ -82,7 +92,10 @@ function rollEncounter(run: Run): EncounterKind {
 
 function enemyFor(run: Run, tier: Tier): string {
   const pool = ENEMIES.filter((e) => e.tier === tier);
-  if (tier === "boss") return pool[(Math.floor(run.floor / CONFIG.bossEvery) - 1) % pool.length].id;
+  if (tier === "boss") {
+    const n = CONFIG.tierEvery > 0 ? difficultyTier(run) : Math.floor(run.floor / CONFIG.bossEvery) - 1;
+    return pool[n % pool.length].id;
+  }
   return pick(run.rng, pool).id;
 }
 
@@ -140,7 +153,12 @@ export function visitSpot(run: Run): void {
 /** What a spot's roll becomes on this floor: the run's own pacing sits on top of what the spot rolled. */
 export function encounterFor(run: Run, encounter: EncounterKind): NodeKind {
   const kind: NodeKind = encounter === "mystery" ? "event" : encounter;
-  if (isBossFloor(run.floor)) return "boss";
+  // Stepped difficulty: the tier's last fight is its boss, wherever you pick it; shops and rests stay what they are
+  if (CONFIG.tierEvery > 0) {
+    if (bossNext(run) && (kind === "fight" || kind === "elite")) return "boss";
+    // Elites wait until you've beaten the first boss, so the first tier stays gentle
+    if (kind === "elite" && difficultyTier(run) === 0) return "fight";
+  } else if (isBossFloor(run.floor)) return "boss";
   if (run.floor === 1) return "fight";
   if (kind === "elite" && run.floor < CONFIG.eliteFromFloor) return "fight";
   return kind;

@@ -5,11 +5,36 @@
 export const DEFAULT_CONFIG = {
   playerHp: 40,
   actionsPerTurn: 3,
-  drawPerTurn: 5,
-  maxHand: 10,
+  drawPerTurn: 0,
+  maxHand: 8,
   maxGuides: 5,
   startGold: 50,
   startSuits: ["hearts", "spades"] as ("hearts" | "diamonds" | "spades" | "clubs")[],
+  /** Extra starting cards beyond the full suits above, e.g. a few diamonds and clubs. */
+  startExtra: [
+    { suit: "diamonds", values: [2, 4, 6, 8] },
+    { suit: "clubs", values: [3, 6] },
+  ] as { suit: "hearts" | "diamonds" | "spades" | "clubs"; values: number[] }[],
+
+  // Hand rules (Sam, 2026-09-30: trying Regicide's "keep your hand")
+  /** Keep unplayed cards between turns instead of discarding them. */
+  keepHand: true,
+  /** Cards drawn when a fight starts. */
+  startHand: 8,
+  /** Discard a card to draw one, for this many actions. null = not allowed. */
+  cycleCost: null as number | null,
+  /** An empty draw pile reshuffles the discard pile. Off = only clubs bring cards back. */
+  reshuffle: true,
+  /** Where clubs send recalled cards: your hand, or the bottom of the draw pile. */
+  clubsTo: "hand" as "hand" | "deck",
+  /**
+   * Every card hits for its value, Regicide style, and its suit power comes
+   * on top: spades hit double, hearts also block, diamonds also draw, clubs
+   * also recall. Off = only spades hit.
+   */
+  allDamage: true,
+  /** Enemies shrug off one suit's power. */
+  immunity: false,
   /** Plain reward cards lean toward the suits you don't start with. */
   rewardSuitWeights: { hearts: 1, spades: 1, diamonds: 2, clubs: 2 },
 
@@ -27,6 +52,18 @@ export const DEFAULT_CONFIG = {
   eliteFromFloor: 3,
   // What a spot holds comes from the map (BASE_ODDS / findAt in @gojai/map).
   // The first spot is always a fight, and elites wait for eliteFromFloor.
+
+  /**
+   * Stepped difficulty (Sam, 2026-09-30): every this-many fights won, enemies
+   * jump a tier and the last fight of each tier is its boss. Within a tier
+   * they don't grow. 0 = the old per-floor growth below, boss every bossEvery.
+   */
+  tierEvery: 10,
+  /** Each tier adds this share of base HP and of base attack. */
+  tierHp: 0.8,
+  tierAtk: 0.5,
+  /** Every enemy's HP times this (all-cards-hit fights need more). */
+  enemyHpMult: 1.5,
 
   // Enemy scaling per floor (floor 1 = ×1)
   hpGrowth: 0.04,

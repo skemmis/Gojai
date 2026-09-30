@@ -211,6 +211,10 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
 
   const cardW = width < 420 ? 78 : 92;
   const overlap = n > 1 ? Math.max(0, (n * cardW - (width - 24)) / (n - 1)) : 0;
+  // The arc stays the same size however many cards you hold: outer cards tilt at most 12° and sink at most 14px
+  const mid = (n - 1) / 2;
+  const tilt = mid > 0 ? Math.min(4, 12 / mid) : 0;
+  const dropAt = (off: number) => (mid > 0 ? (off / mid) ** 2 * Math.min(14, mid * 5) : 0);
 
   const hit = incoming(run);
   const through = Math.max(0, hit - f.block - (pv ? pv.block : 0));
@@ -278,14 +282,13 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
       <div className="hand-zone" ref={handRef}>
         <div className="fan" style={{ ["--card-w" as string]: `${cardW}px` }}>
           {cards.map((c, i) => {
-            const mid = (n - 1) / 2;
             const off = i - mid;
             const isDrag = drag?.uid === c.uid;
             const lifted = valid === c.uid && !isDrag;
             const m = isJunk(c) ? 1 : multiplier(run, c);
             const style: React.CSSProperties = isDrag
               ? { transform: `translate(${drag.dx}px, ${drag.dy}px) scale(1.08)`, zIndex: 50 }
-              : { transform: `translateY(${lifted ? -28 : Math.abs(off) * Math.abs(off) * 2.5}px) rotate(${lifted ? 0 : off * 4}deg)`, zIndex: lifted ? 40 : i };
+              : { transform: `translateY(${lifted ? -28 : dropAt(off)}px) rotate(${lifted ? 0 : off * tilt}deg)`, zIndex: lifted ? 40 : i };
             return (
               <div key={c.uid} className="slot" style={{ marginLeft: i ? -overlap : 0, ...style }} onPointerDown={onDown(c)}>
                 <GameCard card={c} mult={m} off={!!playError(run, c.uid)} dud={isDud(run, c)} armed={isDrag && drag.armed} />

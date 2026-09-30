@@ -4,7 +4,7 @@ import { visit, spotOpened, type Spot, type SpotState, type Visits } from "@goja
 import {
   newRun,
   enterEncounter,
-  isBossFloor,
+  bossNext,
   takeRewardCard,
   takeRewardGuide,
   leaveReward,
@@ -142,7 +142,7 @@ export function App() {
   const enter = () => {
     if (!picked || picked.state.kind !== "open") return;
     const o = spotOpened(picked.spot, picked.state.find, new Date());
-    const boss = isBossFloor(run.floor);
+    const boss = bossNext(run);
     const ok = act((r) => enterEncounter(r, o.find, { spotId: o.spot.id, name: o.spot.gameName ?? o.spot.name, place: o.place, live: o.liveEvents }));
     if (!ok) return;
     changeTown((t) => void walked(t, o.spot.id, o.find, boss));

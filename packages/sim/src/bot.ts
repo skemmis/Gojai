@@ -7,9 +7,9 @@
  * to rank cards and find broken things; not a measure of how well a human
  * can play.
  */
-import { incoming, isJunk, playError, previewPlay, sumEffect, type Card, type Run } from "@gojai/core";
+import { CONFIG, cycleError, incoming, isJunk, playError, previewPlay, sumEffect, type Card, type Run } from "@gojai/core";
 
-export type Move = { k: "play"; uid: number } | { k: "end" };
+export type Move = { k: "play"; uid: number } | { k: "cycle"; uid: number } | { k: "end" };
 
 export interface Decision {
   move: Move;
@@ -81,6 +81,14 @@ export function chooseMove(run: Run): Decision {
 
   const options: { move: Move; score: number }[] = [{ move: { k: "end" }, score: 0 }];
   for (const [uid, score] of bestFirst) options.push({ move: { k: "play", uid }, score });
+  // Swapping a card for a fresh one: worth it for junk, or a small card nothing needs right now
+  if (CONFIG.cycleCost !== null && run.draw.length > 0) {
+    for (const c of run.hand) {
+      if (cycleError(run, c.uid)) continue;
+      const kept = c.suit === "diamonds" || c.suit === "clubs" ? 1 : 0.4;
+      options.push({ move: { k: "cycle", uid: c.uid }, score: isJunk(c) ? 5 : 1.8 - c.value * kept });
+    }
+  }
   options.sort((a, b) => b.score - a.score);
   const [a, b] = options;
   const margin = b ? Math.abs(a.score - b.score) / Math.max(1, Math.abs(a.score)) : 1;

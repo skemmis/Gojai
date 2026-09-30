@@ -80,7 +80,7 @@ export const ENEMIES: EnemyDef[] = [
     catch: { value: 10, suit: "diamonds", effects: [{ k: "draw", n: 1 }], text: "Also draw 1." } },
   { id: "nine_latte", name: "The $9 Latte", tier: "normal", hp: 32, suits: ["clubs"], passive: none, intents: [[atk(6)], [hex("junk_latte")], [atk(4)]], text: "Slips $9 lattes into your deck.",
     catch: { value: 10, suit: "clubs", effects: [{ k: "dmg", n: 3 }], text: "Also deals 3 damage." } },
-  { id: "influencer", name: "The Influencer", tier: "normal", hp: 26, suits: ["hearts"], passive: none, intents: [[hex("junk_like", 2)], [atk(7)], [atk(5)]], text: "Hearts can't block it. Spams Likes into your deck.",
+  { id: "influencer", name: "The Influencer", tier: "normal", hp: 26, suits: ["hearts"], passive: none, intents: [[hex("junk_like", 2)], [atk(7)], [atk(5)]], text: "Spams Likes into your deck.",
     catch: { value: 10, suit: "hearts", effects: [{ k: "wild" }], text: "Counts as every suit." } },
   { id: "crystal_vendor", name: "The Crystal Vendor", tier: "normal", hp: 34, suits: ["diamonds"], passive: { k: "armor", n: 1 }, intents: [[atk(6)], [blk(6)], [atk(6)]], text: "Every hit deals 1 less.",
     catch: { value: 10, suit: "diamonds", effects: [{ k: "block", n: 4 }], text: "Also 4 block." } },
