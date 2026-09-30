@@ -1421,3 +1421,10 @@ footer {
 .run-chip .chip-coin {
   display: inline-block;
 }
+/* A junk card's name sits where the power would; it may take two short lines */
+.gcard .pw.junk {
+  white-space: normal;
+  text-align: center;
+  font-size: 10px;
+  line-height: 1.05;
+}

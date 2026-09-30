@@ -53,7 +53,10 @@ export const font = {
 } as const;
 
 // Type scale (px). Numbers that decide a turn are big and heavy.
-export const size = { label: 12, body: 15, name: 20, title: 28, key: 44 } as const;
+export const size = { label: 12, small: 13, body: 15, name: 20, num: 26, title: 28, key: 44 } as const;
+
+// Spacing steps (px): every gap and inset in the app is one of these.
+export const space = { s1: 4, s2: 8, s3: 12, s4: 16, s5: 24, s6: 32 } as const;
 
 export const rule = {
   frameOuter: 3, // tarot card / panel outer rule

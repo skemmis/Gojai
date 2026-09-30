@@ -165,10 +165,10 @@ export function Line({ k, v, className = "" }: { k: ReactNode; v: ReactNode; cla
   );
 }
 
-/** Tabs and filters: ink words, the chosen one underlined. `big` for a screen's tabs, plain for a filter under them. */
-export function Switch<T extends string>({ options, value, onChange, big }: { options: { id: T; label: string }[]; value: T; onChange: (id: T) => void; big?: boolean }) {
+/** Tabs and filters: ink words, the chosen one underlined. One style everywhere. */
+export function Switch<T extends string>({ options, value, onChange }: { options: { id: T; label: string }[]; value: T; onChange: (id: T) => void }) {
   return (
-    <div className={`k-switch ${big ? "big" : ""}`} role="tablist">
+    <div className="k-switch" role="tablist">
       {options.map((o) => (
         <button key={o.id} role="tab" aria-selected={o.id === value} className={o.id === value ? "on" : ""} onClick={() => onChange(o.id)}>
           {o.label}
@@ -208,7 +208,7 @@ export function Gold({ n, big }: { n: number; big?: boolean }) {
   );
 }
 
-/** A price on a small gilt tag. `short` when you can't afford it. */
+/** A price on a small gilt tag. `short` (faded) when you can't afford it. */
 export function Price({ n, short, sold }: { n: number; short?: boolean; sold?: boolean }) {
   return (
     <span className={`k-price ${short ? "short" : ""} ${sold ? "sold" : ""}`}>
@@ -218,17 +218,17 @@ export function Price({ n, short, sold }: { n: number; short?: boolean; sold?: b
   );
 }
 
-/** Your blood and gold between fights (map, rest, shop, reward): one drop and the number, then gold. On paper or night. */
+/** Your blood and gold between fights (map, rest, shop, reward, events): one drop and the number, then gold, always on its paper plate, right under the title. */
 export function RunStatus({ hp, max, gold, floor }: { hp: number; max: number; gold: number; floor?: string }) {
   return (
-    <span className="k-status">
+    <Sheet wide className="k-status">
       {floor && <span className="k-label">{floor}</span>}
       <span className="hp">
         <img src={UI["blood-drop-flat"] ?? UI["blood-drop"]} alt="" draggable={false} />
         <b>{hp}</b>/{max}
       </span>
       <Gold n={gold} />
-    </span>
+    </Sheet>
   );
 }
 

@@ -31,6 +31,7 @@ import { FightScreen } from "./fight";
 import "./screens.css";
 import { sortCards } from "./components";
 import {
+  Back,
   Choice,
   Emblem,
   GameCard,
@@ -223,7 +224,10 @@ export function App() {
 function CardPicker({ title, cards, onPick, onCancel }: { title: string; cards: Card[]; onPick: (uid: number) => void; onCancel: () => void }) {
   return (
     <div className="picker-layer">
-      <Title>{title}</Title>
+      <div className="k-screen-head">
+        <Back onClick={onCancel} />
+        <Title>{title}</Title>
+      </div>
       <div className="card-grid">
         {sortCards(cards).map((c) => (
           <button key={c.uid} className="card-pick" onClick={() => onPick(c.uid)}>
@@ -231,7 +235,6 @@ function CardPicker({ title, cards, onPick, onCancel }: { title: string; cards: 
           </button>
         ))}
       </div>
-      <InkLink onClick={onCancel}>Cancel</InkLink>
     </div>
   );
 }
@@ -239,14 +242,16 @@ function CardPicker({ title, cards, onPick, onCancel }: { title: string; cards: 
 function GuideReplace({ run, onPick, onCancel }: { run: Run; onPick: (i: number) => void; onCancel: () => void }) {
   return (
     <div className="picker-layer">
-      <Title>Your Guides are full</Title>
+      <div className="k-screen-head">
+        <Back onClick={onCancel} />
+        <Title>Guides Full</Title>
+      </div>
       <p className="k-label">Let one go for the new one</p>
       <div className="guide-row">
         {run.guides.map((g, i) => (
           <GuideCard key={g + i} {...GUIDE_BY_ID[g]} rare={GUIDE_BY_ID[g].rarity === "rare"} onClick={() => onPick(i)} />
         ))}
       </div>
-      <InkLink onClick={onCancel}>Cancel</InkLink>
     </div>
   );
 }
@@ -267,7 +272,8 @@ function DeckScreen({ run, back }: { run: Run; back: () => void }) {
   const shown = sortCards(cards.filter((c) => suit === "all" || c.suit === suit));
   const count = (s: Suit) => cards.filter((c) => c.suit === s).length;
   return (
-    <Screen className="deck" title={`Your deck · ${cards.length}`} backdrop={SCENES[sceneFor(run)]} dim={0.6} onBack={back}>
+    <Screen className="deck" title="Your Deck" backdrop={SCENES[sceneFor(run)]} dim={0.6} onBack={back}>
+      <p className="k-label">{cards.length} cards</p>
       <Switch options={SUIT_TABS.filter((t) => t.id === "all" || count(t.id) > 0)} value={suit} onChange={setSuit} />
       <div className="card-grid">
         {shown.map((c) => (
@@ -304,8 +310,9 @@ function RewardScreen({ run, act, town }: { run: Run; act: Act; town: Town }) {
       title={run.fight?.exact ? "Caught" : "Victory"}
       backdrop={SCENES[sceneFor(run)]}
       dim={0.55}
-      action={<ScrollButton onClick={() => act(leaveReward)}>{r.cardTaken ? "Continue" : "Skip"}</ScrollButton>}
+      action={r.cardTaken ? <ScrollButton onClick={() => act(leaveReward)}>Continue</ScrollButton> : <InkLink onClick={() => act(leaveReward)}>Skip the card</InkLink>}
     >
+      <RunStatus hp={run.hp} max={run.maxHp} gold={run.gold} />
       <div className="spoils">
         <Gold n={r.gold} big />
         {r.perfect && <span className="k-label gilt">Perfect · no damage taken</span>}
@@ -341,7 +348,6 @@ function RewardScreen({ run, act, town }: { run: Run; act: Act; town: Town }) {
           <Emblem faction={town.me.faction} /> Walking here gave {town.me.faction === "order" ? "the Order" : "the Pathless"} ground in {groundName(floor.ground)}
         </p>
       )}
-      <RunStatus hp={run.hp} max={run.maxHp} gold={run.gold} />
       {pending !== null && (
         <GuideReplace
           run={run}
@@ -363,9 +369,9 @@ function RestScreen({ run, act }: { run: Run; act: Act }) {
   const cards = allCards(run).filter((c) => !isJunk(c) && (mode !== "upgrade" || c.value < 10));
   const heal = Math.min(restHeal(run), run.maxHp - run.hp);
   return (
-    <Screen className="rest" title="A bench under the oaks" backdrop={SCENES.rest} dim={0.1}>
-      <div className="grow" />
+    <Screen className="rest" title="The Oak Bench" backdrop={SCENES.rest} dim={0.1}>
       <RunStatus hp={run.hp} max={run.maxHp} gold={run.gold} />
+      <div className="grow" />
       <div className="choices">
         <Choice title="Heal" detail={`+${heal} HP`} off={heal <= 0} onClick={() => act((r) => rest(r, "heal"))} />
         <Choice title="Upgrade" detail={`A card gains +${CONFIG.restUpgrade}`} onClick={() => setMode("upgrade")} />
@@ -373,7 +379,7 @@ function RestScreen({ run, act }: { run: Run; act: Act }) {
       </div>
       {mode && (
         <CardPicker
-          title={mode === "upgrade" ? "Upgrade which card?" : "Let go of which card?"}
+          title={mode === "upgrade" ? "Upgrade a Card" : "Let a Card Go"}
           cards={cards}
           onCancel={() => setMode(null)}
           onPick={(uid) => act((r) => rest(r, mode, uid))}
@@ -390,9 +396,9 @@ function ShopScreen({ run, act }: { run: Run; act: Act }) {
   const [removing, setRemoving] = useState(false);
   const [pending, setPending] = useState<number | null>(null);
   return (
-    <Screen className="shop" title="The Crystal Shop" backdrop={SCENES.shop} dim={0.1} action={<ScrollButton onClick={() => act(leaveShop)}>Leave</ScrollButton>}>
-      <div className="grow" />
+    <Screen className="shop" title="The Crystal Shop" backdrop={SCENES.shop} dim={0.3} action={<ScrollButton onClick={() => act(leaveShop)}>Leave</ScrollButton>}>
       <RunStatus hp={run.hp} max={run.maxHp} gold={run.gold} />
+      <div className="grow" />
       <div className="wares">
         {s.cards.map((it, i) => (
           <div key={it.card.uid} className="ware">
@@ -403,7 +409,7 @@ function ShopScreen({ run, act }: { run: Run; act: Act }) {
           </div>
         ))}
       </div>
-      <div className="wares">
+      <div className="wares guides">
         {s.guides.map((g, i) => (
           <div key={g.id} className="ware">
             <GuideCard
@@ -433,7 +439,7 @@ function ShopScreen({ run, act }: { run: Run; act: Act }) {
       )}
       {removing && (
         <CardPicker
-          title={`Remove which card? (${s.removePrice} gold)`}
+          title="Remove a Card"
           cards={allCards(run).filter((c) => !isJunk(c))}
           onCancel={() => setRemoving(false)}
           onPick={(uid) => {
@@ -450,24 +456,43 @@ function ShopScreen({ run, act }: { run: Run; act: Act }) {
 function EventScreen({ run, act }: { run: Run; act: Act }) {
   const ev = EVENT_BY_ID[run.event!];
   const [picking, setPicking] = useState<number | null>(null);
+  // Walking on is the quiet way out, not a choice like the others
+  const leave = ev.options.findIndex((o) => o.label === "Walk on");
   return (
-    <Screen className="event" title={ev.title} backdrop={SCENES[ev.id] ?? SCENES.honor_shelf} dim={0.1}>
+    <Screen
+      className="event"
+      title={ev.title}
+      backdrop={SCENES[ev.id] ?? SCENES.honor_shelf}
+      dim={0.1}
+      action={leave >= 0 ? <InkLink onClick={() => act((r) => chooseEvent(r, leave))}>Walk on</InkLink> : undefined}
+    >
       <Sheet nail className="story">
         <p>{ev.text}</p>
       </Sheet>
-      <div className="grow" />
       <RunStatus hp={run.hp} max={run.maxHp} gold={run.gold} />
+      <div className="grow" />
       <div className="choices">
         {ev.options.map((o, i) => {
-          const [title, ...rest] = o.label.split(": ");
-          return <Choice key={i} title={title} detail={rest.join(": ") || undefined} onClick={() => (o.needsCard ? setPicking(i) : act((r) => chooseEvent(r, i)))} />;
+          if (i === leave) return null;
+          // The name of the choice in the display face; its cost or effect (numbers) in the sans under it
+          const [title, detail] = splitChoice(o.label);
+          return <Choice key={i} title={title} detail={detail} onClick={() => (o.needsCard ? setPicking(i) : act((r) => chooseEvent(r, i)))} />;
         })}
       </div>
       {picking !== null && (
-        <CardPicker title="Choose a card" cards={allCards(run).filter((c) => !isJunk(c))} onCancel={() => setPicking(null)} onPick={(uid) => act((r) => chooseEvent(r, picking, uid))} />
+        <CardPicker title="Choose a Card" cards={allCards(run).filter((c) => !isJunk(c))} onCancel={() => setPicking(null)} onPick={(uid) => act((r) => chooseEvent(r, picking, uid))} />
       )}
     </Screen>
   );
+}
+
+/** "Heckle: +25 gold, lose 5 HP" → ["Heckle", "+25 gold, lose 5 HP"]; "Take a rare card, pay 30 gold" → ["Take a rare card", "pay 30 gold"]. */
+function splitChoice(label: string): [string, string | undefined] {
+  const colon = label.indexOf(": ");
+  if (colon > 0) return [label.slice(0, colon), label.slice(colon + 2)];
+  const comma = label.lastIndexOf(", ");
+  if (comma > 0 && /\d/.test(label.slice(comma))) return [label.slice(0, comma), label.slice(comma + 2)];
+  return [label, undefined];
 }
 
 // ─── Game over ───────────────────────────────────────────────────────────────
@@ -479,7 +504,7 @@ function OverScreen({ run, town, onNew }: { run: Run; town: Town; onNew: () => v
   const total = Math.round(gift.reduce((s, g) => s + g.amount, 0) * 10) / 10;
   const me = town.me;
   return (
-    <Screen className="over" title="The path ends" backdrop={SCENES[sceneFor(run)]} dim={0.65} action={<ScrollButton onClick={onNew}>Walk again</ScrollButton>}>
+    <Screen className="over" title="The Path Ends" backdrop={SCENES[sceneFor(run)]} dim={0.65} action={<ScrollButton onClick={onNew}>Walk again</ScrollButton>}>
       <p className="fell">Fell to {killer}</p>
       <Sheet nail>
         <Line k="Floors cleared" v={score(run)} />

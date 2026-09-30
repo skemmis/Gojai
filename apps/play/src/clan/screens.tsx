@@ -31,9 +31,7 @@ export function MapChrome({ run, town, now, go, anywhere, toggleAnywhere }: { ru
   return (
     <>
       <header className="map-top">
-        <Sheet wide className="map-status">
-          <RunStatus hp={run.hp} max={run.maxHp} gold={run.gold} floor={isBossFloor(run.floor) ? "Boss next" : `Floor ${run.floor}`} />
-        </Sheet>
+        <RunStatus hp={run.hp} max={run.maxHp} gold={run.gold} floor={isBossFloor(run.floor) ? "Boss next" : `Floor ${run.floor}`} />
         <Medallion seed={town.portraits[ME]} size="l" onClick={() => go("you")} label="Your profile" />
       </header>
       <div className="map-notes">
@@ -130,7 +128,7 @@ export function JoinScreen({ town, seed, onJoin }: { town: Town; seed: number; o
   return (
     <Screen
       className="join"
-      title="You are dealt three faces"
+      title="Three Faces"
       backdrop={SCENES["ojai-valley-trail"]}
       action={
         <ScrollButton disabled={!validName(name)} onClick={() => onJoin(name, dealt[pick], dealt)}>
@@ -149,10 +147,12 @@ export function JoinScreen({ town, seed, onJoin }: { town: Town; seed: number; o
         <p className="motto">{f.motto}</p>
         <p className="why">The valley needs you on this side.</p>
       </Sheet>
-      <label className="ink-field" htmlFor="join-name">
-        <span className="k-label">Your name</span>
-        <input id="join-name" value={name} maxLength={20} onChange={(e) => setName(e.target.value)} autoComplete="nickname" />
-      </label>
+      <Sheet wide className="ink-field">
+        <label className="k-label" htmlFor="join-name">
+          Your name
+        </label>
+        <input id="join-name" value={name} maxLength={20} onChange={(e) => setName(e.target.value)} autoComplete="nickname" placeholder="What the valley calls you" />
+      </Sheet>
     </Screen>
   );
 }
@@ -164,6 +164,7 @@ export function ProfileScreen({ town, back, setPortrait, onNewRun, seed }: { tow
   const s = town.book.stats[ME].season;
   const face = town.portraits[ME];
   const [choosing, setChoosing] = useState(false);
+  const [confirm, setConfirm] = useState(false);
   const title = me.title ?? (me.faction === "order" ? "Initiate of the Star" : "Of No Path");
   return (
     <Screen className="profile" title="You" backdrop={SCENES["shelf-road"]} onBack={back}>
@@ -196,9 +197,17 @@ export function ProfileScreen({ town, back, setPortrait, onNewRun, seed }: { tow
         </div>
       )}
       <div className="run-tools">
-        <span className="k-label">Run seed {seed}</span>
-        <InkLink onClick={onNewRun}>Start a new run</InkLink>
+        {confirm ? (
+          <>
+            <span>This run ends here, with no offering.</span>
+            <InkLink onClick={onNewRun}>Abandon it</InkLink>
+            <InkLink onClick={() => setConfirm(false)}>Keep going</InkLink>
+          </>
+        ) : (
+          <InkLink onClick={() => setConfirm(true)}>Start a new run</InkLink>
+        )}
       </div>
+      <p className="k-label run-seed">Run seed {seed}</p>
     </Screen>
   );
 }
@@ -227,9 +236,12 @@ export function BoardsScreen({ town, back }: { town: Town; back: () => void }) {
   const st = standing(town.book, board, scope, ME, 6);
   const shown = st.top.some((r) => r.player === ME);
   return (
-    <Screen className="boards" title={`${board.name} · ${WINDOW_WORD[board.window]}`} backdrop={SCENES["libbey-park"]} dim={0.5} onBack={back}>
-      <Switch big options={TABS} value={tab} onChange={setTab} />
+    <Screen className="boards" title="Boards" backdrop={SCENES["libbey-park"]} dim={0.5} onBack={back}>
+      <Switch options={TABS} value={tab} onChange={setTab} />
       <Switch options={SCOPES} value={scopeKind} onChange={setScope} />
+      <p className="k-label unit">
+        {WINDOW_WORD[board.window]} · counted in {board.unit}
+      </p>
       <Sheet className="board-sheet">
         <ol className="ranks">
           {st.top.map((r) => (
@@ -246,7 +258,6 @@ export function BoardsScreen({ town, back }: { town: Town; back: () => void }) {
         </Sheet>
       )}
       {!st.you && <p className="nudge">You're not on this board yet.</p>}
-      <p className="k-label unit">Counted in {board.unit}</p>
     </Screen>
   );
 }
@@ -282,9 +293,9 @@ export function ClanScreen({ town, now, back }: { town: Town; now: Date; back: (
   const grounds = Object.values(t.grounds).sort((a, b) => groundName(a.id).localeCompare(groundName(b.id)));
   const flips = town.lastFlips.filter((f) => f.to);
   return (
-    <Screen className="clan" title={seasonName(town.seasonStart)} backdrop={SCENES["arcade"]} dim={0.5} onBack={back}>
+    <Screen className="clan" title={seasonName(town.seasonStart).replace(/^The Season of the /, "")} backdrop={SCENES["arcade"]} dim={0.5} onBack={back}>
       <p className="season-day">
-        Day {day} of {days} · ends at the full moon, {dayFmt.format(ends)}
+        {seasonName(town.seasonStart)} · day {day} of {days}, ends at the full moon, {dayFmt.format(ends)}
       </p>
       <Score order={t.score.order} pathless={t.score.pathless} note={`neighborhood-days held · you walk for ${sideName(me.faction)}`} />
       <Sheet className="ground-sheet">
@@ -329,7 +340,7 @@ export function LiveScreen({ town, now, back }: { town: Town; now: Date; back: (
   const w = liveNow(now)[0];
   if (!w) {
     return (
-      <Screen className="live" title="Nothing live" backdrop={SCENES["shelf-road"]} onBack={back}>
+      <Screen className="live" title="Nothing Live" backdrop={SCENES["shelf-road"]} onBack={back}>
         <p className="season-day">The next event shows here while it's on.</p>
       </Screen>
     );

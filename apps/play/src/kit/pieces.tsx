@@ -149,7 +149,7 @@ export function GameCard({ card, mult = 1, off, dud, armed }: { card: Card; mult
           <b>{powerAmount(card.suit, value)}</b>
         </span>
       ) : (
-        <span className="pw">{d.name}</span>
+        <span className="pw junk">{d.name}</span>
       )}
     </div>
   );

@@ -1,8 +1,8 @@
 /*
  * The design library's styles (docs/DESIGN.md). Colour and font tokens come
  * from packages/art/src/theme.ts via main.tsx (--paper, --ink, --night, --blood,
- * --gilt, --pink, --display, --ui ...); spacing and type steps are set here from
- * the same file's `space` and `size`.
+ * --gilt, --pink, --display, --ui, --s1..--s6, --t-*). The :root values below
+ * are the same numbers, as a fallback only.
  *
  * Text printed on an inked piece is inset to the piece's measured calm area
  * (numbers in each comment) and centred by its capitals.
@@ -51,7 +51,8 @@
   padding: calc(var(--s3) + env(safe-area-inset-top)) var(--s4) calc(var(--s4) + env(safe-area-inset-bottom));
   background: var(--night);
   color: var(--on-night);
-  overflow: hidden;
+  /* clip, not hidden: hidden would make the screen a scroll box and break the sticky main action */
+  overflow: clip;
   isolation: isolate;
 }
 .k-screen-head {
@@ -381,11 +382,6 @@
   opacity: 0.7;
   cursor: pointer;
 }
-.k-switch.big button {
-  font-family: var(--display);
-  font-size: var(--t-name);
-  font-weight: 400;
-}
 .k-switch button.on {
   opacity: 1;
   text-decoration: underline;
@@ -442,16 +438,19 @@
   font-weight: 800;
   text-box: trim-both cap alphabetic;
 }
+.k-price.short img {
+  opacity: 0.45;
+}
 .k-price.short b {
-  text-decoration: line-through;
-  text-decoration-thickness: 2px;
+  color: var(--ink-soft);
 }
 .k-price.sold b {
   font-size: 10px;
   text-transform: uppercase;
 }
 
-.k-status {
+.k-status.k-sheet {
+  width: auto;
   display: inline-flex;
   align-items: center;
   gap: var(--s4);
@@ -664,6 +663,11 @@ button.k-guide {
   content: " ✦";
   color: var(--gilt-text);
 }
+/* Can't be taken: struck through like an unavailable Choice */
 .k-guide.off {
-  opacity: 0.5;
+  opacity: 0.6;
+}
+.k-guide.off .name {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
 }

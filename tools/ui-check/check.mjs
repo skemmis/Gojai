@@ -179,7 +179,7 @@ await steer("r.floor = 2; r.hp = 28; core.enterEncounter(r, 'rest')");
 await checkState("rest");
 await click(page.locator(".k-choice", { hasText: "Upgrade" }));
 await checkState("rest-picker");
-await click(page.getByRole("button", { name: "Cancel" }), 300);
+await click(page.locator(".picker-layer .k-back"), 300);
 await click(page.locator(".k-choice", { hasText: "Heal" }));
 await steer("r.gold = 120; core.enterEncounter(r, 'shop')");
 await checkState("shop");
