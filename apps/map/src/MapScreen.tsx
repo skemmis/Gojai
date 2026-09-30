@@ -186,6 +186,9 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
     const zoomClass = () => {
       mapEl.current?.classList.toggle("labels", m.getZoom() >= 15.5);
       mapEl.current?.classList.toggle("far", m.getZoom() < FAR_ZOOM);
+      // your figure shrinks smoothly as you zoom out (full size from z16, 55% by z13), never in a jump
+      const z = Math.min(16, Math.max(13, m.getZoom()));
+      mapEl.current?.style.setProperty("--you-scale", String(0.55 + ((z - 13) / 3) * 0.45));
     };
     // The UI check (tools/ui-check) moves the camera directly
     if (location.search.includes("uicheck")) (window as unknown as { __map: maplibregl.Map }).__map = m;
@@ -315,7 +318,10 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
       img.src = youFigure;
       img.alt = "";
       img.draggable = false;
-      el.append(glow, img);
+      const body = document.createElement("span");
+      body.className = "body";
+      body.append(glow, img);
+      el.append(body);
     }
     // feet on the spot
     const opts: maplibregl.MarkerOptions = youFigure ? { element: el, anchor: "bottom", offset: [0, 2] } : { element: el };

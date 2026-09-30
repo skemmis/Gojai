@@ -170,6 +170,20 @@ await pause(1500);
 await checkState("map-close");
 // You stand on the map as your own figure
 if (!(await page.locator(".map-screen .you.figure img").count())) failures.push("map-close: the player's figure is missing");
+// ... and shrinks smoothly as you zoom out: no step between two nearby zooms may jump in size
+{
+  const heights = [];
+  for (let z = 13.2; z <= 16.2; z += 0.25) {
+    await camera(z);
+    await pause(60);
+    heights.push([z, (await page.locator(".map-screen .you.figure img").boundingBox())?.height ?? 0]);
+  }
+  for (let i = 1; i < heights.length; i++) {
+    const [z, h] = heights[i], [, h0] = heights[i - 1];
+    if (!h || Math.abs(h - h0) > 3) failures.push(`map: the figure jumps from ${h0.toFixed(1)} to ${h.toFixed(1)} px at z${z.toFixed(2)}`);
+  }
+  console.log("ok   map: figure height by zoom", heights.map(([z, h]) => `z${z.toFixed(1)} ${h.toFixed(0)}`).join(", "));
+}
 await camera(13.6);
 await steer("r.floor = 1", 800);
 
