@@ -368,10 +368,10 @@ function Ribbon({ name }: { name: string }) {
 
 /**
  * Its next move, splashed beside it. An attack is a blot of blood carrying
- * what will actually get through your block; the full blow is kept small on
- * its rim, struck through, once you've blocked any of it (a flurry shows its
- * blows underneath, "3 × 2"). Fully blocked, the
- * blood dries brown. Anything else it does is an ink mark on a paper blot.
+ * what will actually get through your block (a flurry shows its blows
+ * underneath, "3 × 2"). While you only hold a block card, the new number is
+ * outlined and your shield faint; once the block is played and covers the
+ * whole blow, the blood dries brown. Anything else it does is an ink mark on a paper blot.
  */
 function Threat({ run, a, adding }: { run: Run; a: EnemyAction; adding: number }) {
   const f = run.fight!;
@@ -380,11 +380,12 @@ function Threat({ run, a, adding }: { run: Run; a: EnemyAction; adding: number }
     const hit = each * (a.times ?? 1);
     const guard = f.block + adding;
     const left = Math.max(0, hit - guard);
+    // Only block you've actually played dries the blood; a card you're holding just previews it
+    const stopped = hit - f.block <= 0;
     return (
-      <div className={`threat atk ${left === 0 ? "stopped" : ""}`} title={`Attack ${hit}`}>
-        <img className="blot" src={UI[left === 0 ? "blot-attack-dry" : BLOTS[run.floor % BLOTS.length]]} alt="" draggable={false} />
+      <div className={`threat atk ${stopped ? "stopped" : ""} ${adding > 0 ? "previewing" : ""}`} title={`Attack ${hit}`}>
+        <img className="blot" src={UI[stopped ? "blot-attack-dry" : BLOTS[run.floor % BLOTS.length]]} alt="" draggable={false} />
         <b>{left}</b>
-        {guard > 0 && <s className="was">{hit}</s>}
         {a.times && a.times > 1 && (
           <small className="times">
             {each} × {a.times}
@@ -451,6 +452,7 @@ function Drops({ hp, max, loss, who }: { hp: number; max: number; loss: number; 
       </div>
       <span className="num">
         <b>{Math.max(0, hp)}</b>/{max}
+        {loss > 0 && <em className="loss">−{Math.min(loss, hp)}</em>}
       </span>
     </div>
   );
@@ -468,7 +470,7 @@ function Scroll() {
 
 function Pile({ n, side }: { n: number; side: "left" | "right" }) {
   return (
-    <div className={`pile ${side}`} title={side === "left" ? "Draw pile" : "Discard pile"}>
+    <div className={`pile ${side} ${n === 0 ? "empty" : ""}`} title={side === "left" ? "Draw pile" : "Discard pile"}>
       <img src={UI[side === "left" ? "pile-draw" : "pile-discard"]} alt="" draggable={false} />
       <b>{n}</b>
       <small>{side === "left" ? "Draw" : "Discard"}</small>
@@ -508,7 +510,7 @@ export function GameCard({ card, mult = 1, off, dud, armed }: { card: Card; mult
         )}
       </span>
       {art && card.suit ? (
-        <span className="seal" aria-label={`${card.suit} ${powerAmount(card.suit, value)}`}>
+        <span className={`seal ${powerAmount(card.suit, value) >= 10 ? "wide" : ""}`} aria-label={`${card.suit} ${powerAmount(card.suit, value)}`}>
           <svg viewBox="0 0 100 100" aria-hidden="true">
             <path d={SEAL} />
             <circle cx="50" cy="50" r="33" />

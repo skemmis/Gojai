@@ -827,19 +827,6 @@ footer {
   transform: translate(-50%, -50%);
   font-size: 40px;
 }
-/* The whole blow, before your block: small on the rim, struck through in blue */
-.threat .was {
-  position: absolute;
-  top: -6px;
-  right: -10px;
-  font-size: 21px;
-  font-weight: 800;
-  color: var(--paper);
-  text-shadow: 0 1px 2px var(--night);
-  text-decoration: line-through;
-  text-decoration-color: var(--suit-hearts-night);
-  text-decoration-thickness: 3px;
-}
 .threat .times {
   position: absolute;
   bottom: -8px;
@@ -849,6 +836,11 @@ footer {
   font-size: 13px;
   color: var(--paper);
   text-shadow: 0 1px 2px var(--night);
+}
+/* Holding a block card: the number it would leave is only outlined until you play it */
+.threat.atk.previewing > b {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--paper);
 }
 /* Fully blocked: the blood dries brown and the number drops back */
 .threat.atk.stopped > b {
@@ -869,8 +861,9 @@ footer {
 /* On an attack, the shield is pinned to the blot's lower corner */
 .threat.atk .shield-mark {
   position: absolute;
-  right: -30px;
-  bottom: -24px;
+  left: 50%;
+  bottom: -44px;
+  transform: translateX(-50%);
   margin: 0;
 }
 .shield-mark img {
@@ -888,8 +881,8 @@ footer {
   font-variant-numeric: tabular-nums;
 }
 /* Only a card you're holding: the shield breathes until you play it */
-.shield-mark.preview img {
-  animation: breathe 0.9s ease-in-out infinite alternate;
+.shield-mark.preview {
+  opacity: 0.6;
 }
 @keyframes breathe {
   from { opacity: 0.75; }
@@ -958,6 +951,13 @@ footer {
   font-size: 24px;
   font-weight: 800;
   color: var(--on-night);
+}
+.drops .num .loss {
+  margin-left: 6px;
+  font-style: normal;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--suit-spades-night);
 }
 .drops.you .drop {
   width: 15px;
@@ -1070,7 +1070,7 @@ footer {
   grid-template-columns: 1fr auto 1fr;
   align-items: end;
   gap: 12px;
-  padding: 8px 0 12px;
+  padding: 8px 12px 12px;
 }
 .rail .pile.right {
   justify-self: end;
@@ -1106,6 +1106,11 @@ footer {
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+/* An empty pile is only a ghost of itself */
+.pile.empty img {
+  opacity: 0.22;
+  filter: grayscale(1);
 }
 .pile small {
   position: absolute;
@@ -1144,7 +1149,7 @@ footer {
   background: none;
   color: var(--ink);
   font-family: var(--display);
-  font-size: 18px;
+  font-size: 15px;
   cursor: pointer;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
 }
@@ -1154,14 +1159,18 @@ footer {
   width: 100%;
   height: 100%;
   object-fit: fill;
-  opacity: 0.8;
 }
+/* The label sits on the scroll's paper, measured from the art: x 21–80%, y 21–80% (the rollers take the ends) */
 .end span {
-  position: relative;
+  position: absolute;
+  inset: 21% 20% 20% 21%;
+  display: grid;
+  place-items: center;
+  white-space: nowrap;
 }
-/* Out of moons: the scroll brightens to say it's time */
+/* Out of moons: the scroll glows to say it's time */
 .end.ready img {
-  opacity: 1;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--paper) 55%, transparent));
 }
 .end.ready {
   animation: breathe 1s ease-in-out infinite alternate;
@@ -1271,8 +1280,8 @@ footer {
 /* The seal: suit-ink wax pressed into the bottom-left corner, value in paper. The pips on the card carry the suit shape. */
 .gcard .seal {
   position: absolute;
-  left: -4%;
-  bottom: -4%;
+  left: -9%;
+  bottom: -9%;
   z-index: 1;
   width: 52%;
   aspect-ratio: 1;
@@ -1283,6 +1292,9 @@ footer {
   color: var(--paper);
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
   transform: rotate(-8deg);
+}
+.gcard .seal.wide b {
+  font-size: calc(var(--card-w, 84px) * 0.19);
 }
 .gcard .seal svg {
   position: absolute;
@@ -1334,7 +1346,6 @@ footer {
   background: var(--ink);
   color: var(--paper);
   border: 2px solid var(--paper);
-  border-radius: 999px;
   font-size: 13px;
   font-weight: 800;
   padding: 1px 7px;
