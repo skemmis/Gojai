@@ -232,7 +232,11 @@ if (await spade.count()) {
   await spade.click({ position: { x: 8, y: 30 } });
   await pause(1800);
 }
-if (await page.locator(".k-screen.reward").count()) await checkState("reward");
+if (await page.locator(".k-screen.reward").count()) {
+  // Show a catch, with the longest foe name, so the named card on the reward screen is measured too
+  await steer("const d = __core.cardDef('catch_influencer'); r.reward.caught = { uid: 9999, def: d.id, value: d.value, suit: d.suit }", 500);
+  await checkState("reward");
+}
 else failures.push("winning the fight didn't reach the reward screen");
 
 // And lose a run, for the offering

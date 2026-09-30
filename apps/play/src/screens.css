@@ -422,7 +422,7 @@
   color: var(--gilt);
 }
 .k-screen .caught {
-  --card-w: 64px;
+  --card-w: 92px; /* same size as the cards on offer, so a long name like "The Influencer" fits */
   display: flex;
   align-items: center;
   gap: var(--s3);
