@@ -135,3 +135,4 @@
 .map-screen .tools button.test.on { background: var(--ink); color: var(--paper); }
 /* Phones pinch to zoom, so the zoom buttons go (and stop crowding the bar). */
 @media (max-width: 759px) { .map-screen .maplibregl-ctrl-top-right { display: none; } .map-screen .live-band { right: 12px; } }
+.map-screen .hood-name .hood-badge { height: 1.25em; width: auto; vertical-align: -0.28em; margin-right: 0.3em; }

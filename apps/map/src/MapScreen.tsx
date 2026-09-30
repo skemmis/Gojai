@@ -77,17 +77,28 @@ export interface MapScreenProps {
   autoLocate?: boolean;
   /** Extra buttons for the top bar. */
   tools?: ReactNode;
+  /**
+   * Bare: just the map. No top bar, live band or bottom sheet; the game draws
+   * its own chrome and gets taps on spots through `onSelect`.
+   */
+  bare?: boolean;
+  /** Bare mode: a spot was tapped. `state` says whether it can be opened from here. */
+  onSelect?: (spot: Spot, state: SpotState, now: Date) => void;
+  /** Bare mode: a neighborhood (not a spot) was tapped. */
+  onSelectHood?: (id: string) => void;
+  /** An image (e.g. who holds it) shown beside each neighborhood's name. */
+  hoodBadge?: (id: string) => string | undefined;
 }
 
 /**
  * The whole map screen: MapLibre map, top bar, "Happening now" band and the
  * bottom sheet. Drop it into any React app (it fills its positioned parent).
  */
-export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, onOpen, autoLocate = false, tools }: MapScreenProps) {
+export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, onOpen, autoLocate = false, tools, bare = false, onSelect, onSelectHood, hoodBadge }: MapScreenProps) {
   const mapEl = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const removed = useRef(false);
-  const [sel, setSel] = useState<Selection>({ kind: "events" });
+  const [sel, setSel] = useState<Selection>(bare ? null : { kind: "events" });
   const [pretend, setPretend] = useState<Date | null>(null);
   const [tick, setTick] = useState(() => new Date());
   const [you, setYou] = useState<LngLat | null>(null);
@@ -123,12 +134,12 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
       attributionControl: { compact: true, customAttribution: "© OpenStreetMap contributors, Overture Maps" },
     });
     // Keep downtown clear of the bottom sheet on phones.
-    if (phone) m.setPadding({ top: 40, bottom: Math.round(window.innerHeight * 0.4), left: 0, right: 0 });
+    if (phone && !bare) m.setPadding({ top: 40, bottom: Math.round(window.innerHeight * 0.4), left: 0, right: 0 });
     m.on("styleimagemissing", (e) => {
       const img = drawImage(theme, e.id);
       if (img && !m.hasImage(e.id)) m.addImage(e.id, img, { pixelRatio: 2 });
     });
-    m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+    if (!bare) m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
     const zoomClass = () => {
       mapEl.current?.classList.toggle("labels", m.getZoom() >= 15.5);
       mapEl.current?.classList.toggle("far", m.getZoom() < FAR_ZOOM);
@@ -167,6 +178,19 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
     styled.current = active;
     map.current?.setStyle(buildStyle(theme, active));
   }, [active]);
+
+  // Bare mode: the game handles taps.
+  const report = useRef({ onSelect, onSelectHood, you, now, visits, anywhere, playerId });
+  report.current = { onSelect, onSelectHood, you, now, visits, anywhere, playerId };
+  useEffect(() => {
+    if (!bare || !sel) return;
+    const r = report.current;
+    if (sel.kind === "spot") {
+      const s = spotById(sel.id)!;
+      r.onSelect?.(s, spotState(s, r.playerId, r.you, r.now, r.visits, { anywhere: r.anywhere }), r.now);
+    } else if (sel.kind === "hood") r.onSelectHood?.(sel.id);
+    setSel(null);
+  }, [sel, bare]);
 
   // Selected neighborhood highlight.
   const selHood = sel?.kind === "hood" ? sel.id : sel?.kind === "spot" ? neighborhoodOf(spotById(sel.id)!.at)?.id : undefined;
@@ -213,11 +237,19 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
     const names = NEIGHBORHOODS.filter((n) => n.id !== "trail").map((n) => {
       const el = document.createElement("div");
       el.className = "hood-name" + (areaKm2(n) < MINOR_HOOD_KM2 ? " minor" : "");
-      el.textContent = n.name;
+      const badge = hoodBadge?.(n.id);
+      if (badge) {
+        const img = document.createElement("img");
+        img.src = badge;
+        img.alt = "";
+        img.className = "hood-badge";
+        el.append(img);
+      }
+      el.append(n.name);
       return new maplibregl.Marker({ element: el }).setLngLat(labelPoint(n)).addTo(m);
     });
     return () => [...spots, ...names].forEach((mk) => mk.remove());
-  }, [active]);
+  }, [active, hoodBadge]);
 
   // "You are here".
   useEffect(() => {
@@ -294,8 +326,9 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
   const youHood = you ? neighborhoodOf(you) : undefined;
 
   return (
-    <div className="map-screen">
+    <div className={`map-screen ${bare ? "bare" : ""}`}>
       <div ref={mapEl} className="map" />
+      {!bare && <>
 
       <header className="bar">
         <h1>The Pathless Land</h1>
@@ -390,6 +423,7 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
         )}
         {sel?.kind === "key" && <KeyPanel />}
       </aside>
+      </>}
     </div>
   );
 }

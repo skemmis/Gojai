@@ -15,7 +15,7 @@ import vignette from "./assets/scene-vignette.webp";
 type Act = (fn: (r: Run) => void) => boolean;
 
 /** Enemy sprites from the art thread, keyed by enemy id (assets/enemy-<id>.webp). Missing ones stand in as a silhouette. */
-const SPRITES: Record<string, string> = Object.fromEntries(
+export const SPRITES: Record<string, string> = Object.fromEntries(
   Object.entries(import.meta.glob<string>("./assets/enemy-*.webp", { eager: true, import: "default" })).map(([path, url]) => [
     path.replace(/^.*enemy-(.*)\.webp$/, "$1"),
     url,
@@ -37,14 +37,14 @@ function Glyph({ name, fallback }: { name: string; fallback: IconName }) {
 /** Fight backgrounds from the art thread: full-height night plates of real places (assets/scene-<id>.webp); a front layer at the edges (assets/front-<id>.webp) where one exists. */
 const globById = (files: Record<string, string>, prefix: string) =>
   Object.fromEntries(Object.entries(files).map(([path, url]) => [path.replace(new RegExp(`^.*${prefix}-(.*)\\.webp$`), "$1"), url]));
-const SCENES: Record<string, string> = globById(import.meta.glob<string>("./assets/scene-*.webp", { eager: true, import: "default" }), "scene");
+export const SCENES: Record<string, string> = globById(import.meta.glob<string>("./assets/scene-*.webp", { eager: true, import: "default" }), "scene");
 const FRONTS: Record<string, string> = globById(import.meta.glob<string>("./assets/front-*.webp", { eager: true, import: "default" }), "front");
 /** Plate geometry at the size we ship (the tall manifest's 1080×2340 scaled by 2/3): ground line at 55%, quiet column centred. */
 const PLATE = { w: 720, h: 1560, floor: 860, foeX: 0.5 };
 /** Plates a fight can land on when the spot's place has no plate of its own: the run seed and floor pick one. */
 const PLATES = ["arcade", "libbey-park", "ojai-valley-trail", "shelf-road"];
 
-function sceneFor(run: Run): string {
+export function sceneFor(run: Run): string {
   const place = run.spot?.place?.replace(/_/g, "-");
   if (place && SCENES[place]) return place;
   return PLATES[Math.abs((run.seed ?? 0) * 31 + run.floor) % PLATES.length];
@@ -352,11 +352,11 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
 // ─── Pieces ──────────────────────────────────────────────────────────────────
 
 /** Inked UI pieces from the art thread (assets/ui-<id>.webp): blots, shield, moons, drops, piles, ribbon, scroll. */
-const UI: Record<string, string> = globById(import.meta.glob<string>("./assets/ui-*.webp", { eager: true, import: "default" }), "ui");
+export const UI: Record<string, string> = globById(import.meta.glob<string>("./assets/ui-*.webp", { eager: true, import: "default" }), "ui");
 const BLOTS = ["blot-attack-1", "blot-attack-2", "blot-attack-3"];
 
 /** The enemy's name on a paper ribbon across the top of the scene, like a tarot title. */
-function Ribbon({ name }: { name: string }) {
+export function Ribbon({ name }: { name: string }) {
   const size = Math.min(22, 330 / Math.max(10, name.length));
   return (
     <div className="ribbon">
@@ -417,7 +417,7 @@ function Guard({ block, adding }: { block: number; adding: number }) {
   return <ShieldMark n={block + adding} preview={adding > 0} />;
 }
 
-function ShieldMark({ n, small, preview }: { n: number; small?: boolean; preview?: boolean }) {
+export function ShieldMark({ n, small, preview }: { n: number; small?: boolean; preview?: boolean }) {
   return (
     <div className={`shield-mark ${small ? "small" : ""} ${preview ? "preview" : ""}`} title="Block">
       <img src={UI.shield} alt="" draggable={false} />
@@ -431,7 +431,7 @@ function ShieldMark({ n, small, preview }: { n: number; small?: boolean; preview
  * from the bottom; the exact number sits beside them. Drops that the next
  * blow would drain are hatched. The enemy's and yours are drawn the same.
  */
-function Drops({ hp, max, loss, who }: { hp: number; max: number; loss: number; who: "foe" | "you" }) {
+export function Drops({ hp, max, loss, who }: { hp: number; max: number; loss: number; who: "foe" | "you" }) {
   const per = max / 10;
   const after = Math.max(0, hp - loss);
   return (
@@ -457,7 +457,7 @@ function Drops({ hp, max, loss, who }: { hp: number; max: number; loss: number; 
 }
 
 /** One action: a gibbous moon while it's yours to spend, a dark new moon once spent. */
-function Moon({ lit }: { lit: boolean }) {
+export function Moon({ lit }: { lit: boolean }) {
   return <img className={`moon ${lit ? "lit" : ""}`} src={UI[lit ? "moon-gibbous" : "moon-new"]} alt="" draggable={false} />;
 }
 

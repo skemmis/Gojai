@@ -16,7 +16,8 @@
     "@gojai/map-app": "*",
     "maplibre-gl": "^5.0.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "@gojai/clans": "*"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

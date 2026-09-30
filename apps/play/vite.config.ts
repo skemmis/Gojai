@@ -11,6 +11,7 @@ export default defineConfig({
     alias: {
       "@gojai/core": fileURLToPath(new URL("../../packages/core/src/index.ts", import.meta.url)),
       "@gojai/map": fileURLToPath(new URL("../../packages/map/src/index.ts", import.meta.url)),
+      "@gojai/clans": fileURLToPath(new URL("../../packages/clans/src/index.ts", import.meta.url)),
     },
   },
 });
