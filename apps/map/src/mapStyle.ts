@@ -127,7 +127,9 @@ const DRAWN_REPLACES = ["parks", "schools", "schools-line", "contours", "water-f
 export function buildStyle(t: Theme, active: { spots: string[] }, drawn?: DrawnMap): StyleSpecification {
   const style = inkStyle(t, active);
   if (!drawn) return style;
-  style.sources.drawn = { type: "raster", tiles: [drawn.index ? "drawn://{z}/{x}/{y}" : drawn.tiles!], tileSize: drawn.tileSize, bounds: drawn.bounds, minzoom: drawn.minzoom, maxzoom: drawn.maxzoom };
+  // Each 512 px tile is laid out at half size (256), so MapLibre reaches for the next zoom's tiles one level sooner:
+  // on a phone's 2-3x screen a 512 px tile shown at full size, and rounded down a zoom, looks plainly blurry.
+  style.sources.drawn = { type: "raster", tiles: [drawn.index ? "drawn://{z}/{x}/{y}" : drawn.tiles!], tileSize: drawn.tileSize / 2, bounds: drawn.bounds, minzoom: drawn.minzoom, maxzoom: drawn.maxzoom };
   style.layers = style.layers.flatMap((l) => {
     if (l.id === "paper") return [l, { id: "drawn", type: "raster", source: "drawn", paint: { "raster-fade-duration": 350, "raster-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0.4, 15, 0.9] } } as const];
     if (DRAWN_REPLACES.includes(l.id)) return [];
