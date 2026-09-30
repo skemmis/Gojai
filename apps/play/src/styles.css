@@ -667,12 +667,14 @@ footer {
   width: 100%;
   height: auto;
 }
-/* The name sits on the ribbon's middle band, between the swallowtails */
+/* The name sits on the ribbon's front band, measured from the art: x 16–82%, y 4–77% (the tails hang lower) */
 .ribbon span {
   position: absolute;
-  inset: 0 16% 8%;
+  inset: 4.5% 19% 23% 19%;
   display: grid;
   place-items: center;
+  /* Centre the capitals themselves, not the font's ascender/descender box */
+  text-box: trim-both cap alphabetic;
   font-family: var(--display);
   color: var(--ink);
   line-height: 1;
