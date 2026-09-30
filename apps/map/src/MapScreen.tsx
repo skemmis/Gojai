@@ -105,8 +105,19 @@ export interface MapScreenProps {
  * The whole map screen: MapLibre map, top bar, "Happening now" band and the
  * bottom sheet. Drop it into any React app (it fills its positioned parent).
  */
-/** Serve drawn:// tiles out of the drawn map's pack files: each pack is fetched once, on the first tile it holds. */
+/**
+ * Serve drawn:// tiles out of the drawn map's pack files. Each pack is fetched once; after the first screen is up the
+ * rest are fetched in the background, so zooming in finds the sharper tiles already here instead of waiting on megabytes.
+ */
 const packCache = new Map<string, Promise<ArrayBuffer>>();
+function loadPack(src: string): Promise<ArrayBuffer> {
+  if (!packCache.has(src)) {
+    const load = fetch(src).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(`${src}: ${r.status}`))));
+    load.catch(() => packCache.delete(src)); // a failed pack is fetched again on the next tile
+    packCache.set(src, load);
+  }
+  return packCache.get(src)!;
+}
 let served: DrawnMap | undefined;
 function servePacks(drawn: DrawnMap) {
   if (!drawn.index || served === drawn) return;
@@ -117,15 +128,11 @@ function servePacks(drawn: DrawnMap) {
     const at = index[url.slice("drawn://".length)];
     if (!at) throw new Error(`no drawn tile ${url}`);
     const [p, off, len] = at;
-    const src = packs[p];
-    if (!packCache.has(src)) {
-      const load = fetch(src).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(`${src}: ${r.status}`))));
-      load.catch(() => packCache.delete(src)); // a failed pack is fetched again on the next tile
-      packCache.set(src, load);
-    }
-    const buf = await packCache.get(src)!;
+    const buf = await loadPack(packs[p]);
     return { data: buf.slice(off, off + len) };
   });
+  // Warm the rest one at a time once the first screen has had its turn
+  setTimeout(() => packs.reduce((prev, src) => prev.then(() => loadPack(src).then(() => undefined, () => undefined)), Promise.resolve()), 1500);
 }
 
 export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, onOpen, autoLocate = false, tools, bare = false, onSelect, onSelectHood, hoodBadge, spotGlyph, drawn, youFigure }: MapScreenProps) {

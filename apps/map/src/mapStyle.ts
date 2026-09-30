@@ -129,7 +129,7 @@ export function buildStyle(t: Theme, active: { spots: string[] }, drawn?: DrawnM
   if (!drawn) return style;
   style.sources.drawn = { type: "raster", tiles: [drawn.index ? "drawn://{z}/{x}/{y}" : drawn.tiles!], tileSize: drawn.tileSize, bounds: drawn.bounds, minzoom: drawn.minzoom, maxzoom: drawn.maxzoom };
   style.layers = style.layers.flatMap((l) => {
-    if (l.id === "paper") return [l, { id: "drawn", type: "raster", source: "drawn", paint: { "raster-fade-duration": 0, "raster-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0.4, 15, 0.9] } } as const];
+    if (l.id === "paper") return [l, { id: "drawn", type: "raster", source: "drawn", paint: { "raster-fade-duration": 350, "raster-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0.4, 15, 0.9] } } as const];
     if (DRAWN_REPLACES.includes(l.id)) return [];
     // on the busy drawing, spots stand on a soft paper knockout so they lift off the buildings
     if (l.id === "spots" || l.id === "spot-dots") return [{ ...KNOCK, id: `${l.id}-knock`, minzoom: l.id === "spots" ? CARD_ZOOM : 0, maxzoom: l.id === "spots" ? 24 : CARD_ZOOM, paint: { ...KNOCK.paint, "circle-radius": l.id === "spots" ? ["interpolate", ["linear"], ["zoom"], CARD_ZOOM, 13, 17, 19] : ["interpolate", ["linear"], ["zoom"], 12, 3.5, CARD_ZOOM, 6] } } as const, l];
