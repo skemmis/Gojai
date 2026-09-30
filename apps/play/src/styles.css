@@ -573,6 +573,7 @@ footer {
 
 /* The place runs behind the whole table, edge to edge; the ground carries on under your hand */
 .table {
+  grid-template-columns: minmax(0, 1fr);
   overflow: hidden;
   margin-inline: -16px;
   padding-inline: 16px;
@@ -645,7 +646,7 @@ footer {
 .foe-zone {
   position: relative;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: min-content min-content 1fr;
   justify-items: center;
   align-items: end;
   min-height: 0;
@@ -786,15 +787,15 @@ footer {
   color: var(--ink);
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
 }
-.threat svg {
+.threat > svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   overflow: visible;
 }
-.threat svg path,
-.threat svg circle {
+.threat > svg path,
+.threat > svg circle {
   fill: var(--paper);
 }
 .threat .glyph,
@@ -808,7 +809,7 @@ footer {
   width: 22px;
   height: 22px;
 }
-.threat b {
+.threat > b {
   position: relative;
   font-size: 30px;
   font-weight: 800;
@@ -825,19 +826,19 @@ footer {
   height: 90px;
   color: var(--paper);
 }
-.threat.atk svg path,
-.threat.atk svg circle {
+.threat.atk > svg path,
+.threat.atk > svg circle {
   fill: var(--blood);
 }
-.threat.atk b {
+.threat.atk > b {
   font-size: 40px;
 }
 /* The whole blow, before your block: small on the rim, struck through in blue */
 .threat .was {
   position: absolute;
-  top: -2px;
-  right: -8px;
-  font-size: 18px;
+  top: -6px;
+  right: -10px;
+  font-size: 21px;
   font-weight: 800;
   color: var(--paper);
   text-shadow: 0 1px 2px var(--night);
@@ -856,11 +857,11 @@ footer {
   text-shadow: 0 1px 2px var(--night);
 }
 /* Fully blocked: the blood dries brown and the number drops back */
-.threat.atk.stopped svg path,
-.threat.atk.stopped svg circle {
+.threat.atk.stopped > svg path,
+.threat.atk.stopped > svg circle {
   fill: #5A3A26;
 }
-.threat.atk.stopped b {
+.threat.atk.stopped > b {
   opacity: 0.6;
 }
 .shield-mark {
@@ -874,6 +875,13 @@ footer {
   justify-content: center;
   color: var(--paper);
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.6));
+}
+/* On an attack, the shield is pinned to the blot's lower corner */
+.threat.atk .shield-mark {
+  position: absolute;
+  right: -30px;
+  bottom: -24px;
+  margin: 0;
 }
 .shield-mark svg {
   position: absolute;
@@ -916,9 +924,10 @@ footer {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 2px 10px;
+  margin-top: -4px;
+  padding: 6px 18px;
   border-radius: 999px;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--night) 80%, transparent), transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--night) 85%, transparent) 60%, transparent);
 }
 .drops {
   display: flex;
@@ -930,8 +939,8 @@ footer {
   gap: 3px;
 }
 .drops svg {
-  width: 14px;
-  height: 20px;
+  width: 15px;
+  height: 21px;
   overflow: visible;
 }
 .drops .empty {
@@ -954,12 +963,14 @@ footer {
   stroke-width: 1.6;
 }
 .drops .num {
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 700;
   color: var(--on-night-soft);
+  text-shadow: 0 1px 3px var(--night), 0 0 8px var(--night);
   font-variant-numeric: tabular-nums;
 }
 .drops .num b {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 800;
   color: var(--on-night);
 }
@@ -968,7 +979,7 @@ footer {
   height: 23px;
 }
 .drops.you .num b {
-  font-size: 22px;
+  font-size: 26px;
 }
 
 .immune {
@@ -995,11 +1006,21 @@ footer {
 }
 
 
-/* You: your blood, mirroring the enemy's, just above your hand */
+/* You: your blood, mirroring the enemy's, just above your hand; End turn across from it */
 .you-zone {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
   padding: 4px 0 0;
+}
+.you-zone .drops {
+  padding: 6px 12px 6px 4px;
+  border-radius: 999px;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--night) 80%, transparent) 60%, transparent);
+}
+.you-zone .drops .row {
+  gap: 2px;
 }
 .you-zone .floater {
   top: -40px;
@@ -1033,15 +1054,19 @@ footer {
 /* The table's edge: draw pile, moons, End turn, discard */
 .rail {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
-  align-items: center;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
   gap: 12px;
-  padding: 10px 0 14px;
+  padding: 8px 0 12px;
+}
+.rail .pile.right {
+  justify-self: end;
 }
 .pile {
   position: relative;
-  width: 34px;
-  height: 46px;
+  width: 44px;
+  height: 62px;
+  margin-bottom: 16px;
   pointer-events: none;
 }
 .pile .back {
@@ -1057,35 +1082,55 @@ footer {
 }
 .pile b {
   position: absolute;
-  right: -8px;
-  bottom: -6px;
-  min-width: 22px;
-  height: 22px;
+  right: -10px;
+  bottom: 4px;
+  min-width: 26px;
+  height: 26px;
   padding: 0 4px;
   display: grid;
   place-items: center;
   border-radius: 999px;
   background: var(--paper);
   color: var(--ink);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
-.pile.right {
-  opacity: 0.8;
+.pile small {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 3px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--on-night);
+  text-shadow: 0 1px 3px var(--night);
+}
+.pile .back {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
 }
 .moons {
   display: flex;
-  gap: 8px;
-  padding-left: 6px;
+  gap: 10px;
+  padding-bottom: 20px;
 }
 .moon {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--paper) 25%, transparent));
+}
+.moon:not(.lit) {
+  filter: none;
+}
+.moon .crater {
+  fill: color-mix(in srgb, var(--paper) 70%, var(--ink));
 }
 .moon .disc {
-  fill: color-mix(in srgb, var(--night) 70%, transparent);
+  fill: #221c16;
   stroke: var(--on-night-soft);
   stroke-width: 1.5;
 }
@@ -1380,4 +1425,10 @@ footer {
   height: 9px;
   border-radius: 50%;
   background: var(--gilt);
+}
+
+.ink-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
 }

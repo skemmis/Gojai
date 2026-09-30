@@ -212,7 +212,7 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
   const n = cards.length;
   const [width, setWidth] = useState(390);
   useLayoutEffect(() => {
-    const onResize = () => setWidth(Math.min(tableRef.current?.clientWidth ?? 390, 560));
+    const onResize = () => setWidth(Math.min((tableRef.current?.clientWidth ?? 390) - 32, 560));
     onResize();
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
@@ -243,12 +243,27 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
 
   return (
     <div className={`table ${shake === "you" ? "shake" : ""}`} ref={tableRef} onPointerMove={onMove} onPointerUp={onUp}>
+      <InkDefs />
       <Scene id={scene} zone={stage} feet={stage.feet} pink={pinkMoment(run)} />
       <SceneFront id={scene} zone={stage} feet={stage.feet} />
 
       {/* ─── Enemy ─── */}
       <div className={`foe-zone ${drag?.armed ? "armed" : ""}`} ref={zoneRef}>
         <Ribbon name={e.name} />
+        {/* Its life hangs right under its name, so it can't be mistaken for yours */}
+        <div className="foe-life">
+          {e.block > 0 && <ShieldMark n={e.block} small />}
+          <Drops who="foe" hp={e.hp} max={e.maxHp} loss={pv ? Math.max(0, pv.damage - e.block) : 0} />
+          {e.suits.length > 0 && (
+            <div className="immune" title="Immune">
+              {e.suits.map((s) => (
+                <span key={s} className="no">
+                  <Icon name={s} />
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
         <div className={`sprite-wrap ${shake === "foe" ? "hit" : ""} tier-${tier}`} ref={spriteRef}>
           {SPRITES[e.id] ? <img className="sprite" src={SPRITES[e.id]} alt={e.name} draggable={false} /> : <Silhouette />}
           {floaters
@@ -264,26 +279,17 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
           {intent(run).map((a, i) => (
             <Threat key={i} run={run} a={a} adding={pv?.block ?? 0} />
           ))}
-          <Guard block={f.block} adding={pv?.block ?? 0} />
-        </div>
-        <div className="foe-life">
-          {e.block > 0 && <ShieldMark n={e.block} small />}
-          <Drops who="foe" hp={e.hp} max={e.maxHp} loss={pv ? Math.max(0, pv.damage - e.block) : 0} />
-          {e.suits.length > 0 && (
-            <div className="immune" title="Immune">
-              {e.suits.map((s) => (
-                <span key={s} className="no">
-                  <Icon name={s} />
-                </span>
-              ))}
-            </div>
-          )}
+          {!intent(run).some((a) => a.k === "attack") && <Guard block={f.block} adding={pv?.block ?? 0} />}
         </div>
       </div>
 
-      {/* ─── You: your blood, mirroring its own ─── */}
+      {/* ─── You: your blood, mirroring its own, and End turn ─── */}
       <div className="you-zone">
         <Drops who="you" hp={run.hp} max={run.maxHp} loss={through} />
+        <button className={`end ${f.actions === 0 ? "ready" : ""}`} onClick={() => act(endTurn) && setSel(null)}>
+          <Scroll />
+          <span>End turn</span>
+        </button>
         {floaters
           .filter((x) => x.where === "you")
           .map((x) => (
@@ -314,7 +320,7 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
         </div>
       </div>
 
-      {/* ─── The table's edge: draw pile, moons (actions), End turn, discard ─── */}
+      {/* ─── The table's edge: draw pile, moons (actions) in the middle, discard ─── */}
       <div className="rail">
         <Pile n={run.draw.length} side="left" />
         <div className="moons" title={`${f.actions} of ${maxActions} actions left`}>
@@ -322,10 +328,6 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
             <Moon key={i} lit={i < f.actions} />
           ))}
         </div>
-        <button className={`end ${f.actions === 0 ? "ready" : ""}`} onClick={() => act(endTurn) && setSel(null)}>
-          <Scroll />
-          <span>End turn</span>
-        </button>
         <Pile n={run.discard.length} side="right" />
       </div>
       {pv && (
@@ -345,6 +347,25 @@ const BLOT =
   "M93 44Q90 50 96 57Q103 64 93 67Q83 70 80 74Q76 78 72 81Q67 84 62 89Q57 95 51 91Q44 87 38 86Q32 85 29 80Q26 76 18 74Q10 73 10 67Q9 61 9 56Q8 50 12 45Q15 41 8 31Q1 21 12 21Q23 21 28 19Q33 16 39 16Q45 16 51 11Q57 6 61 13Q65 19 70 22Q75 24 78 28Q82 31 89 34Q96 38 93 44Z";
 const SHIELD = "M50 4L92 14L88 52Q80 82 50 97Q20 82 12 52L8 14Z";
 const DROP = "M10 1C10 1 18 12 18 18.5A8 8 0 0 1 2 18.5C2 12 10 1 10 1Z";
+
+/**
+ * Printed-ink roughness for the larger drawn shapes (blots, shield):
+ * edges wobble a little and the fill breaks up, like a worn letterpress block.
+ * Rendered once per fight screen; shapes opt in with filter="url(#ink)".
+ */
+function InkDefs() {
+  return (
+    <svg className="ink-defs" aria-hidden="true" width="0" height="0">
+      <filter id="ink" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="3" result="wob" />
+        <feDisplacementMap in="SourceGraphic" in2="wob" scale="5" xChannelSelector="R" yChannelSelector="G" result="rough" />
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="8" result="grain" />
+        <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -9 5.9" result="holes" />
+        <feComposite in="rough" in2="holes" operator="in" />
+      </filter>
+    </svg>
+  );
+}
 
 /** The enemy's name on a paper ribbon across the top of the scene, like a tarot title. */
 function Ribbon({ name }: { name: string }) {
@@ -384,7 +405,7 @@ function Threat({ run, a, adding }: { run: Run; a: EnemyAction; adding: number }
     const left = Math.max(0, hit - guard);
     return (
       <div className={`threat atk ${left === 0 ? "stopped" : ""}`} title={`Attack ${hit}`}>
-        <svg viewBox="-6 -2 116 104" aria-hidden="true">
+        <svg viewBox="-6 -2 116 104" aria-hidden="true" filter="url(#ink)">
           <path d={BLOT} />
           <circle cx="104" cy="28" r="3.5" />
           <circle cx="-1" cy="64" r="2.5" />
@@ -399,6 +420,7 @@ function Threat({ run, a, adding }: { run: Run; a: EnemyAction; adding: number }
             {each} × {a.times}
           </small>
         )}
+        <Guard block={f.block} adding={adding} />
       </div>
     );
   }
@@ -412,7 +434,7 @@ function Threat({ run, a, adding }: { run: Run; a: EnemyAction; adding: number }
   const title = a.k === "hex" ? `Adds ${a.count} × ${cardDef(a.card).name} to your deck` : a.k;
   return (
     <div className="threat" title={title}>
-      <svg viewBox="-6 -2 116 104" aria-hidden="true">
+      <svg viewBox="-6 -2 116 104" aria-hidden="true" filter="url(#ink)">
         <path d={BLOT} />
       </svg>
       <Glyph name={glyph} fallback={icon} />
@@ -430,7 +452,7 @@ function Guard({ block, adding }: { block: number; adding: number }) {
 function ShieldMark({ n, small, preview }: { n: number; small?: boolean; preview?: boolean }) {
   return (
     <div className={`shield-mark ${small ? "small" : ""} ${preview ? "preview" : ""}`} title="Block">
-      <svg viewBox="0 0 100 100" aria-hidden="true">
+      <svg viewBox="0 0 100 100" aria-hidden="true" filter="url(#ink)">
         <path d={SHIELD} />
       </svg>
       <b>{n}</b>
@@ -477,7 +499,14 @@ function Moon({ lit }: { lit: boolean }) {
   return (
     <svg className={`moon ${lit ? "lit" : ""}`} viewBox="0 0 40 40" aria-hidden="true">
       <circle className="disc" cx="20" cy="20" r="17" />
-      {lit && <path className="light" d="M20 3A17 17 0 0 1 20 37A9 17 0 0 1 20 3Z" />}
+      {lit && (
+        <g>
+          <path className="light" d="M20 3A17 17 0 0 1 20 37A10 17 0 0 1 20 3Z" />
+          <circle className="crater" cx="27" cy="14" r="2.6" />
+          <circle className="crater" cx="23" cy="26" r="3.4" />
+          <circle className="crater" cx="31" cy="24" r="1.6" />
+        </g>
+      )}
     </svg>
   );
 }
@@ -501,6 +530,7 @@ function Pile({ n, side }: { n: number; side: "left" | "right" }) {
       <span className="back" style={{ backgroundImage: `url(${cardBack})` }} />
       <span className="back" style={{ backgroundImage: `url(${cardBack})` }} />
       <b>{n}</b>
+      <small>{side === "left" ? "Draw" : "Discard"}</small>
     </div>
   );
 }
