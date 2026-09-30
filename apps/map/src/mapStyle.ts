@@ -107,9 +107,13 @@ export function drawImage(t: Theme, name: string): { width: number; height: numb
   return null;
 }
 
-/** The hand-drawn map as XYZ tiles (tools/map/drawn_tiles.py): URL template and the area it covers. */
+/** The hand-drawn map as XYZ tiles (tools/map/drawn_tiles.py): the area it covers and where the tiles are. Either a
+ * URL template (`tiles`) or, as the tool writes them, a few pack files (`packs`, URLs) with a byte `index` "z/x/y" ->
+ * [pack, offset, length], served through the `drawn://` protocol (see servePacks in MapScreen). */
 export interface DrawnMap {
-  tiles: string;
+  tiles?: string;
+  packs?: string[];
+  index?: Record<string, number[]>;
   bounds: [number, number, number, number];
   minzoom: number;
   maxzoom: number;
@@ -123,7 +127,7 @@ const DRAWN_REPLACES = ["parks", "schools", "schools-line", "contours", "water-f
 export function buildStyle(t: Theme, active: { spots: string[] }, drawn?: DrawnMap): StyleSpecification {
   const style = inkStyle(t, active);
   if (!drawn) return style;
-  style.sources.drawn = { type: "raster", tiles: [drawn.tiles], tileSize: drawn.tileSize, bounds: drawn.bounds, minzoom: drawn.minzoom, maxzoom: drawn.maxzoom };
+  style.sources.drawn = { type: "raster", tiles: [drawn.index ? "drawn://{z}/{x}/{y}" : drawn.tiles!], tileSize: drawn.tileSize, bounds: drawn.bounds, minzoom: drawn.minzoom, maxzoom: drawn.maxzoom };
   style.layers = style.layers.flatMap((l) => {
     if (l.id === "paper") return [l, { id: "drawn", type: "raster", source: "drawn", paint: { "raster-fade-duration": 0, "raster-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0.4, 15, 0.9] } } as const];
     if (DRAWN_REPLACES.includes(l.id)) return [];

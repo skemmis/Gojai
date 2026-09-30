@@ -80,8 +80,12 @@ function store(key: string, value: unknown) {
   }
 }
 
-/** The hand-drawn valley map, served as tiles next to the page (apps/map/drawn-tiles, from tools/map/drawn_tiles.py). */
-const DRAWN = { ...drawnMeta, tiles: new URL("drawn/", document.baseURI).href + "{z}/{x}/{y}.webp" } as DrawnMap;
+/** The hand-drawn valley map: three tile packs next to the page (apps/map/drawn-tiles/drawn, from tools/map/drawn_tiles.py). */
+const DRAWN: DrawnMap = {
+  ...drawnMeta,
+  bounds: drawnMeta.bounds as DrawnMap["bounds"],
+  packs: drawnMeta.packs.map((f) => new URL(`drawn/${f}`, document.baseURI).href),
+};
 
 export function App() {
   const [run, setRun] = useState<Run>(() => newRun(randomSeed()));
