@@ -658,30 +658,25 @@ footer {
 
 /* The name: a paper ribbon across the top, like a tarot title */
 .ribbon {
-  width: min(300px, 82%);
+  position: relative;
+  width: min(310px, 84%);
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
 }
-.ribbon svg {
+.ribbon img {
   display: block;
   width: 100%;
   height: auto;
 }
-.ribbon .band {
-  fill: var(--paper);
-  stroke: var(--ink);
-  stroke-width: 1.5;
-}
-.ribbon .tail {
-  fill: color-mix(in srgb, var(--paper) 78%, var(--ink));
-  stroke: var(--ink);
-  stroke-width: 1.5;
-}
-.ribbon .fold {
-  fill: var(--ink);
-}
-.ribbon text {
+/* The name sits on the ribbon's middle band, between the swallowtails */
+.ribbon span {
+  position: absolute;
+  inset: 0 16% 8%;
+  display: grid;
+  place-items: center;
   font-family: var(--display);
-  fill: var(--ink);
+  color: var(--ink);
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .sprite-wrap {
@@ -776,16 +771,12 @@ footer {
   color: var(--ink);
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
 }
-.threat > svg {
+.threat > .blot {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-.threat > svg path,
-.threat > svg circle {
-  fill: var(--paper);
+  inset: -8%;
+  width: 116%;
+  height: 116%;
+  object-fit: contain;
 }
 .threat .glyph,
 .threat .ico {
@@ -812,12 +803,9 @@ footer {
 }
 .threat.atk {
   width: 100px;
-  height: 90px;
+  height: 96px;
   color: var(--paper);
-}
-.threat.atk > svg path,
-.threat.atk > svg circle {
-  fill: var(--blood);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 .threat.atk > b {
   font-size: 40px;
@@ -846,10 +834,6 @@ footer {
   text-shadow: 0 1px 2px var(--night);
 }
 /* Fully blocked: the blood dries brown and the number drops back */
-.threat.atk.stopped > svg path,
-.threat.atk.stopped > svg circle {
-  fill: #5A3A26;
-}
 .threat.atk.stopped > b {
   opacity: 0.6;
 }
@@ -872,16 +856,12 @@ footer {
   bottom: -24px;
   margin: 0;
 }
-.shield-mark svg {
+.shield-mark img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-}
-.shield-mark path {
-  fill: var(--suit-hearts);
-  stroke: var(--paper);
-  stroke-width: 4;
+  object-fit: contain;
 }
 .shield-mark b {
   position: relative;
@@ -890,9 +870,9 @@ footer {
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
-.shield-mark.preview path {
-  stroke-dasharray: 8 6;
-  animation: breathe 1.2s ease-in-out infinite alternate;
+/* Only a card you're holding: the shield breathes until you play it */
+.shield-mark.preview img {
+  animation: breathe 0.9s ease-in-out infinite alternate;
 }
 @keyframes breathe {
   from { opacity: 0.75; }
@@ -927,29 +907,28 @@ footer {
   display: flex;
   gap: 3px;
 }
-.drops svg {
-  width: 15px;
+.drops .drop {
+  position: relative;
+  width: 13px;
   height: 21px;
-  overflow: visible;
 }
-.drops .empty {
-  fill: color-mix(in srgb, var(--night) 60%, transparent);
-  stroke: var(--on-night-soft);
-  stroke-width: 1.2;
+.drops .drop img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
-.drops .full {
-  fill: var(--suit-spades-night);
+/* The inked drops are dark; lift them so they read on the night table */
+.drops .drop .full {
+  filter: brightness(1.9) saturate(1.15);
 }
-/* Drops the next blow would drain go pale */
+/* Drops the next blow would drain go pale and breathe */
 .drops .risk .full {
-  fill: var(--paper);
+  opacity: 0.35;
 }
 .drops .risk {
   animation: breathe 0.8s ease-in-out infinite alternate;
-}
-.drops .risk .empty {
-  stroke: var(--paper);
-  stroke-width: 1.6;
 }
 .drops .num {
   font-size: 14px;
@@ -963,9 +942,9 @@ footer {
   font-weight: 800;
   color: var(--on-night);
 }
-.drops.you svg {
-  width: 16px;
-  height: 23px;
+.drops.you .drop {
+  width: 15px;
+  height: 24px;
 }
 .drops.you .num b {
   font-size: 26px;
@@ -1053,21 +1032,18 @@ footer {
 }
 .pile {
   position: relative;
-  width: 44px;
-  height: 62px;
+  width: 64px;
+  height: 52px;
   margin-bottom: 16px;
   pointer-events: none;
 }
-.pile .back {
+.pile img {
   position: absolute;
-  inset: 0 6px 6px 0;
-  border-radius: 3px;
-  border: 1px solid var(--on-night-soft);
-  background-size: cover;
-}
-.pile .back + .back {
-  inset: 4px 2px 2px 4px;
-  transform: rotate(4deg);
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7));
 }
 .pile b {
   position: absolute;
@@ -1099,40 +1075,25 @@ footer {
   color: var(--on-night);
   text-shadow: 0 1px 3px var(--night);
 }
-.pile .back {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
-}
+
 .moons {
   display: flex;
   gap: 10px;
   padding-bottom: 20px;
 }
 .moon {
-  width: 40px;
-  height: 40px;
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--paper) 25%, transparent));
+  width: 42px;
+  height: 42px;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--paper) 30%, transparent));
 }
 .moon:not(.lit) {
   filter: none;
-}
-.moon .crater {
-  fill: color-mix(in srgb, var(--paper) 70%, var(--ink));
-}
-.moon .disc {
-  fill: #221c16;
-  stroke: var(--on-night-soft);
-  stroke-width: 1.5;
-}
-.moon.lit .disc {
-  stroke: var(--paper);
-}
-.moon .light {
-  fill: var(--paper);
+  opacity: 0.85;
 }
 .end {
   position: relative;
-  width: 132px;
-  height: 46px;
+  width: 124px;
+  height: 58px;
   padding: 0;
   border: 0;
   background: none;
@@ -1142,28 +1103,20 @@ footer {
   cursor: pointer;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
 }
-.end svg {
+.end img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-}
-.end .sheet,
-.end .roll {
-  fill: color-mix(in srgb, var(--paper) 72%, var(--night));
-  stroke: var(--ink);
-  stroke-width: 1.5;
-}
-.end .core {
-  fill: var(--ink);
+  object-fit: fill;
+  opacity: 0.8;
 }
 .end span {
   position: relative;
 }
 /* Out of moons: the scroll brightens to say it's time */
-.end.ready .sheet,
-.end.ready .roll {
-  fill: var(--paper);
+.end.ready img {
+  opacity: 1;
 }
 .end.ready {
   animation: breathe 1s ease-in-out infinite alternate;
@@ -1414,10 +1367,4 @@ footer {
   height: 9px;
   border-radius: 50%;
   background: var(--gilt);
-}
-
-.ink-defs {
-  position: absolute;
-  width: 0;
-  height: 0;
 }

@@ -10,7 +10,6 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { cardDef, CONFIG, endTurn, hitSize, incoming, intent, isJunk, multiplier, play, playError, previewPlay } from "@gojai/core";
 import type { Card, EnemyAction, Run, Suit } from "@gojai/core";
 import { Icon, rankLabel, powerAmount, sortCards, type IconName } from "./components";
-import cardBack from "./assets/card-back.webp";
 import vignette from "./assets/scene-vignette.webp";
 
 type Act = (fn: (r: Run) => void) => boolean;
@@ -241,7 +240,6 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
 
   return (
     <div className={`table ${shake === "you" ? "shake" : ""}`} ref={tableRef} onPointerMove={onMove} onPointerUp={onUp}>
-      <InkDefs />
       <Scene id={scene} zone={stage} feet={stage.feet} pink={pinkMoment(run)} />
       <SceneFront id={scene} zone={stage} feet={stage.feet} />
 
@@ -340,49 +338,17 @@ export function FightScreen({ run, act }: { run: Run; act: Act }) {
 
 // ─── Pieces ──────────────────────────────────────────────────────────────────
 
-/** Drawn shapes, in 0–100 boxes: an irregular blot with a few spatters, a shield, a drop of blood. */
-const BLOT =
-  "M93 44Q90 50 96 57Q103 64 93 67Q83 70 80 74Q76 78 72 81Q67 84 62 89Q57 95 51 91Q44 87 38 86Q32 85 29 80Q26 76 18 74Q10 73 10 67Q9 61 9 56Q8 50 12 45Q15 41 8 31Q1 21 12 21Q23 21 28 19Q33 16 39 16Q45 16 51 11Q57 6 61 13Q65 19 70 22Q75 24 78 28Q82 31 89 34Q96 38 93 44Z";
-const SHIELD = "M50 4L92 14L88 52Q80 82 50 97Q20 82 12 52L8 14Z";
-const DROP = "M10 1C10 1 18 12 18 18.5A8 8 0 0 1 2 18.5C2 12 10 1 10 1Z";
-
-/**
- * Printed-ink roughness for the larger drawn shapes (blots, shield):
- * edges wobble a little and the fill breaks up, like a worn letterpress block.
- * Rendered once per fight screen; shapes opt in with filter="url(#ink)".
- */
-function InkDefs() {
-  return (
-    <svg className="ink-defs" aria-hidden="true" width="0" height="0">
-      <filter id="ink" x="-10%" y="-10%" width="120%" height="120%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="3" result="wob" />
-        <feDisplacementMap in="SourceGraphic" in2="wob" scale="5" xChannelSelector="R" yChannelSelector="G" result="rough" />
-        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="8" result="grain" />
-        <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -9 5.9" result="holes" />
-        <feComposite in="rough" in2="holes" operator="in" />
-      </filter>
-    </svg>
-  );
-}
+/** Inked UI pieces from the art thread (assets/ui-<id>.webp): blots, shield, moons, drops, piles, ribbon, scroll. */
+const UI: Record<string, string> = globById(import.meta.glob<string>("./assets/ui-*.webp", { eager: true, import: "default" }), "ui");
+const BLOTS = ["blot-attack-1", "blot-attack-2", "blot-attack-3"];
 
 /** The enemy's name on a paper ribbon across the top of the scene, like a tarot title. */
 function Ribbon({ name }: { name: string }) {
-  const size = Math.min(22, 380 / Math.max(10, name.length));
+  const size = Math.min(22, 330 / Math.max(10, name.length));
   return (
-    <div className="ribbon" aria-label={name}>
-      <svg viewBox="0 0 300 76" aria-hidden="true">
-        <path className="tail" d="M2 30H52V66H2L16 48Z" />
-        <path className="tail" d="M298 30H248V66H298L284 48Z" />
-        <path className="fold" d="M40 58L52 66V52Z" />
-        <path className="fold" d="M260 58L248 66V52Z" />
-        <path className="band" d="M40 20Q150 0 260 20V58Q150 38 40 58Z" />
-        <path id="ribbon-line" d="M52 46Q150 26 248 46" fill="none" />
-        <text style={{ fontSize: size }}>
-          <textPath href="#ribbon-line" startOffset="50%" textAnchor="middle">
-            {name}
-          </textPath>
-        </text>
-      </svg>
+    <div className="ribbon">
+      <img src={UI.ribbon} alt="" draggable={false} />
+      <span style={{ fontSize: size }}>{name}</span>
     </div>
   );
 }
@@ -403,13 +369,7 @@ function Threat({ run, a, adding }: { run: Run; a: EnemyAction; adding: number }
     const left = Math.max(0, hit - guard);
     return (
       <div className={`threat atk ${left === 0 ? "stopped" : ""}`} title={`Attack ${hit}`}>
-        <svg viewBox="-6 -2 116 104" aria-hidden="true" filter="url(#ink)">
-          <path d={BLOT} />
-          <circle cx="104" cy="28" r="3.5" />
-          <circle cx="-1" cy="64" r="2.5" />
-          <circle cx="84" cy="97" r="3" />
-          <circle cx="22" cy="7" r="2" />
-        </svg>
+        <img className="blot" src={UI[left === 0 ? "blot-attack-dry" : BLOTS[run.floor % BLOTS.length]]} alt="" draggable={false} />
         <Glyph name="attack" fallback="blade" />
         <b>{left}</b>
         {guard > 0 && <s className="was">{hit}</s>}
@@ -432,9 +392,7 @@ function Threat({ run, a, adding }: { run: Run; a: EnemyAction; adding: number }
   const title = a.k === "hex" ? `Adds ${a.count} × ${cardDef(a.card).name} to your deck` : a.k;
   return (
     <div className="threat" title={title}>
-      <svg viewBox="-6 -2 116 104" aria-hidden="true" filter="url(#ink)">
-        <path d={BLOT} />
-      </svg>
+      <img className="blot" src={UI["blot-paper"]} alt="" draggable={false} />
       <Glyph name={glyph} fallback={icon} />
       <b>{text}</b>
     </div>
@@ -450,9 +408,7 @@ function Guard({ block, adding }: { block: number; adding: number }) {
 function ShieldMark({ n, small, preview }: { n: number; small?: boolean; preview?: boolean }) {
   return (
     <div className={`shield-mark ${small ? "small" : ""} ${preview ? "preview" : ""}`} title="Block">
-      <svg viewBox="0 0 100 100" aria-hidden="true" filter="url(#ink)">
-        <path d={SHIELD} />
-      </svg>
+      <img src={UI.shield} alt="" draggable={false} />
       <b>{n}</b>
     </div>
   );
@@ -473,15 +429,11 @@ function Drops({ hp, max, loss, who }: { hp: number; max: number; loss: number; 
           const lo = i * per;
           const fill = Math.min(1, Math.max(0, (hp - lo) / per));
           const risk = loss > 0 && hp > lo && after < lo + per;
-          const id = `${who}-drop-${i}`;
           return (
-            <svg key={i} viewBox="0 0 20 28" className={risk ? "risk" : ""} aria-hidden="true">
-              <clipPath id={id}>
-                <rect x="0" y={28 - 27 * fill} width="20" height="28" />
-              </clipPath>
-              <path className="empty" d={DROP} />
-              {fill > 0 && <path className="full" d={DROP} clipPath={`url(#${id})`} />}
-            </svg>
+            <span key={i} className={`drop ${risk ? "risk" : ""}`} aria-hidden="true">
+              <img src={UI["blood-drop-empty"]} alt="" draggable={false} />
+              {fill > 0 && <img className="full" src={UI["blood-drop"]} style={{ clipPath: `inset(${(1 - fill) * 100}% 0 0 0)` }} alt="" draggable={false} />}
+            </span>
           );
         })}
       </div>
@@ -494,39 +446,18 @@ function Drops({ hp, max, loss, who }: { hp: number; max: number; loss: number; 
 
 /** One action: a gibbous moon while it's yours to spend, a dark new moon once spent. */
 function Moon({ lit }: { lit: boolean }) {
-  return (
-    <svg className={`moon ${lit ? "lit" : ""}`} viewBox="0 0 40 40" aria-hidden="true">
-      <circle className="disc" cx="20" cy="20" r="17" />
-      {lit && (
-        <g>
-          <path className="light" d="M20 3A17 17 0 0 1 20 37A10 17 0 0 1 20 3Z" />
-          <circle className="crater" cx="27" cy="14" r="2.6" />
-          <circle className="crater" cx="23" cy="26" r="3.4" />
-          <circle className="crater" cx="31" cy="24" r="1.6" />
-        </g>
-      )}
-    </svg>
-  );
+  return <img className={`moon ${lit ? "lit" : ""}`} src={UI[lit ? "moon-gibbous" : "moon-new"]} alt="" draggable={false} />;
 }
 
-/** A paper scroll with rolled ends, for End turn. */
+/** A paper scroll, for End turn. */
 function Scroll() {
-  return (
-    <svg viewBox="0 0 160 52" preserveAspectRatio="none" aria-hidden="true">
-      <path className="sheet" d="M14 8Q80 2 146 8V44Q80 50 14 44Z" />
-      <ellipse className="roll" cx="14" cy="26" rx="8" ry="20" />
-      <ellipse className="roll" cx="146" cy="26" rx="8" ry="20" />
-      <ellipse className="core" cx="14" cy="26" rx="3" ry="8" />
-      <ellipse className="core" cx="146" cy="26" rx="3" ry="8" />
-    </svg>
-  );
+  return <img src={UI.scroll} alt="" draggable={false} />;
 }
 
 function Pile({ n, side }: { n: number; side: "left" | "right" }) {
   return (
     <div className={`pile ${side}`} title={side === "left" ? "Draw pile" : "Discard pile"}>
-      <span className="back" style={{ backgroundImage: `url(${cardBack})` }} />
-      <span className="back" style={{ backgroundImage: `url(${cardBack})` }} />
+      <img src={UI[side === "left" ? "pile-draw" : "pile-discard"]} alt="" draggable={false} />
       <b>{n}</b>
       <small>{side === "left" ? "Draw" : "Discard"}</small>
     </div>
