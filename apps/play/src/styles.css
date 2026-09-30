@@ -598,17 +598,6 @@ footer {
   from { transform: translateX(-4px); }
   to { transform: translateX(4px); }
 }
-.scene .plate.mirror {
-  transform: scaleY(-1);
-}
-/* Below the ground line the scene darkens toward the bottom, so the cards and controls read against it */
-.scene .ground-fade {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(transparent, color-mix(in srgb, var(--night) 55%, transparent) 30%, color-mix(in srgb, var(--night) 88%, transparent) 75%);
-}
 /* Pink Moment: the sky band takes the pink, printed a little off-register; blacks stay black */
 .scene .pink-wash {
   position: absolute;

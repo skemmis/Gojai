@@ -35,13 +35,13 @@ function Glyph({ name, fallback }: { name: string; fallback: IconName }) {
   if (!url) return <Icon name={fallback} />;
   return <span className="glyph" style={{ maskImage: `url(${url})`, WebkitMaskImage: `url(${url})` }} aria-hidden="true" />;
 }
-/** Fight backgrounds from the art thread: portrait night plates of real places (assets/scene-<id>.webp), each with a front layer at the edges (assets/front-<id>.webp). */
+/** Fight backgrounds from the art thread: full-height night plates of real places (assets/scene-<id>.webp); a front layer at the edges (assets/front-<id>.webp) where one exists. */
 const globById = (files: Record<string, string>, prefix: string) =>
   Object.fromEntries(Object.entries(files).map(([path, url]) => [path.replace(new RegExp(`^.*${prefix}-(.*)\\.webp$`), "$1"), url]));
 const SCENES: Record<string, string> = globById(import.meta.glob<string>("./assets/scene-*.webp", { eager: true, import: "default" }), "scene");
 const FRONTS: Record<string, string> = globById(import.meta.glob<string>("./assets/front-*.webp", { eager: true, import: "default" }), "front");
-/** Plate geometry at the size we ship (the manifest's 1080×1440 scaled by 0.75): ground line at 78%, quiet column centred. */
-const PLATE = { w: 810, h: 1080, floor: 842, foeX: 0.5 };
+/** Plate geometry at the size we ship (the tall manifest's 1080×2340 scaled by 2/3): ground line at 55%, quiet column centred. */
+const PLATE = { w: 720, h: 1560, floor: 860, foeX: 0.5 };
 /** Plates a fight can land on when the spot's place has no plate of its own: the run seed and floor pick one. */
 const PLATES = ["arcade", "libbey-park", "ojai-valley-trail", "shelf-road"];
 
@@ -66,13 +66,13 @@ function daylight(): number {
 }
 
 /**
- * The place behind the whole table. Scaled so the plate's ground line meets
- * the sprite's feet and its quiet column sits under the sprite. The plate stops
- * short of the bottom of the screen, so the ground carries on below it as the
- * plate's own mirror image, fading into the night under your hand.
+ * The place behind the whole table, top to bottom. Scaled so the plate's
+ * ground line meets the sprite's feet and its quiet column sits under the
+ * sprite, while still covering the screen; the plate's ground runs on under
+ * your hand and fades to the night table by itself.
  */
 function plateBox(zone: { w: number; h: number }, feet: number) {
-  const s = Math.max(zone.w / PLATE.w, feet / PLATE.floor);
+  const s = Math.max(zone.w / PLATE.w, feet / PLATE.floor, (zone.h - feet) / (PLATE.h - PLATE.floor));
   const w = PLATE.w * s;
   const h = PLATE.h * s;
   const left = Math.min(0, Math.max(zone.w - w, zone.w / 2 - PLATE.foeX * w));
@@ -89,8 +89,6 @@ function Scene({ id, zone, feet, pink }: { id: string; zone: { w: number; h: num
       {pink && <div className="pink-wash" style={{ ...box, height: box.height * 0.38 }} />}
       <div className="fog" style={{ top: feet - 60 * s, height: 140 * s }} />
       <img className="plate" src={vignette} style={box} alt="" draggable={false} />
-      <img className="plate mirror" src={url} style={{ ...box, top: box.top + box.height, filter: `brightness(${daylight() * 0.7})` }} alt="" draggable={false} />
-      <div className="ground-fade" style={{ top: feet + 40 * s }} />
     </div>
   );
 }
