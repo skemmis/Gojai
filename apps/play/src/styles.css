@@ -793,7 +793,14 @@ footer {
   width: 22px;
   height: 22px;
 }
-.threat > b {
+.threat > .mark {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.threat > b,
+.threat > .mark b {
   position: relative;
   font-size: 30px;
   font-weight: 800;
@@ -813,6 +820,7 @@ footer {
 }
 /* Numbers and words printed on a shape are centred by their capitals, not the font's line box */
 .threat > b,
+.threat > .mark b,
 .shield-mark b,
 .gcard .seal b,
 .pile b,
@@ -898,7 +906,7 @@ footer {
   margin-top: -4px;
 }
 
-/* Life: ten drops of blood, filled like vials, the exact number beside them */
+/* Life: one drop as its sign, then the number */
 .foe-life {
   display: flex;
   align-items: center;
@@ -911,32 +919,19 @@ footer {
 .drops {
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-.drops .row {
-  display: flex;
-  gap: 3px;
+  gap: 6px;
 }
 .drops .drop {
-  position: relative;
-  width: 13px;
-  height: 21px;
-}
-.drops .drop img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  width: 15px;
+  height: 22px;
   object-fit: contain;
 }
-/* Drops the next blow would drain go pale and breathe */
-.drops .risk .full {
-  opacity: 0.35;
-}
-.drops .risk {
+/* When the next blow would take some of it, the drop breathes */
+.drops.at-risk .drop {
   animation: breathe 0.8s ease-in-out infinite alternate;
 }
 .drops .num {
+  position: relative;
   font-size: 14px;
   font-weight: 700;
   color: var(--on-night-soft);
@@ -947,9 +942,6 @@ footer {
   font-size: 24px;
   font-weight: 800;
   color: var(--on-night);
-}
-.drops .num {
-  position: relative;
 }
 /* The coming loss hangs over the number, so the row doesn't grow */
 .drops .num .loss {
@@ -962,11 +954,11 @@ footer {
   color: var(--suit-spades-night);
 }
 .drops.you .drop {
-  width: 14px;
-  height: 23px;
+  width: 18px;
+  height: 26px;
 }
 .drops.you .num b {
-  font-size: 26px;
+  font-size: 28px;
 }
 
 /* Immunity: the suit it shrugs off, in that suit's ink, struck through. Cards of that suit are struck through in your hand too. */
@@ -1027,9 +1019,6 @@ footer {
   padding: 6px 12px 6px 4px;
   border-radius: 999px;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--night) 80%, transparent) 60%, transparent);
-}
-.you-zone .drops .row {
-  gap: 2px;
 }
 .you-zone .floater {
   top: -40px;

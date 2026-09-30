@@ -75,28 +75,14 @@ export function ShieldMark({ n, small, preview }: { n: number; small?: boolean; 
 
 
 /**
- * Life as ten drops of blood, each a tenth of the whole, filled like a vial
- * from the bottom; the exact number sits beside them. Drops that the next
- * blow would drain are hatched. The enemy's and yours are drawn the same.
+ * Life: one drop of blood as the sign for it, then the exact number. The
+ * coming loss hangs over the number in red. The enemy's and yours are drawn
+ * the same. (Ten drops filled like vials read as busy, so they went.)
  */
 export function Drops({ hp, max, loss, who }: { hp: number; max: number; loss: number; who: "foe" | "you" }) {
-  const per = max / 10;
-  const after = Math.max(0, hp - loss);
   return (
-    <div className={`drops ${who}`}>
-      <div className="row">
-        {Array.from({ length: 10 }, (_, i) => {
-          const lo = i * per;
-          const fill = Math.min(1, Math.max(0, (hp - lo) / per));
-          const risk = loss > 0 && hp > lo && after < lo + per;
-          return (
-            <span key={i} className={`drop ${risk ? "risk" : ""}`} aria-hidden="true">
-              <img src={UI["blood-drop-flat-empty"]} alt="" draggable={false} />
-              {fill > 0 && <img className="full" src={UI["blood-drop-flat"]} style={{ clipPath: `inset(${(1 - fill) * 100}% 0 0 0)` }} alt="" draggable={false} />}
-            </span>
-          );
-        })}
-      </div>
+    <div className={`drops ${who} ${loss > 0 ? "at-risk" : ""}`} title={`${Math.max(0, hp)} of ${max} life`}>
+      <img className="drop" src={UI["blood-drop-flat"]} alt="" draggable={false} />
       <span className="num">
         <b>{Math.max(0, hp)}</b>/{max}
         {loss > 0 && <em className="loss">−{Math.min(loss, hp)}</em>}

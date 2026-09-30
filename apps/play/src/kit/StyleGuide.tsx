@@ -282,7 +282,7 @@ export function StyleGuide() {
             </State>
             <RunStatus hp={28} max={40} gold={120} />
           </Part>
-          <Part name="Blood, moons and block" job="From the fight: HP as ten drops, actions as gibbous moons, block as the shield.">
+          <Part name="Blood, moons and block" job="From the fight: HP as a drop and its number, actions as gibbous moons, block as the shield.">
             <div className="sg-col">
               <Drops hp={30} max={40} loss={6} who="you" />
               <div className="sg-row">

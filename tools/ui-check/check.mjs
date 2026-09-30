@@ -31,6 +31,7 @@ const TOLERANCE = 1.5;
 const CENTRED = [
   ["enemy name on ribbon", ".ribbon span", ".ribbon span", "xy"],
   ["attack number on blot", ".threat.atk > b", ".threat.atk", "xy"],
+  ["intent on paper blot", ".threat > .mark", ".threat", "xy"],
   ["block number on shield", ".shield-mark b", ".shield-mark", "x"],
   ["card value on seal", ".gcard .seal b", ".gcard .seal", "xy"],
   ["End turn on scroll", ".end span", ".end", "xy"],
@@ -208,6 +209,10 @@ if (await heart.count()) {
 await page.getByRole("button", { name: /End turn/ }).click();
 await pause(1500);
 await checkState("fight-next-turn");
+
+// A foe whose next move isn't an attack: its glyph and number sit together on a paper blot
+await steer("Object.assign(r.fight.enemy, { id: 'influencer', name: 'The Influencer', intentIdx: 0 })", 600);
+await checkState("fight-hex");
 
 // Win it: one hit left, then a spade
 await steer("r.fight.enemy.hp = 1; r.fight.enemy.block = 0", 400);

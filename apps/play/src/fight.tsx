@@ -359,8 +359,10 @@ function Threat({ run, a, adding }: { run: Run; a: EnemyAction; adding: number }
   return (
     <div className="threat" title={title}>
       <img className="blot" src={UI["blot-paper"]} alt="" draggable={false} />
-      <Glyph name={glyph} fallback={icon} />
-      <b>{text}</b>
+      <span className="mark">
+        <Glyph name={glyph} fallback={icon} />
+        <b>{text}</b>
+      </span>
     </div>
   );
 }
