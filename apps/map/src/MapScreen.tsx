@@ -88,13 +88,19 @@ export interface MapScreenProps {
   onSelectHood?: (id: string) => void;
   /** An image (e.g. who holds it) shown beside each neighborhood's name. */
   hoodBadge?: (id: string) => string | undefined;
+  /**
+   * What a spot holds for this player's current roll, as an image URL stood on
+   * its card (the game maps the find through the run's pacing: boss floors,
+   * no elites early). Opened spots show none until they reroll.
+   */
+  spotGlyph?: (spot: Spot, find: Find) => string | undefined;
 }
 
 /**
  * The whole map screen: MapLibre map, top bar, "Happening now" band and the
  * bottom sheet. Drop it into any React app (it fills its positioned parent).
  */
-export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, onOpen, autoLocate = false, tools, bare = false, onSelect, onSelectHood, hoodBadge }: MapScreenProps) {
+export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, onOpen, autoLocate = false, tools, bare = false, onSelect, onSelectHood, hoodBadge, spotGlyph }: MapScreenProps) {
   const mapEl = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const removed = useRef(false);
@@ -146,6 +152,8 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
       mapEl.current?.classList.toggle("labels", m.getZoom() >= 15.5);
       mapEl.current?.classList.toggle("far", m.getZoom() < FAR_ZOOM);
     };
+    // The UI check (tools/ui-check) moves the camera directly
+    if (location.search.includes("uicheck")) (window as unknown as { __map: maplibregl.Map }).__map = m;
     m.on("zoom", zoomClass);
     zoomClass();
     m.on("click", (e) => {
@@ -285,6 +293,41 @@ export function MapScreen({ playerId = "demo", visits = {}, anywhere = false, on
     m.on("styledata", apply);
     return () => void m.off("styledata", apply);
   }, [near, spentKey]);
+
+  // What every spot holds this roll, so the player can choose where to walk.
+  const slot = Math.floor(now.getTime() / (REFRESH_MIN * 6e4));
+  const glyphs = useMemo(() => {
+    if (!spotGlyph) return [];
+    const nearIds = new Set(near.map((s) => s.id));
+    return SPOTS.filter((s) => s.kind === "spot").flatMap((s) => {
+      if (visits[s.id] !== undefined && nextReroll(new Date(visits[s.id])) > now) return [];
+      const glyph = spotGlyph(s, findAt(s, playerId, now));
+      return glyph ? [{ id: s.id, glyph, near: nearIds.has(s.id), at: s.at }] : [];
+    });
+  }, [spotGlyph, slot, playerId, near, visits]);
+  const glyphKey = glyphs.map((g) => `${g.id}:${g.glyph}:${g.near ? 1 : 0}`).join();
+  useEffect(() => {
+    const m = map.current!;
+    const data = {
+      type: "FeatureCollection" as const,
+      features: glyphs.map((g) => ({
+        type: "Feature" as const,
+        properties: { id: g.id, glyph: g.glyph, near: g.near },
+        geometry: { type: "Point" as const, coordinates: g.at },
+      })),
+    };
+    // Glyphs are 128 px inked pieces; shown at about 24 px (size 1, with their paper knockout) over 14 px cards.
+    const load = (url: string) =>
+      m.hasImage(url) ? Promise.resolve() : m.loadImage(url).then((r) => void (!m.hasImage(url) && m.addImage(url, r.data, { pixelRatio: 6 })));
+    const apply = () => {
+      const src = m.getSource("kinds") as maplibregl.GeoJSONSource | undefined;
+      if (!src) return;
+      Promise.all([...new Set(glyphs.map((g) => g.glyph))].map(load)).then(() => !removed.current && src.setData(data));
+    };
+    apply();
+    m.on("styledata", apply);
+    return () => void m.off("styledata", apply);
+  }, [glyphKey]);
 
   useEffect(() => {
     if (autoLocate) locate();

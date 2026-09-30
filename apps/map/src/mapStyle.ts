@@ -1,4 +1,4 @@
-import type { StyleSpecification, ExpressionSpecification } from "maplibre-gl";
+import type { StyleSpecification, ExpressionSpecification, SymbolLayerSpecification } from "maplibre-gl";
 import { SPOTS, neighborhoodsGeoJSON, type LngLat } from "@gojai/map";
 import { GEO } from "./geo.ts";
 import type { Theme } from "./theme.ts";
@@ -35,6 +35,14 @@ const SPOT_POINTS: FC = {
     properties: { id: s.id },
     geometry: { type: "Point", coordinates: s.at },
   })),
+};
+
+const GLYPH: SymbolLayerSpecification["layout"] = {
+  "icon-image": ["get", "glyph"],
+  "icon-anchor": "bottom",
+  "icon-offset": [0, -10], // glyph stands on the card, its paper knockout keeping a small gap (the card is 20 px tall at size 1)
+  "icon-allow-overlap": true,
+  "icon-ignore-placement": true,
 };
 
 /** Zoom at which plain spots turn from dots into cards. */
@@ -115,6 +123,7 @@ export function buildStyle(t: Theme, active: { spots: string[] }): StyleSpecific
       ranges: { type: "geojson", data: RANGES as never },
       spots: { type: "geojson", data: SPOT_POINTS as never, promoteId: "id" },
       near: { type: "geojson", data: { type: "FeatureCollection", features: [] }, promoteId: "id" },
+      kinds: { type: "geojson", data: { type: "FeatureCollection", features: [] } },
     },
     layers: [
       { id: "paper", type: "background", paint: { "background-color": t.paper } },
@@ -299,6 +308,23 @@ export function buildStyle(t: Theme, active: { spots: string[] }): StyleSpecific
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
         },
+      },
+      // What each spot holds this roll (fight, elite, shop…), stood on top of its card, so you can pick where to walk.
+      // Same sizes as the cards under them; only where the game passes `spotGlyph`.
+      {
+        id: "kind-cards",
+        type: "symbol",
+        source: "kinds",
+        minzoom: CARD_ZOOM,
+        filter: ["!", ["get", "near"]],
+        layout: { ...GLYPH, "icon-size": ["interpolate", ["linear"], ["zoom"], CARD_ZOOM, 0.7, 17, 1] },
+      },
+      {
+        id: "kind-near",
+        type: "symbol",
+        source: "kinds",
+        filter: ["get", "near"],
+        layout: { ...GLYPH, "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.42, 14, 0.58, 17, 1.05] },
       },
     ],
   };

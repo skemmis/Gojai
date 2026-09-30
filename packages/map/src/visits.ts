@@ -11,7 +11,7 @@ import { REFRESH_MIN, findAt, type Find, type Spot } from "./spots.ts";
 export type Visits = Record<string, number>;
 
 export type SpotState =
-  | { kind: "far"; distanceM: number } // walk closer
+  | { kind: "far"; distanceM: number; find: Find } // walk closer (what it holds this roll is already known)
   | { kind: "open"; find: Find } // tap to play what it rolled
   | { kind: "cooling"; until: Date }; // already opened this roll
 
@@ -37,7 +37,7 @@ export function spotState(
   const opened = visits[spot.id];
   if (opened !== undefined && nextReroll(new Date(opened)) > now) return { kind: "cooling", until: nextReroll(new Date(opened)) };
   const d = you ? distanceM(you, spot.at) : Infinity;
-  if (!opts.anywhere && d > spot.radiusM) return { kind: "far", distanceM: d };
+  if (!opts.anywhere && d > spot.radiusM) return { kind: "far", distanceM: d, find: findAt(spot, playerId, now) };
   return { kind: "open", find: findAt(spot, playerId, now) };
 }
 

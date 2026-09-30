@@ -161,6 +161,14 @@ await checkState("join");
 await page.locator("#join-name").fill("Tester");
 await click(page.getByRole("button", { name: "Begin" }), 2000);
 await checkState("map");
+// Close in, spots are cards with what each holds this roll stood on top (fight, elite, shop…); floor 3 so elites can show
+await steer("r.floor = 3", 400);
+const camera = (zoom) => page.evaluate((z) => { const m = window.__map; m.jumpTo({ zoom: z, center: [-119.2465, 34.4478] }); }, zoom);
+await camera(16.2);
+await pause(1500);
+await checkState("map-close");
+await camera(13.6);
+await steer("r.floor = 1", 800);
 
 // The screens behind the map's seals, then back to the map
 for (const [seal, state] of [["Deck", "deck"], ["Clan", "clan"], ["Boards", "boards"], ["You", "profile"]]) {

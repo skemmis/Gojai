@@ -71,8 +71,8 @@ export function SpotSheet({ spot, state, now, town, run, onEnter, onClose }: { s
   const holder = ground ? (town.territory.grounds[ground]?.holder ?? null) : null;
   const inf = ground ? influenceIn(town, ground) : { order: 0, pathless: 0 };
   // What entering does on this floor (floor 1 is always a fight, boss floors a boss), not just what the spot rolled
-  const kind = state.kind === "open" ? encounterFor(run, state.find) : undefined;
-  const place = spotOpened(spot, state.kind === "open" ? state.find : "fight", now).place?.replace(/_/g, "-");
+  const kind = state.kind !== "cooling" ? encounterFor(run, state.find) : undefined;
+  const place = spotOpened(spot, state.kind !== "cooling" ? state.find : "fight", now).place?.replace(/_/g, "-");
   const plate = (kind && KIND_PLATE[kind]) || (place && SCENES[place] ? place : PLACE_PLATES[spot.id.length % PLACE_PLATES.length]);
   const mine = town.me?.faction ?? null;
   return (
@@ -87,8 +87,12 @@ export function SpotSheet({ spot, state, now, town, run, onEnter, onClose }: { s
             <img src={SCENES[plate]} alt="" draggable={false} />
           </div>
           <p className="waits">
-            {kind && WAITS[kind]}
-            {state.kind === "far" && (Number.isFinite(state.distanceM) ? `Walk closer: ${Math.round(state.distanceM - spot.radiusM)} m to go` : "Walk here to open it")}
+            {kind && (
+              <span className="holds">
+                <img className="kind" src={UI[`kind-${kind}`]} alt="" /> {WAITS[kind]}
+              </span>
+            )}
+            {state.kind === "far" && <span className="walk">{Number.isFinite(state.distanceM) ? `Walk closer: ${Math.round(state.distanceM - spot.radiusM)} m to go` : "Walk here to open it"}</span>}
             {state.kind === "cooling" && (
               <>
                 <img className="hourglass" src={UI.hourglass} alt="" /> Opened. A new roll in {mins(state.until.getTime() - now.getTime())} min

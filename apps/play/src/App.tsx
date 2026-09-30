@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { MapScreen as WorldMap } from "@gojai/map-app/MapScreen";
-import { visit, spotOpened, type Spot, type SpotState, type Visits } from "@gojai/map";
+import { visit, spotOpened, type Find, type Spot, type SpotState, type Visits } from "@gojai/map";
 import {
   newRun,
+  encounterFor,
   enterEncounter,
   bossNext,
   takeRewardCard,
@@ -162,6 +163,8 @@ export function App() {
   const hoodBadge = useCallback((id: string) => (heldBy[id] ? UI[heldBy[id] === "order" ? "star" : "acorn"] : undefined), [heldBy]);
 
   const onMap = run.phase === "map";
+  // Each spot's roll, through this run's pacing, stood on its card so the player chooses where to walk
+  const spotGlyph = useCallback((_: Spot, find: Find) => UI[`kind-${encounterFor(run, find)}-map`], [run.floor]);
   const back = () => setView("map");
   return (
     <div className={`app ${run.phase === "fight" ? "night" : "screens"} ${onMap && view === "map" ? "on-map" : ""}`}>
@@ -180,6 +183,7 @@ export function App() {
           autoLocate={!anywhere}
           hoodBadge={hoodBadge}
           onSelect={(spot, state, at) => setPicked({ spot, state, now: at })}
+          spotGlyph={spotGlyph}
         />
         {town.me && (
           <MapChrome
